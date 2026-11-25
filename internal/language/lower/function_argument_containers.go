@@ -1,15 +1,17 @@
 package lower
 
 import (
+	"fmt"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
 // A function's Dictionary envelope contains semantic argument values. Preserve
 // an authored Map's AST identity so ordinary native-looking keys and literal
 // braces cannot select raw native/template codecs. Scalar and native-reference
 // argument routes retain their existing representation.
-func (l *Lowerer) lowerFunctionArgumentValue(call *syntax.CallExpr, argumentIndex int, expr syntax.Expression, optional bool) (interface{}, interface{}, error) {
+func (l *Lowerer) lowerFunctionArgumentValue(call *syntax.CallExpr, argumentIndex int, expr syntax.Expression, optional bool, expected types.Type) (interface{}, interface{}, error) {
 	if literal, ok := expr.(*syntax.LiteralExpr); ok && literal.Type == syntax.TokenNone {
 		// The slot binder validates an Optional parameter and writes value absence
 		// independently from the caller's supplied/default-presence flag.
@@ -20,6 +22,9 @@ func (l *Lowerer) lowerFunctionArgumentValue(call *syntax.CallExpr, argumentInde
 			return nil, nil, err
 		}
 	}
+	if types.PrivateValueTransport(l.transportType(expr)) && !types.PrivateValueTransport(expected) {
+		return nil, nil, fmt.Errorf("E_TARGET_VALUE_SHAPE: function parameter cannot erase a structured representation at %s", expr.NodeSpan())
+	}
 	previous := l.inExprStmt
 	l.inExprStmt = false
 	defer func() { l.inExprStmt = previous }()
@@ -27,10 +32,11 @@ func (l *Lowerer) lowerFunctionArgumentValue(call *syntax.CallExpr, argumentInde
 	var value interface{}
 	var err error
 	_, literalMap := expr.(*syntax.MapExpr)
-	if literalMap {
+	if literalMap && !types.PrivateValueTransport(expected) && !types.PrivateValueTransport(l.transportType(expr)) {
 		value, err = l.lowerSemanticValue(expr)
 	} else {
-		value, err = l.lowerCallValue(expr)
+		literalMap = false
+		value, err = l.lowerTypedRuntimeValue(expr, expected)
 	}
 	if err != nil {
 		return nil, nil, err

@@ -1,0 +1,50 @@
+{
+  "schema": "cherri-measure-void-qualification/1",
+  "status": "PASS_MEASURE_VALUE_OR_VOID",
+  "implementationSource": "a7847eb575e17c701a2b0a44434c0997f30f14fd",
+  "implementationTree": "9ee24ed7eeb4e89c4522496a790f60fc0e8e886c",
+  "actualJob": "job_8b1cc31db90d",
+  "executedAtUTC": "2026-11-25T08:54:02.861986+00:00",
+  "originalReceipt": "/mnt/development/projects/evidence/cherri-p10r15-macro-void-blocks-20261125/green-01/result.original.json",
+  "originalReceiptSHA256": "fbddaff2d6c92548deb8535112779a014e1501f013acf26ae3573370095abcd4",
+  "copiedReceipt": "green-receipt.json",
+  "scope": {
+    "namedPassed": 254,
+    "namedFailed": 0,
+    "newGraphLeaves": 76,
+    "existingValueLeaves": 4,
+    "negativeLeaves": 40,
+    "causalFaultLeaves": 52,
+    "packages": [
+      "github.com/electrikmilk/cherri/internal/language/backend",
+      "github.com/electrikmilk/cherri/internal/language/analysis",
+      "github.com/electrikmilk/cherri",
+      "github.com/electrikmilk/cherri/internal/language/lower"
+    ],
+    "sourceGoInputs": 835,
+    "original76IDsMatched": true,
+    "nativeRuntimeExecuted": false,
+    "formalAcceptance": false
+  },
+  "sourceGoInputManifestSHA256": "3088401f399bd1761e696214cef2cefec9ebcf123e58fb5ddf17cddb18192bd1",
+  "redReceipts": [
+    {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-macro-void-blocks-20261125/red-01/result.original.json",
+      "sha256": "3d4190a1254a99e76de2685bfeb6bedec665a6c32e7f77f8110f5df66e17d58e",
+      "status": "UNEXPECTED_RED_RESULT",
+      "note": "72 semantic failures, 4 ordinary-control setup failures; original preserved"
+    },
+    {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-macro-void-blocks-20261125/red-corrected-02/result.original.json",
+      "sha256": "f476177dbebd951006540522ded8c880a4a2cfa46025445eb670b70b7d829a5b",
+      "status": "EXPECTED_RED_UNIMPLEMENTED_VOID_BLOCKS",
+      "note": "exact 4 corrected Legacy leaves failed semantically"
+    }
+  ],
+  "limits": [
+    "No Apple runtime execution is asserted.",
+    "No typed parameterized blocks, closures, finally, or cancellation guarantee is added.",
+    "Frozen S/K/D and live installation were not changed.",
+    "Full project acceptance and final integrated CI remain separate."
+  ]
+}

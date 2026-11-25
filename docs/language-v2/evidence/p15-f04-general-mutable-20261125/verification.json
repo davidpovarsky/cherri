@@ -1,0 +1,98 @@
+{
+  "schema": "cherri-f04-general-mutable-verification/1",
+  "status": "PASS_FOCUSED_NATIVE_GRAPHS_ORIGINAL330_AND_AFFECTED_PACKAGES",
+  "implementationCommit": "82b8201dc3b38fd20a9ae8eafc5e50e540e20403",
+  "qualifiedGoInputsSHA256": "22d5389caef163f2baa3c651d8450e2f33375bbe92104a84a08854505c119413",
+  "qualifiedGoInputCount": 829,
+  "original330Overlay": [
+    "p15_f04_local_cell_consumers_test.go",
+    "p15_f04_general_promotions_test.go"
+  ],
+  "red": {
+    "newSourcesRejected": 27,
+    "existingPositiveControlPassed": 1,
+    "timeout": false,
+    "sourceTestSHA256": "7fbd3dd5dc303845fc09b287b75725fcfb9687b39b0ce84e444f40d61d4d1559"
+  },
+  "green": {
+    "namedPassed": 152,
+    "packagesPassed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "newNativeGraphCases": 28,
+    "newNativeGraphFaults": 4,
+    "newIndependentLowerFaults": 25
+  },
+  "original330": {
+    "rootNamedPassed": 260,
+    "internalNamedPassed": 70,
+    "identitiesMatchOriginalJSONL": true,
+    "failed": 0,
+    "skipped": 0,
+    "originalRootSourcesPromoted": [
+      "mutable_sequence",
+      "mutable_alias"
+    ],
+    "causalGraphFaultsPerPromotedRootSource": 5,
+    "schemaSourcesWithPositiveAdmission": 12,
+    "schemaSourcesStillRejecting": 6
+  },
+  "affectedLanguage": {
+    "packages": [
+      "internal/language/analysis",
+      "internal/language/lower",
+      "internal/language/schema"
+    ],
+    "namedPassed": 269,
+    "failed": 0,
+    "skipped": 0
+  },
+  "preservedFailures": {
+    "attempt02": "two historically rejecting root sources are now implemented; all source texts and IDs retained",
+    "attempt03": "new test helper passed []any instead of p15FunctionArgument; root build failed before tests; fixed to the existing empty-array argument helper"
+  },
+  "receipts": {
+    "red": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/red-general-mutable-01/result.original.json",
+      "sha256": "79e38a600f5df64dfc6c7ebd712b784a7deb7d89c2d08a630ea4053a92255049",
+      "status": "RED_CONFIRMED"
+    },
+    "green": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/green-general-mutable-01/result.original.json",
+      "sha256": "cbafed697d94afa8ee24182ef33ee26412494f2cf8a3f63ee63377e644f13f76",
+      "status": "PASS"
+    },
+    "original330HistoricalExpectations": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/regression-original330-02/result.original.json",
+      "sha256": "d0e9eace1148d79d6c4acc9bd35d58f772372d9d89a669b841e121580f147a40",
+      "status": "FAILED_OR_INCOMPLETE"
+    },
+    "original330OracleBuildFailure": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/regression-original330-03/result.original.json",
+      "sha256": "9820a4a0002efd91ed7dd2900dc016eb950d85a3429a4fd42ec271750a858e8f",
+      "status": "FAILED_OR_INCOMPLETE"
+    },
+    "original330": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/regression-original330-04/result.original.json",
+      "sha256": "8853df6a202068e81b5126b588b6655e532de5697ede669632683b6ca64d5155",
+      "status": "PASS_CURRENT_ORIGINAL_330_IDENTITIES"
+    },
+    "affectedLanguage": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-general-language-completion-20261125/affected-language-02/result.original.json",
+      "sha256": "82b208a54b611c0b60171acd5425147831d3a1ab8d8bac6d5647cd78563d462d",
+      "status": "PASS"
+    }
+  },
+  "nativeRuntimeExecuted": false,
+  "formal179Acceptance": false,
+  "frozenReleaseOrLiveInstallationChanged": false,
+  "remaining": [
+    "ordinary-list/cell representation joins",
+    "uninitialized cell variables",
+    "overwritten versions without a selected consumer",
+    "compound cell mutation",
+    "arbitrary function/import/action interfaces",
+    "all nested and dynamic payloads",
+    "fresh final integrated CI, native runtime and formal acceptance"
+  ]
+}

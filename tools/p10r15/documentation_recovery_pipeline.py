@@ -12,13 +12,14 @@ import sys
 sys.dont_write_bytecode = True
 import documentation_recovery_examples as examples
 import documentation_recovery_wrappers as wrappers
+import documentation_recovery_intake as intake
 import package_skill
 
 def collect(mode, compiler_source, consumer_source, docs, compiler, implementation_sha, output, bash="sh"):
     source, consumer, docs, compiler, output = map(Path, (compiler_source, consumer_source, docs, compiler, output))
     wrappers.repository_state(consumer, implementation_sha)
     for name in ("documentation_recovery_pipeline.py", "documentation_recovery_examples.py",
-                 "documentation_recovery_wrappers.py", "package_skill.py"):
+                 "documentation_recovery_wrappers.py", "documentation_recovery_intake.py", "package_skill.py"):
         relative = "tools/p10r15/" + name
         examples.bound_bytes(consumer, implementation_sha, relative)
     if Path(__file__).resolve() != (consumer / "tools/p10r15/documentation_recovery_pipeline.py").resolve():
@@ -34,8 +35,8 @@ def collect(mode, compiler_source, consumer_source, docs, compiler, implementati
     try:
         if mode == "consumers":
             example_report = examples.collect(source, consumer, docs, compiler, implementation_sha, output / "examples")
-            if example_report["summary"]["executed"] != 88 or example_report["summary"]["passed"] != 88 or example_report["summary"]["failed"] != 0:
-                raise ValueError("complete documentation examples did not pass")
+            intake.verify_example_inventory(example_report, pins, consumer, docs, implementation_sha,
+                                            compiler_repo=source)
             expected, receipt = package_skill.expected_package(consumer, implementation_sha, "source")
             archive = output / "cherri-shortcuts-source.zip"
             package_skill.create_archive(archive, expected)

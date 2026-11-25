@@ -326,10 +326,14 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 			row.Scope = numberWireScope
 		}
 		if scenario, found := joinedPublicScenarios[row.ID]; found {
-			row.TestNames = scenario.tests()
-			row.ProductionPath = joinedPublicSourcePaths(row.ID)
+			// Retain dedicated identities already linked above; the declaration
+			// inventory does not change the executed tiers or closure status.
+			for _, name := range scenario.tests() {
+				row.TestNames = appendUniqueAudit(row.TestNames, name)
+			}
+			row.ProductionPath = deriveGateFixtures(row.ID)
 			row.PositiveAndNegative = res.Passed || res.Status == "PENDING_EXTERNAL"
-			row.Scope = scenario.Scope
+			row.Scope = scenario.Scope + "; dedicated native tiers require independently validated original records; declaration identities do not prove execution"
 		}
 		if row.ID == "RP39" {
 			row.TestNames = append([]string{}, combinedEditorTests...)
@@ -569,6 +573,7 @@ func writeExecutionAudit(runner *Runner, contracts *ContractsSet, outPath string
 		}
 		applyFinalProvenanceAudit(&row, runner)
 		applyOwnedBaselineAudit(&row, runner)
+		applyTakeoverAudit(&row, runner)
 		applyCIIdentityAudit(&row, runner)
 		applyPublicationSecurityAudit(&row, runner)
 		rows = append(rows, row)

@@ -1,0 +1,63 @@
+{
+  "schema": "cherri-tagged-carrier-engineering-contract/1",
+  "fixture": "qa-tagged-value-carrier-v2",
+  "diagnostic_prefix": "CHERRI_TAGGED_VALUE_CARRIER_V1:",
+  "source_sha256": "8abc203ba48ba97e6c3c28240dd861e3a6b8b4a0b5ac91f7e82334ca528a46ec",
+  "field_order": [
+    "OUTER_COUNT",
+    "FIRST_PRESENT",
+    "FIRST_COUNT",
+    "FIRST_FIRST64",
+    "FIRST_LAST64",
+    "EMPTY_PRESENT",
+    "EMPTY_COUNT",
+    "ORIGINAL_LIST_TYPE64",
+    "DECODED_LIST_TYPE64",
+    "TEXT_TYPE64",
+    "MAP_OUTER_COUNT",
+    "MAP_PRESENT",
+    "MAP_ABSENT",
+    "ORIGINAL_MAP_TYPE64",
+    "DECODED_MAP_TYPE64",
+    "MAP_KEYS",
+    "MAP_ALPHA64",
+    "MAP_BETA64"
+  ],
+  "literal_goals": {
+    "OUTER_COUNT": "2",
+    "FIRST_PRESENT": "Y",
+    "FIRST_COUNT": "2",
+    "FIRST_FIRST64": "MTE=",
+    "FIRST_LAST64": "MjI=",
+    "EMPTY_PRESENT": "Y",
+    "EMPTY_COUNT": "0",
+    "MAP_OUTER_COUNT": "2",
+    "MAP_PRESENT": "Y",
+    "MAP_ABSENT": "Y",
+    "MAP_KEYS": "2",
+    "MAP_ALPHA64": "TEVGVA==",
+    "MAP_BETA64": "UklHSFQ="
+  },
+  "type_relations": [
+    "DECODED_LIST_TYPE64 == ORIGINAL_LIST_TYPE64",
+    "ORIGINAL_LIST_TYPE64 != TEXT_TYPE64",
+    "DECODED_MAP_TYPE64 == ORIGINAL_MAP_TYPE64",
+    "ORIGINAL_MAP_TYPE64 != TEXT_TYPE64"
+  ],
+  "trace_run_id": "qa-tagged-value-carrier-v2",
+  "trace_label": "tagged-value-carrier",
+  "formalAcceptanceGranted": false,
+  "historicalNestedFixturesChanged": false,
+  "preparedUtc": "2026-11-25T10:17:43.882192+00:00",
+  "type_witness_fields": [
+    "ORIGINAL_LIST_TYPE64",
+    "DECODED_LIST_TYPE64",
+    "TEXT_TYPE64",
+    "ORIGINAL_MAP_TYPE64",
+    "DECODED_MAP_TYPE64"
+  ],
+  "type_witness_policy": "All five must decode to canonical nonempty UTF-8 base64 before any type relation passes. UNOBSERVED is an absence diagnostic, never a type witness.",
+  "coverage_limit": "This engineering fixture covers the specified nonempty and empty List cells, Map payload and absent Map cell only. It does not prove false, JSON null, empty Map, or full T05/L01 acceptance.",
+  "enrollment": "UNENROLLED_ENGINEERING_FIXTURE",
+  "compilerGraphAndRuntimeIntakesRequired": true
+}

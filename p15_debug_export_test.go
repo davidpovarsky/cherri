@@ -153,18 +153,66 @@ func TestP15DebugExportLiteralOptionsAndRelease(t *testing.T) {
 		for _, profile := range []BuildProfile{BuildProfileDebug, BuildProfileRelease} {
 			for _, bad := range []string{
 				"debugExport(\"xml\")\n",
-				"debugExport(\"json\", true)\n",
 				"debugExport(\"../escape.json\")\n",
 			} {
 				if _, err := compileBuildProfileFixture(t, bad, legacy, profile); err == nil {
 					t.Fatalf("legacy=%t profile=%s accepted invalid export: %q", legacy, profile, bad)
 				}
 			}
+			// This exact historical unsupported-date source is now an
+			// admitted opt-in. Keep it in both profiles and frontends.
+			dated, err := compileBuildProfileFixture(t, "debugExport(\"json\", true)\n", legacy, profile)
+			if err != nil {
+				t.Fatalf("admitted date source failed: legacy=%t profile=%s: %v", legacy, profile, err)
+			}
+			if profile == BuildProfileRelease {
+				validate := func(actions []ShortcutAction) error {
+					if legacy {
+						// Legacy has no synthetic main fallthrough action. Nil
+						// and empty slices are the same zero-action graph.
+						if len(actions) == 0 {
+							return nil
+						}
+					} else if len(actions) == 1 {
+						return debugMainVoidBoundaryError(actions)
+					}
+					return fmt.Errorf("Release export leaked actions: %#v", actions)
+				}
+				if err := validate(dated); err != nil {
+					t.Fatal(err)
+				}
+				for _, leak := range []string{"gettext", "quicklook", "nothing"} {
+					t.Run(fmt.Sprintf("release_legacy_%t/leaked_%s", legacy, leak), func(t *testing.T) {
+						mutated := append(append([]ShortcutAction(nil), dated...), ShortcutAction{
+							WFWorkflowActionIdentifier: "is.workflow.actions." + leak,
+						})
+						if err := validate(mutated); err == nil {
+							t.Fatalf("Release oracle accepted an additional %s action", leak)
+						}
+						if err := validate(dated); err != nil {
+							t.Fatalf("unchanged Release control no longer accepted: %v", err)
+						}
+					})
+				}
+			} else {
+				last := -1
+				for i, action := range dated {
+					if action.WFWorkflowActionIdentifier == "is.workflow.actions.setitemname" {
+						last = i
+					}
+				}
+				if last < 0 {
+					t.Fatal("date source lost original export boundary")
+				}
+				if err := p15ExportMetadataGraphError(dated[:last+1], p15ExportMetadataOptions{dates: true, types: true, redact: true, format: "json"}); err != nil {
+					t.Fatal(err)
+				}
+			}
 			decl := "let"
 			if legacy {
 				decl = "const"
 			}
-			_, err := compileBuildProfileFixture(t, decl+" dynamic = text(\"json\")\ndebugExport(dynamic)\n", legacy, profile)
+			_, err = compileBuildProfileFixture(t, decl+" dynamic = text(\"json\")\ndebugExport(dynamic)\n", legacy, profile)
 			if err == nil {
 				t.Fatal("dynamic format accepted")
 			}
@@ -204,7 +252,7 @@ func TestP15DebugExportZeroOneThousandCompileBudget(t *testing.T) {
 
 func TestP15DebugExportRedactionRejectsNilAndDynamic(t *testing.T) {
 	for _, raw := range []any{nil, "false", 0, debugLogValueRef("runtimeFlag")} {
-		for _, key := range []string{"WFDebugExportRedact", "WFDebugExportTypes", "WFDebugExportDates"} {
+		for _, key := range []string{"WFDebugExportRedact", "WFDebugExportTypes", "WFDebugExportDates", "WFDebugExportLabels"} {
 			if _, err := parseDebugExportOptions(map[string]any{key: raw}); err == nil {
 				t.Fatalf("nonliteral option %s=%T accepted; it must not weaken default redaction", key, raw)
 			}

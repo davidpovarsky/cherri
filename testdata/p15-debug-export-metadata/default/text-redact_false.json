@@ -1,0 +1,256 @@
+[
+  {
+    "id": "is.workflow.actions.gettext",
+    "parameters": {
+      "UUID": "producer_0",
+      "WFTextActionText": "Cherri export Text witness"
+    }
+  },
+  {
+    "id": "is.workflow.actions.getitemtype",
+    "parameters": {
+      "UUID": "producer_1",
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "producer_0",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.repeat.each",
+    "parameters": {
+      "GroupingIdentifier": "group_0",
+      "WFControlFlowMode": 0,
+      "WFInput": {
+        "Value": {
+          "Type": "Variable",
+          "VariableName": "__cherri_debug_log"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.getitemtype",
+    "parameters": {
+      "UUID": "producer_3",
+      "WFInput": {
+        "Value": {
+          "Type": "Variable",
+          "VariableName": "Repeat Item"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.base64encode",
+    "parameters": {
+      "UUID": "producer_4",
+      "WFBase64LineBreakMode": "None",
+      "WFEncodeMode": "Encode",
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "producer_3",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.conditional",
+    "parameters": {
+      "GroupingIdentifier": "group_1",
+      "WFCondition": 4,
+      "WFConditionalActionString": {
+        "Value": {
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "producer_1",
+              "Type": "ActionOutput"
+            }
+          },
+          "string": "￼"
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "WFConditionalLegacyComparisonBehavior": true,
+      "WFControlFlowMode": 0,
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "OutputUUID": "producer_3",
+            "Type": "ActionOutput"
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.base64encode",
+    "parameters": {
+      "UUID": "producer_6",
+      "WFBase64LineBreakMode": "None",
+      "WFEncodeMode": "Encode",
+      "WFInput": {
+        "Value": {
+          "Type": "Variable",
+          "VariableName": "Repeat Item"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.gettext",
+    "parameters": {
+      "UUID": "producer_7",
+      "WFTextActionText": {
+        "Value": {
+          "attachmentsByRange": {
+            "{130, 1}": {
+              "OutputName": "producer_4",
+              "OutputUUID": "producer_4",
+              "Type": "ActionOutput"
+            },
+            "{78, 1}": {
+              "OutputName": "producer_6",
+              "OutputUUID": "producer_6",
+              "Type": "ActionOutput"
+            }
+          },
+          "string": "{\"status\":\"TEXT_PAYLOAD_ENCODED\",\"payload\":{\"encoding\":\"base64-utf8\",\"value\":\"￼\"},\"nativeType\":{\"encoding\":\"base64-utf8\",\"value\":\"￼\"}}"
+        },
+        "WFSerializationType": "WFTextTokenString"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.conditional",
+    "parameters": {
+      "GroupingIdentifier": "group_1",
+      "WFControlFlowMode": 1
+    }
+  },
+  {
+    "id": "is.workflow.actions.gettext",
+    "parameters": {
+      "UUID": "producer_9",
+      "WFTextActionText": {
+        "Value": {
+          "attachmentsByRange": {
+            "{100, 1}": {
+              "OutputName": "producer_4",
+              "OutputUUID": "producer_4",
+              "Type": "ActionOutput"
+            }
+          },
+          "string": "{\"status\":\"UNSUPPORTED_PAYLOAD_TYPE\",\"payload\":null,\"nativeType\":{\"encoding\":\"base64-utf8\",\"value\":\"￼\"}}"
+        },
+        "WFSerializationType": "WFTextTokenString"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.conditional",
+    "parameters": {
+      "GroupingIdentifier": "group_1",
+      "UUID": "producer_10",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "id": "is.workflow.actions.repeat.each",
+    "parameters": {
+      "GroupingIdentifier": "group_0",
+      "UUID": "producer_11",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "id": "is.workflow.actions.text.combine",
+    "parameters": {
+      "UUID": "producer_12",
+      "WFTextCustomSeparator": "\n",
+      "WFTextSeparator": "Custom",
+      "text": {
+        "Value": {
+          "OutputName": "Repeat Results",
+          "OutputUUID": "producer_11",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.gettext",
+    "parameters": {
+      "UUID": "producer_13",
+      "WFTextActionText": {
+        "Value": {
+          "attachmentsByRange": {
+            "{187, 1}": {
+              "OutputName": "producer_12",
+              "OutputUUID": "producer_12",
+              "Type": "ActionOutput"
+            }
+          },
+          "string": "Cherri Debug Export 1\nScope: run-local native items\nPayload policy: text-only-base64\nDates: not collected\nLabels: not collected\nEntry encoding: JSON lines; Text payloads use base64-utf8\n\n￼"
+        },
+        "WFSerializationType": "WFTextTokenString"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.base64encode",
+    "parameters": {
+      "UUID": "producer_14",
+      "WFBase64LineBreakMode": "None",
+      "WFEncodeMode": "Encode",
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "producer_13",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.base64encode",
+    "parameters": {
+      "UUID": "producer_15",
+      "WFEncodeMode": "Decode",
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "producer_14",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "id": "is.workflow.actions.setitemname",
+    "parameters": {
+      "CustomOutputName": "binding_0",
+      "UUID": "producer_16",
+      "WFDontIncludeFileExtension": false,
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "producer_15",
+          "Type": "ActionOutput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFName": "cherri-debug.txt"
+    }
+  }
+]

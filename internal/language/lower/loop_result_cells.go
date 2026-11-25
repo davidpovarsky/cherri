@@ -13,7 +13,8 @@ import (
 // its inline loop argument. It is not attached to source bindings and cannot
 // escape into an alias, index, native export, or function envelope.
 type loopResultFrame struct {
-	accumulator string
+	accumulator  string
+	localPayload bool // local consumers decode the authored container representation
 }
 
 func (l *Lowerer) loopResultNeedsCells(expression syntax.Expression) bool {
@@ -114,11 +115,18 @@ func (l *Lowerer) lowerLoopResultYield(yield *syntax.YieldStmt, frame *loopResul
 	defer func() { l.inExprStmt = previous }()
 	var value interface{}
 	var err error
-	switch yield.Value.(type) {
-	case *syntax.MapExpr, *syntax.ListExpr:
-		value, err = l.lowerSemanticValue(yield.Value)
-	default:
+	if frame.localPayload && types.PrivateValueTransport(l.transportType(yield.Value)) {
+		// Local decoders observe the actual payload, so nested/Optional Lists
+		// must retain their source-owned cells. The closed Count-only route
+		// keeps its established inline Dictionary-array payload unchanged.
 		value, err = l.lowerRuntimeLiteral(yield.Value)
+	} else {
+		switch yield.Value.(type) {
+		case *syntax.MapExpr, *syntax.ListExpr:
+			value, err = l.lowerSemanticValue(yield.Value)
+		default:
+			value, err = l.lowerRuntimeLiteral(yield.Value)
+		}
 	}
 	if err != nil {
 		return err

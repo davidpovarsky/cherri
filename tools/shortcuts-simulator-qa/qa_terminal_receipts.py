@@ -573,6 +573,12 @@ def validate_terminal(value, root, expected):
 
 
 SOURCE_FILES = (
+    "tools/shortcuts-simulator-qa/simulator_listapps_observation.py",
+    "tools/shortcuts-simulator-qa/test_simulator_listapps_observation.py",
+    "tools/shortcuts-simulator-qa/project_prerequisite_observation.py",
+    "tools/shortcuts-simulator-qa/test_process_capture_journal.py",
+    "tools/shortcuts-simulator-qa/simulator_phase_boundary.py",
+    "tools/shortcuts-simulator-qa/test_simulator_phase_boundary.py",
     "tools/shortcuts-simulator-qa/nested_list_runtime.py",
     "tools/shortcuts-simulator-qa/nested_list_probe.py",
     "tools/shortcuts-simulator-qa/fixtures/qa-nested-list-control-v2.cherri",

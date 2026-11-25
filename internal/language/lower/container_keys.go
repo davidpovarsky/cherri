@@ -5,12 +5,16 @@ import (
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
 // Key and value expressions share one authored evaluation order. A key must be
 // captured before its own value can write it; an earlier value must also be
 // captured before a later key can write it.
 func (l *Lowerer) lowerSemanticMap(expr *syntax.MapExpr) (backend.SemanticValue, error) {
+	if types.PrivateValueTransport(l.transportType(expr)) {
+		return l.lowerTaggedMapSemantic(expr)
+	}
 	expressions := make([]syntax.Expression, 0, len(expr.Entries)*2)
 	for _, entry := range expr.Entries {
 		expressions = append(expressions, entry.Key, entry.Value)
@@ -29,7 +33,7 @@ func (l *Lowerer) lowerSemanticMap(expr *syntax.MapExpr) (backend.SemanticValue,
 		if err := l.requirePresentTransport(entry.Value, "Dictionary value"); err != nil {
 			return backend.SemanticValue{}, err
 		}
-		value, err := l.lowerSemanticValue(entry.Value)
+		value, err := l.lowerTypedInlineValue(entry.Value, l.transportType(entry.Value))
 		if err != nil {
 			return backend.SemanticValue{}, err
 		}

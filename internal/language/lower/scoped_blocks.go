@@ -7,6 +7,7 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/backend"
 	"github.com/electrikmilk/cherri/internal/language/ir"
 	"github.com/electrikmilk/cherri/internal/language/syntax"
+	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
 // lowerScopedBlockCall adds lexical scope and value flow to an inline compiler
@@ -20,8 +21,29 @@ func (l *Lowerer) lowerScopedBlockCall(call *syntax.CallExpr) (interface{}, erro
 	if l.session == nil {
 		return nil, fmt.Errorf("E_BLOCK_CANONICAL_BACKEND at %s: scoped blocks require the canonical backend session", call.Span)
 	}
-	if call.Block == nil || call.Block.Body == nil || syntax.BlockResultExpression(call.Block.Body) == nil {
-		return nil, fmt.Errorf("E_BLOCK_VALUE_REQUIRED at %s: measure requires an explicit final value", call.Span)
+	if call.Block == nil || call.Block.Body == nil {
+		return nil, fmt.Errorf("E_BLOCK_REQUIRED at %s: measure requires a scoped body", call.Span)
+	}
+	sourceResult := syntax.BlockResultExpression(call.Block.Body)
+	bodyType := l.exprTypes[call]
+	voidBody := bodyType != nil && bodyType.Kind() == types.KindVoid
+	if voidBody {
+		if l.currentBindingName != "" || !l.inExprStmt {
+			return nil, fmt.Errorf("E_BLOCK_VOID_VALUE at %s: a Void scoped body has no value to consume", call.Span)
+		}
+		if sourceResult != nil {
+			resultType := l.exprTypes[sourceResult]
+			if resultType == nil || resultType.Kind() != types.KindVoid {
+				return nil, fmt.Errorf("E_BLOCK_RESULT_TYPE at %s: Void classification does not match the authored result", sourceResult.NodeSpan())
+			}
+			if _, explicit := call.Block.Body.Statements[len(call.Block.Body.Statements)-1].(*syntax.YieldStmt); explicit {
+				return nil, fmt.Errorf("E_BLOCK_VALUE_REQUIRED at %s: a Void action cannot supply an explicit yield", sourceResult.NodeSpan())
+			}
+		}
+	} else if sourceResult == nil {
+		return nil, fmt.Errorf("E_BLOCK_RESULT_TYPE at %s: a body without a final value requires analyzed Void semantics", call.Span)
+	} else if resultType := l.exprTypes[sourceResult]; resultType != nil && resultType.Kind() == types.KindVoid {
+		return nil, fmt.Errorf("E_BLOCK_RESULT_TYPE at %s: a Void tail cannot supply a value result", sourceResult.NodeSpan())
 	}
 	labelExpr := call.PrimaryArg
 	for _, argument := range call.NamedArgs {
@@ -60,6 +82,27 @@ func (l *Lowerer) lowerScopedBlockCall(call *syntax.CallExpr) (interface{}, erro
 	// Iterations reuse their own key sequentially; nested measurements cannot
 	// overwrite one another's start time.
 	timerLabel := label.Value + ":" + renamer.prefix
+	if voidBody {
+		err := backend.EmitScopedMeasureVoid(
+			timerLabel,
+			func(name, key string) error { return l.emitBlockTimer(name, key, call) },
+			func() error {
+				for _, statement := range body.Statements {
+					if err := l.lowerStatement(statement); err != nil {
+						return err
+					}
+				}
+				return nil
+			},
+			func() error {
+				l.emitAction(&ir.NativeActionNode{
+					NodeID: l.GenerateUUID(), AppleIdentifier: "is.workflow.actions.nothing",
+				})
+				return nil
+			},
+		)
+		return nil, err
+	}
 	return backend.EmitScopedMeasure(
 		timerLabel,
 		func(name, key string) error { return l.emitBlockTimer(name, key, call) },

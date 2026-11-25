@@ -260,6 +260,7 @@ def main():
          checks.append({"id":ident,"status":"PASS","sourceSha256":hashlib.sha256(source.read_bytes()).hexdigest(),"actionCount":len(actions),"exportActionCount":len(graph),"mainFallthroughBoundary":main_boundary,"exactNativeActionRoundtrip":True,"models":models})
          graphs[(legacy,fmt,redact,include_types)]=graph
     negatives=[]
+    admitted_date_sources=[]
     for legacy in (False,True):
       for profile in ("debug","release"):
        for name,source in {
@@ -271,7 +272,25 @@ def main():
           source_path=out/f"negative-{legacy}-{profile}-{name}.cherri";target=source_path.with_suffix(".shortcut")
           source_path.write_bytes(source.encode())
           target.unlink(missing_ok=True)
-          result=run([exe,"compile",source_path,"-o",target,"--build-profile",profile]+(["--legacy"] if legacy else []))
+          command=[exe,"compile",source_path,"-o",target,"--build-profile",profile]+(["--legacy"] if legacy else [])
+          if name == "unproved-dates":
+              # Preserve the exact former rejection source/identity. This
+              # feature evolution admits its source graph, not native dates or
+              # the still-unproved File class.
+              result=run(command+["--skip-sign"])
+              assert result.returncode == 0 and target.is_file(),"admitted date source failed"
+              dated_actions=plistlib.loads(target.read_bytes())["WFWorkflowActions"]
+              date_formats=[a for a in dated_actions if a["WFWorkflowActionIdentifier"]==PREFIX+"format.date"]
+              if profile == "release":
+                  assert not date_formats and not any(a["WFWorkflowActionIdentifier"]==PREFIX+"setitemname" for a in dated_actions),"Release retained diagnostic date export"
+              else:
+                  assert len(date_formats)==1,"admitted source has no unique date formatter"
+                  parameters=date_formats[0]["WFWorkflowActionParameters"]
+                  assert parameters["WFDateFormatStyle"]=="ISO 8601" and parameters["WFISO8601IncludeTime"] is True
+                  assert any("WFFileCreationDate" in json.dumps(a) for a in dated_actions),"date does not bind item Creation Date"
+              admitted_date_sources.append({"id":f"{legacy}-{profile}-{name}","sourceSha256":hashlib.sha256(source_path.read_bytes()).hexdigest(),"exitCode":result.returncode,"artifactSHA256":hashlib.sha256(target.read_bytes()).hexdigest(),"status":"PASS_ADMITTED_SOURCE_ONLY","historicalRejectionExpectationChanged":True,"nativeExecuted":0})
+              continue
+          result=run(command)
           assert result.returncode != 0 and not target.exists(),"invalid source produced success"
           negatives.append({"id":f"{legacy}-{profile}-{name}","exitCode":result.returncode,"noArtifact":True,"status":"PASS"})
     base=graphs[(False,"json",False,True)]
@@ -337,8 +356,8 @@ def main():
       "nativeMetadata":verify_native_metadata(),
       "scope":["macro produces one File; main fallthrough is verified separately; no provider save/share/network","default full payload redaction","opt-in Text payloads explicitly base64-utf8","non-Text payloads explicitly unsupported","dates/labels not collected"],
       "nativeAssumptionsStillRequiringSignedRuntime":["empty cleared log Repeat cardinality","native Text Base64 UTF-8 including empty Text and controls","Text envelope Base64 Encode/Decode byte conversion","Set Name on newly produced File","Repeat and If result collection for 0/1/1000 items"],
-      "summary":{"cliCompiles":len(checks),"exactNativeActionRoundtrips":len(checks),"independentModelCases":sum(len(c["models"]) for c in checks),"cliNegatives":len(negatives),"causalFaults":len(faults),"nativeProbeCompiles":len(native_probes),"nativeExecuted":0,"elapsedSeconds":round(time.monotonic()-started,3)},
-      "compiles":checks,"cliNegatives":negatives,"causalFaults":faults,"nativeProbes":native_probes,
+      "summary":{"cliCompiles":len(checks),"exactNativeActionRoundtrips":len(checks),"independentModelCases":sum(len(c["models"]) for c in checks),"cliNegatives":len(negatives),"causalFaults":len(faults),"nativeProbeCompiles":len(native_probes),"admittedHistoricalDateSourceCases":len(admitted_date_sources),"nativeExecuted":0,"elapsedSeconds":round(time.monotonic()-started,3)},
+      "compiles":checks,"cliNegatives":negatives,"admittedHistoricalDateSources":admitted_date_sources,"causalFaults":faults,"nativeProbes":native_probes,
     }
     report_path=ROOT/args.report;report_path.parent.mkdir(parents=True,exist_ok=True)
     report_path.write_bytes((json.dumps(report,ensure_ascii=False,indent=2)+"\n").encode())

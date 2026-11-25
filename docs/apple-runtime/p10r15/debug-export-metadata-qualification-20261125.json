@@ -1,0 +1,498 @@
+{
+  "schema": "cherri.debug-export-metadata-source-qualification/1",
+  "status": "PASS_METADATA_SOURCE_SCOPE_WITH_NATIVE_GAPS",
+  "componentSource": "a921113944f7e23629eed6198aef52331cd5cac8",
+  "componentTree": "7af3e5c9d1039c435e66136175650dd3d5eaaa7c",
+  "implementationSource": "fa2a204fd45ddcaaaf123ffe3ed20f9df6510f42",
+  "modelSource": "0c1573a0428622d73a75518b04de4a3190c47e58",
+  "branch": "agent/cherri-p10r15-macro-export-metadata-20261125",
+  "qualificationMethod": "preserved original partial Go result plus narrow repaired-oracle replay, with exact unchanged production/other-test input proof; not a single all-green run",
+  "originalGoPass": 215,
+  "originalGoFail": 1,
+  "replayedOriginalParents": 1,
+  "newCausalReleaseControls": 6,
+  "qualifiedDistinctGoTestIdentities": 222,
+  "sourceGraphConfigurations": 48,
+  "originalDefaultBaselines": 4,
+  "referenceFaults": 24,
+  "profileAndStorageCases": 8,
+  "independentTextModel": {
+    "smallModelCases": 720,
+    "stress1000ItemCases": 8,
+    "causalGraphFaults": 12,
+    "nativeRuntimeExecuted": false,
+    "materializationBoundaryExecuted": false
+  },
+  "sourceInputCount": 969,
+  "sourceChangedPathsSinceProduction": [
+    "p15_debug_export_test.go",
+    "tools/p10r15/verify_debug_export_metadata.py"
+  ],
+  "unchangedOtherGoTests": true,
+  "unchangedProductionAndDefaultGraphs": true,
+  "preservedOriginalFailedResult": true,
+  "nativeRuntimeExecuted": false,
+  "fileClassAccepted": false,
+  "macroFullAcceptance": false,
+  "formal179Acceptance": false,
+  "openRequirements": [
+    "Dedicated signed Apple Creation Date/cardinality/type/empty Text observations",
+    "Real returned File class and exact UTF-8 bytes; historical Dictionary counterevidence unchanged",
+    "Structured payload serialization beyond explicit Text-only policy",
+    "Physical iPad and final integrated CI/consumer acceptance"
+  ],
+  "parents": {
+    "originalRed": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/red-01/result.original.json",
+      "sha256": "033153857c4b76236776618a3e821bf6a03932ca6daa172270455d0986e66fa1"
+    },
+    "defaultBaselines": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/default-controls-06/result.original.json",
+      "sha256": "f4112b3b726ecaa863a2059d0a356e5344b933bcf8bb26c3d1e5263a3b3d8e52"
+    },
+    "originalGoQualification": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/green-01/result.original.json",
+      "sha256": "1f9ddf4d1edfdb6e063f7606b90d6fe29151ba306ddc0d5e82e023acf5c065e6"
+    },
+    "modelFirstFailure": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/text-model-01/result.original.json",
+      "sha256": "5d9df633b010254a8b2c7cab5de0adbcc3220fe895d67a9072026eb60490e92a"
+    },
+    "modelOwner": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/text-model-02/result.original.json",
+      "sha256": "b93c36e40d9aedfcd18e0e3790c2a041b6eb6093464045a9dd7f15b1c673e6b7"
+    },
+    "modelReport": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/text-model-02/model.original.json",
+      "sha256": "f211cf16ed02dc729e95c63efbec11ee4cc0f6ddc3cb3a79f6e5b7aaa4e7ecf8"
+    },
+    "replayCapacityBlock": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/literal-options-replay-01/result.original.json",
+      "sha256": "8fee359eba7077a0aef8369b0b7f8a846a0c970acb66fd66b45c08c3ff2d0514"
+    },
+    "narrowGoReplay": {
+      "path": "/mnt/development/projects/evidence/cherri-p10r15-macro-export-metadata-20261125/literal-options-replay-02/result.original.json",
+      "sha256": "05036b9142def5e22df232a52845d64e0b7caf9b08f078f6e7ae10ac2d84981b"
+    }
+  },
+  "sourceTestIdentities": [
+    "TestDebugLabelsActualLoopBranchesKeepSourceProjection",
+    "TestDebugLabelsCausalGraphRejectsCorruption",
+    "TestDebugLabelsCausalGraphRejectsCorruption/count-text-not-items",
+    "TestDebugLabelsCausalGraphRejectsCorruption/count-wrong-source",
+    "TestDebugLabelsCausalGraphRejectsCorruption/metadata-append-detached",
+    "TestDebugLabelsCausalGraphRejectsCorruption/raw-input-boxed",
+    "TestDebugLabelsCausalGraphRejectsCorruption/restore-coerces-text",
+    "TestDebugLabelsCausalGraphRejectsCorruption/reversed-range",
+    "TestDebugLabelsCausalGraphRejectsCorruption/zero-based-native-range",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill/false/debugFinish()",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill/false/debugShowLogs()",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill/false/debugShowLogs(false,true)",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill/false/debugShowLogs(true)",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill/false/debugShowLogs(true,true)",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill/true/debugFinish()",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill/true/debugShowLogs()",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill/true/debugShowLogs(false,true)",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill/true/debugShowLogs(true)",
+    "TestDebugLabelsClearPreviewOwnershipAndLoopBackfill/true/debugShowLogs(true,true)",
+    "TestDebugLabelsClearRejectsUnexpectedNothingInput",
+    "TestDebugLabelsExactTwoReferenceUnicodeString",
+    "TestDebugLabelsMultipleEntriesAndUnlabeledAppend",
+    "TestDebugLabelsMultipleEntriesAndUnlabeledAppend/legacy=false",
+    "TestDebugLabelsMultipleEntriesAndUnlabeledAppend/legacy=true",
+    "TestDebugLabelsNamedDisplayModesAndProvenance",
+    "TestDebugLabelsNamedDisplayModesAndProvenance/{false_false_false}",
+    "TestDebugLabelsNamedDisplayModesAndProvenance/{false_false_true}",
+    "TestDebugLabelsNamedDisplayModesAndProvenance/{false_true_false}",
+    "TestDebugLabelsNamedDisplayModesAndProvenance/{true_false_false}",
+    "TestDebugLabelsNamedDisplayModesAndProvenance/{true_false_true}",
+    "TestDebugLabelsNamedDisplayModesAndProvenance/{true_true_false}",
+    "TestDebugLabelsNestedPreviewUsesSnapshotAndStrictBranchFallback",
+    "TestDebugLabelsNestedPreviewUsesSnapshotAndStrictBranchFallback/dates=false/text=false",
+    "TestDebugLabelsNestedPreviewUsesSnapshotAndStrictBranchFallback/dates=false/text=true",
+    "TestDebugLabelsNestedPreviewUsesSnapshotAndStrictBranchFallback/dates=true/text=false",
+    "TestDebugLabelsNestedPreviewUsesSnapshotAndStrictBranchFallback/dates=true/text=true",
+    "TestDebugLabelsProfilesAndInvalidValues",
+    "TestDebugLabelsPublicLiteralOmissionContract",
+    "TestDebugLabelsPublicLiteralOmissionContract/debugLog/legacy=false",
+    "TestDebugLabelsPublicLiteralOmissionContract/debugLog/legacy=true",
+    "TestDebugLabelsPublicLiteralOmissionContract/debugLogPrevious/legacy=false",
+    "TestDebugLabelsPublicLiteralOmissionContract/debugLogPrevious/legacy=true",
+    "TestDebugLabelsTypedProducersAndLaterConsumers",
+    "TestDebugLabelsTypedProducersAndLaterConsumers/false/currentDate()",
+    "TestDebugLabelsTypedProducersAndLaterConsumers/false/list(\"a\",\"b\")",
+    "TestDebugLabelsTypedProducersAndLaterConsumers/false/number(42)",
+    "TestDebugLabelsTypedProducersAndLaterConsumers/false/text(\"raw\")",
+    "TestDebugLabelsTypedProducersAndLaterConsumers/false/{\"key\":_\"value\",_\"n\":_2}",
+    "TestDebugLabelsTypedProducersAndLaterConsumers/true/currentDate()",
+    "TestDebugLabelsTypedProducersAndLaterConsumers/true/list(\"a\",\"b\")",
+    "TestDebugLabelsTypedProducersAndLaterConsumers/true/number(42)",
+    "TestDebugLabelsTypedProducersAndLaterConsumers/true/text(\"raw\")",
+    "TestDebugLabelsTypedProducersAndLaterConsumers/true/{\"key\":_\"value\",_\"n\":_2}",
+    "TestDebugStdlibCanonicalCompilerSharedSequence",
+    "TestDebugStdlibCanonicalCompilerSharedSequence/legacy",
+    "TestDebugStdlibCanonicalCompilerSharedSequence/v2",
+    "TestDebugStdlibDatedClearAndTimerSynchronized",
+    "TestDebugStdlibDatedPassIdempotentAndNoDateOnPlainPreview",
+    "TestDebugStdlibExplicitDisplayHelpers",
+    "TestDebugStdlibFailsClosedWithoutPreviousOutput",
+    "TestDebugStdlibImplicitPreviousExactlyOneAppend",
+    "TestDebugStdlibLoggingDoesNotBreakLaterConsumer",
+    "TestDebugStdlibLoggingDoesNotBreakLaterConsumer/legacy",
+    "TestDebugStdlibLoggingDoesNotBreakLaterConsumer/v2",
+    "TestDebugStdlibMainVoidBoundaryCausalControls",
+    "TestDebugStdlibMainVoidBoundaryCausalControls/missing_terminal",
+    "TestDebugStdlibMainVoidBoundaryCausalControls/terminal_input",
+    "TestDebugStdlibMainVoidBoundaryCausalControls/value_terminal",
+    "TestDebugStdlibMustNotRewriteExistingProducerUUID",
+    "TestDebugStdlibNoArgumentRequiresBoundSource",
+    "TestDebugStdlibNoCrossShortcutPersistentState",
+    "TestDebugStdlibOutputUUIDIsPreserved",
+    "TestDebugStdlibQAStructuredTracingDoesNotPerturbDebugLogOrSourceGraph",
+    "TestDebugStdlibRejectsConflictingDisplayModes",
+    "TestDebugStdlibRejectsLiteralInsteadOfAddingText",
+    "TestDebugStdlibRejectsUnknownMacro",
+    "TestDebugStdlibShowLogsRejectsInvalidFlag",
+    "TestDebugStdlibSixDisplayModes",
+    "TestDebugStdlibSixDisplayModes/legacy=false/dated-text-preview",
+    "TestDebugStdlibSixDisplayModes/legacy=false/native-dated-preview",
+    "TestDebugStdlibSixDisplayModes/legacy=false/native-preview",
+    "TestDebugStdlibSixDisplayModes/legacy=false/record-creation-date",
+    "TestDebugStdlibSixDisplayModes/legacy=false/record-only",
+    "TestDebugStdlibSixDisplayModes/legacy=false/text-preview",
+    "TestDebugStdlibSixDisplayModes/legacy=true/dated-text-preview",
+    "TestDebugStdlibSixDisplayModes/legacy=true/native-dated-preview",
+    "TestDebugStdlibSixDisplayModes/legacy=true/native-preview",
+    "TestDebugStdlibSixDisplayModes/legacy=true/record-creation-date",
+    "TestDebugStdlibSixDisplayModes/legacy=true/record-only",
+    "TestDebugStdlibSixDisplayModes/legacy=true/text-preview",
+    "TestDebugStdlibTimerNativeDateFieldSerialization",
+    "TestDebugStdlibTimerNativeDateFieldSerialization/legacy",
+    "TestDebugStdlibTimerNativeDateFieldSerialization/v2",
+    "TestDebugStdlibTypedProducersAndEdgeControlFlows",
+    "TestDebugStdlibTypedProducersAndEdgeControlFlows/legacy-typed-producers",
+    "TestDebugStdlibTypedProducersAndEdgeControlFlows/v2-typed-producers",
+    "TestP15DebugExportBothFrontendsPrivacyAndIdentity",
+    "TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options=",
+    "TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options=\"json\",_false,_false,_true",
+    "TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options=\"json\",_false,_true,_false",
+    "TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=false/options=\"text\",_false,_true,_false",
+    "TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options=",
+    "TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options=\"json\",_false,_false,_true",
+    "TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options=\"json\",_false,_true,_false",
+    "TestP15DebugExportBothFrontendsPrivacyAndIdentity/legacy=true/options=\"text\",_false,_true,_false",
+    "TestP15DebugExportCanonicalNativeMetadata",
+    "TestP15DebugExportCanonicalTextCodecUTF16Identity",
+    "TestP15DebugExportLiteralOptionsAndRelease",
+    "TestP15DebugExportLiteralOptionsAndRelease/release_legacy_false/leaked_gettext",
+    "TestP15DebugExportLiteralOptionsAndRelease/release_legacy_false/leaked_nothing",
+    "TestP15DebugExportLiteralOptionsAndRelease/release_legacy_false/leaked_quicklook",
+    "TestP15DebugExportLiteralOptionsAndRelease/release_legacy_true/leaked_gettext",
+    "TestP15DebugExportLiteralOptionsAndRelease/release_legacy_true/leaked_nothing",
+    "TestP15DebugExportLiteralOptionsAndRelease/release_legacy_true/leaked_quicklook",
+    "TestP15DebugExportMetadataDefaultFlagsControl",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_false",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_false/duplicate_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_false/empty_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_false/missing_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_false/nonpreceding_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_false/other_producer_output_name",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_false/uuid_literal_payload",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_true",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_true/duplicate_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_true/empty_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_true/missing_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_true/nonpreceding_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_true/other_producer_output_name",
+    "TestP15DebugExportMetadataDefaultFlagsControl/json/redact_true/uuid_literal_payload",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_false",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_false/duplicate_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_false/empty_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_false/missing_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_false/nonpreceding_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_false/other_producer_output_name",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_false/uuid_literal_payload",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_true",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_true/duplicate_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_true/empty_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_true/missing_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_true/nonpreceding_producer",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_true/other_producer_output_name",
+    "TestP15DebugExportMetadataDefaultFlagsControl/text/redact_true/uuid_literal_payload",
+    "TestP15DebugExportMetadataReleaseAndStorage",
+    "TestP15DebugExportMetadataReleaseAndStorage/legacy_false",
+    "TestP15DebugExportMetadataReleaseAndStorage/legacy_false/later_label_in_outer_loop",
+    "TestP15DebugExportMetadataReleaseAndStorage/legacy_false/release_json",
+    "TestP15DebugExportMetadataReleaseAndStorage/legacy_false/release_text",
+    "TestP15DebugExportMetadataReleaseAndStorage/legacy_false/storage_only_backfill",
+    "TestP15DebugExportMetadataReleaseAndStorage/legacy_true",
+    "TestP15DebugExportMetadataReleaseAndStorage/legacy_true/later_label_in_outer_loop",
+    "TestP15DebugExportMetadataReleaseAndStorage/legacy_true/release_json",
+    "TestP15DebugExportMetadataReleaseAndStorage/legacy_true/release_text",
+    "TestP15DebugExportMetadataReleaseAndStorage/legacy_true/storage_only_backfill",
+    "TestP15DebugExportMetadataSourceGraphs",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_false/json/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_false/json/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_false/json/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_false/json/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_false/text/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_false/text/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_false/text/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_false/text/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_true/json/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_true/json/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_true/json/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_true/json/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_true/text/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_true/text/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_true/text/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates/legacy_true/text/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_false/json/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_false/json/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_false/json/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_false/json/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_false/text/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_false/text/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_false/text/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_false/text/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_true/json/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_true/json/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_true/json/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_true/json/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_true/text/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_true/text/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_true/text/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/dates_labels/legacy_true/text/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_false/json/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_false/json/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_false/json/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_false/json/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_false/text/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_false/text/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_false/text/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_false/text/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_true/json/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_true/json/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_true/json/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_true/json/types_true/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_true/text/types_false/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_true/text/types_false/redact_true",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_true/text/types_true/redact_false",
+    "TestP15DebugExportMetadataSourceGraphs/labels/legacy_true/text/types_true/redact_true",
+    "TestP15DebugExportRedactionRejectsNilAndDynamic",
+    "TestP15DebugExportUsesBase64FileMaterialization",
+    "TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=json/redact=false",
+    "TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=json/redact=true",
+    "TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=text/redact=false",
+    "TestP15DebugExportUsesBase64FileMaterialization/legacy=false/format=text/redact=true",
+    "TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=json/redact=false",
+    "TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=json/redact=true",
+    "TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=text/redact=false",
+    "TestP15DebugExportUsesBase64FileMaterialization/legacy=true/format=text/redact=true",
+    "TestP15DebugExportZeroOneThousandCompileBudget",
+    "TestP15DebugMacroPreservesFrontendResultIdentity",
+    "TestP15DebugMacroPreservesFrontendResultIdentity/debugExportTrace",
+    "TestP15DebugMacroPreservesFrontendResultIdentity/debugLog",
+    "TestP15DebugMacroPreservesFrontendResultIdentity/debugTraceEvent",
+    "TestP15SignedFixtureExactProducerReferences",
+    "TestP15SignedFixtureExactProducerReferences/legacy",
+    "TestP15SignedFixtureExactProducerReferences/v2"
+  ],
+  "graphHashes": {
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_false-json-types_false-redact_false.json": {
+      "sha256": "c5bf6e95bb3c661cb9d8fb262fe336458e243c0801f579b62789249638daf341",
+      "bytes": 17187
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_false-json-types_false-redact_true.json": {
+      "sha256": "385c1dca50a960a91492548c1b3a97485696a6d3e52ff67192ac529284e9e67c",
+      "bytes": 13181
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_false-json-types_true-redact_false.json": {
+      "sha256": "426a01c474467dae8cdb1327b2234541fecd4041c3a0988f993bc6ce698d43fd",
+      "bytes": 18248
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_false-json-types_true-redact_true.json": {
+      "sha256": "989ebc7281e4d4d45532c6cf865e0cb95553c630222cc103a11cb8327ea4b13f",
+      "bytes": 14360
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_false-text-types_false-redact_false.json": {
+      "sha256": "69b8baf79ee08a3c6fec5c2e6d75ba8506e8fee38627377b0334b8fdab59ffbe",
+      "bytes": 17188
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_false-text-types_false-redact_true.json": {
+      "sha256": "b5ad99cc203b928f6471b1b652e4685b83e30f31bdb3e09605e50335aede5169",
+      "bytes": 13182
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_false-text-types_true-redact_false.json": {
+      "sha256": "a6fb4e3d269628396ac4b3972e448b2cbc2b8e9eb65f5483541670ea40e4e304",
+      "bytes": 18249
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_false-text-types_true-redact_true.json": {
+      "sha256": "992c757c4f80063e96d8040233a8e11d9c9f5efe8145aecb76e580e7c5beb3db",
+      "bytes": 14361
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_true-json-types_false-redact_false.json": {
+      "sha256": "1e0f62fb714ba3b4151cbea9e4f0a7950657d7e05c03e1cb2403308192c2ba66",
+      "bytes": 17185
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_true-json-types_false-redact_true.json": {
+      "sha256": "07a2b010284bd15b50b2fb3c23fe33c0dd0f8b8a653b73b9639de42edd5b9f76",
+      "bytes": 13179
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_true-json-types_true-redact_false.json": {
+      "sha256": "7be0a86e6486ecaab16cca45f2a69d3bbd9ff529b3dda2d5bf0fae613c92629d",
+      "bytes": 18246
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_true-json-types_true-redact_true.json": {
+      "sha256": "bddd3588548cc0f8c321b9989c5513370f905f7255d843fede61a9d690a915cf",
+      "bytes": 14358
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_true-text-types_false-redact_false.json": {
+      "sha256": "ddb71e5a5056c0c806e3d749c5c42d648de2709e5e59d275a0a4e6c2883bc772",
+      "bytes": 17186
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_true-text-types_false-redact_true.json": {
+      "sha256": "a6b5da9f6ea33ca421daab6efffd36669893640aa2d210bb5e8676baf2e5a948",
+      "bytes": 13180
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_true-text-types_true-redact_false.json": {
+      "sha256": "3bce31699d1a683168699e96941f5ea51309e11b441fdcc22c3957249cc20c15",
+      "bytes": 18247
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates-legacy_true-text-types_true-redact_true.json": {
+      "sha256": "45f0a64f0722945ffb4b723e803f42ceb35ffdeba012de68eb5bdac54c89c139",
+      "bytes": 14359
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_false-json-types_false-redact_false.json": {
+      "sha256": "6747efdd1589fec63a27dea728d602fd888469e4cb2443b06f862db47f344ab6",
+      "bytes": 105635
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_false-json-types_false-redact_true.json": {
+      "sha256": "8dc8605b834d4feffcf661d8786fa55f3e47c2d0c5694acf71ff139312100358",
+      "bytes": 13233
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_false-json-types_true-redact_false.json": {
+      "sha256": "33afdbaee55c249bb562aecd6ecee74d34898c7f33208d06f9defe957d1eec2d",
+      "bytes": 106698
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_false-json-types_true-redact_true.json": {
+      "sha256": "b98c2d46e3c8983b0f839fcd967a7e2f3aa3f2bebd14ab12a437ba5ac7dc6340",
+      "bytes": 14412
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_false-text-types_false-redact_false.json": {
+      "sha256": "210143611dbdffb43b0b7cadde0f581a864bf616055bdfcdd5372d6aa52f495b",
+      "bytes": 105636
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_false-text-types_false-redact_true.json": {
+      "sha256": "22e182bac6b6d41845226344ba189c4236d8b45418e59de379fed8de419ca38e",
+      "bytes": 13234
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_false-text-types_true-redact_false.json": {
+      "sha256": "44966edd8a86c1eb50d47971c163eb878b4344db436dccdad4123e27862087a3",
+      "bytes": 106699
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_false-text-types_true-redact_true.json": {
+      "sha256": "f0905f2e0943881e08c47be9d33c0db1778048ce1db9a44288600a09585f5499",
+      "bytes": 14413
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_true-json-types_false-redact_false.json": {
+      "sha256": "00d5a82ea580a105cee1a3ee314488de470bfc5d4032688f0bcfe722a733044b",
+      "bytes": 105621
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_true-json-types_false-redact_true.json": {
+      "sha256": "02c6b8e243aaf70be6a5bb833c6776e60de362673c82e9e84770bb8d86e99f37",
+      "bytes": 13231
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_true-json-types_true-redact_false.json": {
+      "sha256": "c269996e422e9d03282d36b61fd48280f89550921649ef258e228dca13eb0fb5",
+      "bytes": 106684
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_true-json-types_true-redact_true.json": {
+      "sha256": "2f4be07f8045432f4849648b0bd9c149c582355a3184216c0142a46e8691779b",
+      "bytes": 14410
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_true-text-types_false-redact_false.json": {
+      "sha256": "df79baf46dba7e617ba103ec40846abf962645e82aef29f8a2a051cec7a3b697",
+      "bytes": 105622
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_true-text-types_false-redact_true.json": {
+      "sha256": "4338551fabf02cc5383e61eb6efab1fa5b9e0080aae47d9833a199089b87173c",
+      "bytes": 13232
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_true-text-types_true-redact_false.json": {
+      "sha256": "f213f0cb0f646855233775f79779e0c1caaaabfc54efd27600b0930d3bbe8206",
+      "bytes": 106685
+    },
+    "TestP15DebugExportMetadataSourceGraphs-dates_labels-legacy_true-text-types_true-redact_true.json": {
+      "sha256": "0f50d50ae171bc84d365d1b37b78c45cddcf6af411958dda20257e444279d0e5",
+      "bytes": 14411
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_false-json-types_false-redact_false.json": {
+      "sha256": "a1df33b6423aa024a8682910a0f5c624da1ebb66d7d8890ec5f3b2b580b335bd",
+      "bytes": 96748
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_false-json-types_false-redact_true.json": {
+      "sha256": "7b3199153be35a033a90bfc14ea0ab0bc6a0850aa2b9b38be3c5d40b7f53eabc",
+      "bytes": 4411
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_false-json-types_true-redact_false.json": {
+      "sha256": "83756984928feaba710ad31fa9b544fc6e6c499cb2fa56e049eb1e9c34dddf4b",
+      "bytes": 97809
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_false-json-types_true-redact_true.json": {
+      "sha256": "b8245e4d7d3a1a099559416edaaeffcb80a17ee3c06d3ae2b0d64f0431aad1fc",
+      "bytes": 5761
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_false-text-types_false-redact_false.json": {
+      "sha256": "e9d18c97f60f73a3157542ada72a8e01a4e0c473a54968460301bc9c1162ea67",
+      "bytes": 96749
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_false-text-types_false-redact_true.json": {
+      "sha256": "fd0f82554e4c84a64ad18cb0cb482138f40698e76f2f48bbd43512514752ef8e",
+      "bytes": 4412
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_false-text-types_true-redact_false.json": {
+      "sha256": "57b79737945014d930cb919b64acfb53d18d99f8de25e99c88ee2baf802de188",
+      "bytes": 97810
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_false-text-types_true-redact_true.json": {
+      "sha256": "1a29954e7a5a9cd0014b4b395bbb04f877b7d96674ae342043739a4da131339e",
+      "bytes": 5762
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_true-json-types_false-redact_false.json": {
+      "sha256": "710c357e3afbf2544e2f22c132154e42ee20ebce8b4c64b738c162b012ddabe3",
+      "bytes": 96734
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_true-json-types_false-redact_true.json": {
+      "sha256": "8c673448b9a2035ee5a420b03fe7d2288a12f76dca1b7868a34ce80aa01188bd",
+      "bytes": 4409
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_true-json-types_true-redact_false.json": {
+      "sha256": "90b224e8967313f93d3e1dd224458011cc56660a36cf400ac9849d65f50271f2",
+      "bytes": 97795
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_true-json-types_true-redact_true.json": {
+      "sha256": "d7f59e366f19794a53a8eb9ce8c3464b5a9a9a539bc77c7fb1585205ccc385ad",
+      "bytes": 5759
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_true-text-types_false-redact_false.json": {
+      "sha256": "cb5e11ec4b583d722aca01e59c7eb1fdd4e193b2900a4afb73dd5428bedf1fe5",
+      "bytes": 96735
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_true-text-types_false-redact_true.json": {
+      "sha256": "cae4570f22494cd7a1ae35d6a258fd04de8361199e0819b909a785bb34c61484",
+      "bytes": 4410
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_true-text-types_true-redact_false.json": {
+      "sha256": "25961acc5d929d53d11f471d33f91cef5af01393c059789db900e198978d9bc0",
+      "bytes": 97796
+    },
+    "TestP15DebugExportMetadataSourceGraphs-labels-legacy_true-text-types_true-redact_true.json": {
+      "sha256": "a55d3cfac11fc40bb23db3013f635a0423ab11f22a3ec767eff028a6b3d9aef9",
+      "bytes": 5760
+    }
+  },
+  "intakeScriptSHA256": "70288e16aefe2b3731758576ad28f3d4b0b3f8bfedc1d1caf6fc47adade81663",
+  "createdAtUTC": "2026-11-25T11:01:16.277762+00:00"
+}

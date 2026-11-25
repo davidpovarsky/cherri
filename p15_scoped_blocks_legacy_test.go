@@ -275,6 +275,28 @@ func TestP15_LegacyMeasureRejectsUnprovenForms(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.want, func(t *testing.T) {
+			// These two exact historical sources now have a statement-only
+			// contract. Keep their original test IDs and verify the full graph.
+			if c.source == "measure(\"empty\") {\n}\n" || c.source == "measure(\"void\") {\nwait(1)\n}\n" {
+				body := ""
+				if strings.Contains(c.source, "wait(1)") {
+					body = "wait(1)\n"
+				}
+				for _, profile := range []BuildProfile{BuildProfileDebug, BuildProfileRelease} {
+					actual, err := compileBuildProfileFixture(t, c.source, true, profile)
+					if err != nil {
+						t.Fatal(err)
+					}
+					ordinary, err := compileBuildProfileFixture(t, body+"nothing()\n", true, profile)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if err = p15MeasureVoidGraphError(actual, ordinary, 1, profile); err != nil {
+						t.Fatal(err)
+					}
+				}
+				return
+			}
 			_, err := compileLegacySourceToRawMapInMemoryWithProfile(c.source, BuildProfileDebug)
 			if err == nil || !strings.Contains(err.Error(), c.want) {
 				t.Fatalf("want %s, got %v", c.want, err)

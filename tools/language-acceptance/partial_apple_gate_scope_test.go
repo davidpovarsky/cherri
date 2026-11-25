@@ -47,8 +47,8 @@ func TestPartialAppleGateProbeScopes(t *testing.T) {
 				t.Fatal("partial Apple probe still authorizes a complete joined requirement", gate.ID)
 			}
 		}
-		if len(row.RequiredUIAssertions) != 0 {
-			t.Fatal("unexecuted joined UI assertions remain attached to a partial probe", gate.ID)
+		if !reflect.DeepEqual(row.RequiredUIAssertions, joinedNativeEditorUIAssertions(gate.ID)) {
+			t.Fatal("only exact dedicated joined UI assertions may be enrolled", gate.ID)
 		}
 	}
 	// An absent implementation SHA cannot authorize either enrolled producer.

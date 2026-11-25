@@ -212,8 +212,9 @@ func validateJoinedPublicRecord(id string, record EvidenceRecord, manifest *Evid
 		return nil
 	}
 	if record.Tier == "ios-build" || record.Tier == "ios-ui" {
-		// Replaced only when the dedicated native original validator is integrated.
-		return fmt.Errorf("%s dedicated native producer is not yet enrolled", id)
+		// The canonical manifest path independently replays dedicated native
+		// originals. The BRG27 bridge remains companion evidence, never LSP.
+		return validateJoinedNativeEditorRecord(id, record, manifest)
 	}
 	step, found := spec.tierStep(record.Tier)
 	if !found || record.Result != "passed" || record.ExitCode != 0 ||

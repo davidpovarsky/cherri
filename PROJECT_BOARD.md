@@ -351,3 +351,19 @@ Root integrated the source-bound e2027ee2 provider transport and its preserved o
 - The candidate Skill pins compiler `627c3e7eb4a54a0364b5a5563db89291fa953b97` and Docs `428f067090bf54f4d2f214c36951689dd599d153` together. D16 CI [45532536498](https://github.com/davidpovarsky/cherrilang.org/actions/runs/45532536498) passed 40 executable/diagnostic examples, original reference generation/check and the built-site gates; 524 reference signatures/fragments remain explicitly unexecuted.
 - Skill guidance now states the bounded local List/Optional alias contract and unsupported joins. Immutable source hashes distinguish this delivery while existing language, schema and Skill versions remain stable.
 - The runtime pair, installed Skill and RemoteBuilder successor are still pending their actual source/package/39-entrypoint/58-signing qualification and rollout cycle at this source checkpoint. Documentation CI does not grant those results or full179 acceptance.
+
+## 2026-11-25 — F04 mutable values through structured control
+
+- A source-owned origin-set analysis now preserves explicit exact-typed mutable aliases across If/Else, Menu, blocks, Repeat and For. A finite entry/backedge fixed point retains zero iterations and multi-iteration snapshot dependencies; declaration identities preserve writes before lexical shadowing.
+- Actual causal RED rejected16 planner/13 production-graph cases on unchanged K. The first implementation GREEN passed95 named events (87 leaves/8 parents) across3 packages, including16 full native graphs,6 graph corruptions,8 type rejections and preserved existing boundaries. These are compiler/native-structure results, not Apple execution.
+- Seven exact formerly rejected source cases are positive obligations for the newly implemented feature; their original full IDs will be restored before the330 inventory regression. Other representation/type/enrollment rejections remain intact.
+- This isolated component does not change frozen S/K/D, liveK18, acceptance contracts or historical results. Remaining mutable RHS/direct producer/inferred alias support and affected Legacy/Optional/lexical regressions are pending. [Source, originals and limits](docs/language-v2/p15-f04-structured-mutable-flow-20261125.md).
+
+### F04 follow-up — current original 330 identities retained
+
+The original27-parent selectors passed260 root+70 internal named IDs on the structured-flow implementation, with exact package/test identity comparison against original streams, no failures/skips, and tracked Go source guards unchanged. Seven implemented flow forms now explicitly expect admission under their original IDs; eleven remaining boundary forms still reject. Source74d15 plus only the recorded test-layout restoration is pinned by receipt `a1c0b6e836d35e964467d6e21ee89ed26fd466358c93b377143f767cf058516e`. Original RED/GREEN snapshots remain unchanged; broader affected regression and mutable RHS/direct/inferred support remain separate next work.
+
+
+## F04 general mutable storage qualification — 2026-11-25
+
+Implementation `82b8201d` admits inferred/mutable-source whole assignments and direct Repeat/For producers in the source-owned local cell slice. Actual focused152, original330 exact identities, and full affected269 tests passed; original failures and all source/ID expectation changes are retained. See `docs/language-v2/p15-f04-general-mutable-candidate-20261125.md` and its verification JSON. F04 remains open for consistent ordinary/cell declaration storage, uninitialized/overwritten versions, compound append and broader interfaces; no native runtime, final179 or release credit is claimed.

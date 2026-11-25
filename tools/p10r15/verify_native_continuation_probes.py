@@ -18,6 +18,8 @@ import time
 from verify_storage_probes import verify_build_identity
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools/shortcuts-simulator-qa"))
+from native_comparison_graph import verify_equality_region
 PUBLIC_URL = ("https://raw.githubusercontent.com/davidpovarsky/cherri/"
               "38c7098772f4b822d6a3555137c0c7cf8e5b1e5e/"
               "docs/apple-runtime/p10r15/paginate-pages/one.json")
@@ -105,14 +107,90 @@ def verify_debug_clear(actions):
             "unreviewed additional debug-log assignment")
 
 
-def common_graph(actions, allowed):
+def storage_type_pairs(actions):
+    original = output_named(actions, "original")
+    pairs = []
+    require(sum(suffix(a) == "getitemtype" for a in actions) == 4,
+            "exact four storage type witnesses required")
+    for name in ("written", "restored"):
+        read = output_named(actions, name)
+        found = [(i, a) for i, a in enumerate(actions)
+                 if suffix(a) == "getitemtype"
+                 and refs(params(a).get("WFInput")) == [params(read)["UUID"]]]
+        require(len(found) == 1, "readback native Get Type witness missing")
+        index, actual = found[0]
+        require(index > 0, "expected type witness missing")
+        expected = actions[index - 1]
+        require(suffix(expected) == "getitemtype"
+                and refs(params(expected).get("WFInput")) == [params(original)["UUID"]],
+                "readback expected type must inspect the original Text")
+        pairs.append((name + "-type", actual, expected, 5))
+    return pairs
+
+
+def http_type_pairs(actions):
+    return [
+        ("raw-text-type", output_named(actions, "rawType"),
+         output_named(actions, "textType"), 4),
+        ("raw-dictionary-type", output_named(actions, "rawType"),
+         output_named(actions, "dictionaryType"), 4),
+        ("parsed-dictionary-type", output_named(actions, "parsedType"),
+         output_named(actions, "dictionaryType"), 5),
+    ]
+
+
+def verify_type_comparisons(actions, pairs):
+    regions, occupied = [], set()
+    for name, left, right, operator in pairs:
+        require(suffix(left) == suffix(right) == "getitemtype",
+                "exact type comparison requires actual Get Type producers")
+        left_uuid, right_uuid = params(left).get("UUID"), params(right).get("UUID")
+        require(left_uuid and right_uuid and left_uuid != right_uuid,
+                "independent type producer identities required")
+        starts = [i for i in range(len(actions) - 1)
+                  if suffix(actions[i]) == suffix(actions[i + 1]) == "gettext"
+                  and refs(params(actions[i]).get("WFTextActionText")) == [left_uuid]
+                  and refs(params(actions[i + 1]).get("WFTextActionText")) == [right_uuid]]
+        require(len(starts) == 1, "one exact type comparison region per source predicate")
+        start = starts[0]
+        # The shared verifier checks all ten actions, their producer graph and
+        # the consuming conditional; this is not a general effect allowlist.
+        condition = start + 10
+        verify_equality_region(actions, start, condition, left, right_source=right,
+                               operator=operator, require=require)
+        indices = set(range(start, condition))
+        require(not (occupied & indices), "overlapping exact comparison regions")
+        occupied.update(indices)
+        regions.append({"name": name, "start": start, "condition": condition,
+                        "leftUUID": left_uuid, "rightUUID": right_uuid,
+                        "operator": operator})
+    return regions
+
+
+def verify_failure_flag(actions, condition, flag, value):
+    body = actions[condition + 1:condition + 4]
+    require(len(body) == 3 and suffix(body[0]) == "gettext"
+            and text_parts(body[0])[0] == value
+            and suffix(body[1]) == "setvariable"
+            and params(body[1]).get("WFVariableName") == flag
+            and refs(params(body[1]).get("WFInput")) == [params(body[0]).get("UUID")]
+            and suffix(body[2]) == "conditional"
+            and params(body[2]).get("WFControlFlowMode") == 2
+            and params(body[2]).get("GroupingIdentifier")
+                == params(actions[condition]).get("GroupingIdentifier"),
+            "source failure flag must remain in its own comparison branch")
+
+
+def common_graph(actions, allowed, comparisons=()):
     require(isinstance(actions, list) and bool(actions), "empty action graph")
     verify_debug_clear(actions)
+    regions = verify_type_comparisons(actions, comparisons)
+    reviewed_indices = {i for r in regions for i in range(r["start"], r["condition"])}
     producers, frames, contexts, groups = {}, [], {}, {}
     for index, action in enumerate(actions):
         reviewed_clear = index == 1 and suffix(action) == "nothing"
         require(action.get("WFWorkflowActionIdentifier", "").startswith(PREFIX)
-                and (suffix(action) in allowed or reviewed_clear), "unreviewed native effect")
+                and (suffix(action) in allowed or reviewed_clear or index in reviewed_indices), "unreviewed native effect")
         p = params(action)
         for ref in refs(p):
             require(ref in producers, "missing or nonpreceding native producer")
@@ -136,7 +214,7 @@ def common_graph(actions, allowed):
             require(uuid not in producers, "duplicate native producer UUID")
             producers[uuid] = action
     require(not frames, "unterminated conditional")
-    return producers, contexts
+    return producers, contexts, regions
 
 
 BASE = {"comment", "gettext", "setvariable", "appendvariable", "text.combine",
@@ -144,8 +222,9 @@ BASE = {"comment", "gettext", "setvariable", "appendvariable", "text.combine",
 
 
 def storage_graph(actions):
-    producers, contexts = common_graph(actions, BASE | {
-        "detect.dictionary", "getvalueforkey", "setstoredcontent", "getstoredcontent", "deletestoredcontent"})
+    producers, contexts, regions = common_graph(actions, BASE | {
+        "detect.dictionary", "getvalueforkey", "setstoredcontent", "getstoredcontent", "deletestoredcontent"},
+        storage_type_pairs(actions))
     phase = output_named(actions, "phase")
     run_token = output_named(actions, "runToken")
     request = output_named(actions, "request")
@@ -187,26 +266,44 @@ def storage_graph(actions):
         observed.append((suffix(action), context))
     require([s for s, _ in observed] == ["setstoredcontent", "getstoredcontent", "getstoredcontent", "deletestoredcontent"],
             "storage operations changed")
-    comparisons = [params(a) for a in actions if suffix(a) == "conditional"
-                   and params(a).get("WFControlFlowMode") == 0 and params(a).get("WFCondition") == 5]
-    require(len(comparisons) == 4, "type/value comparison count changed")
-    for read_uuid in read_ids:
-        require(any(single_ref(p["WFInput"]) == read_uuid and
-                    single_ref(p["WFConditionalActionString"]) == params(original)["UUID"] for p in comparisons),
-                "readback exact value comparison retargeted")
-        type_reads = [params(a)["UUID"] for a in actions if suffix(a) == "getitemtype"
-                      and refs(params(a).get("WFInput")) == [read_uuid]]
-        require(len(type_reads) == 1 and any(refs(p["WFInput"]) == type_reads for p in comparisons),
-                "readback native Get Type witness missing")
+    positions = {id(a): i for i, a in enumerate(actions)}
+    source_conditions = {positions[id(a)] for a in phase_guards}
+    for read_uuid, region in zip(read_ids, regions):
+        read = producers[read_uuid]
+        read_index = positions[id(read)]
+        require(contexts[region["start"]] == contexts[read_index]
+                and contexts[region["condition"]][:-1] == contexts[read_index],
+                "type comparison moved outside its storage phase")
+        verify_failure_flag(actions, region["condition"], "typeFlag", "TYPE_FAIL")
+        source_conditions.add(region["condition"])
+        comparisons = [i for i, a in enumerate(actions) if suffix(a) == "conditional"
+                       and params(a).get("WFControlFlowMode") == 0
+                       and refs(params(a).get("WFInput")) == [read_uuid]]
+        require(len(comparisons) == 1, "one stored-value predicate per readback")
+        condition = comparisons[0]
+        # Stored Content remains dynamic in the reviewed source. Preserve its
+        # explicit String coercion and original operand; do not claim typed
+        # exact Text semantics for this separate runtime observation.
+        verify_equality_region(actions, condition, condition, read,
+                               right_source=original, operator=5, dynamic=True,
+                               coercion="WFStringContentItem", require=require)
+        require(contexts[condition][:-1] == contexts[read_index],
+                "value comparison moved outside its storage phase")
+        verify_failure_flag(actions, condition, "valueFlag", "VALUE_FAIL")
+        source_conditions.add(condition)
+    internal = {i for r in regions for i in range(r["start"], r["condition"])}
+    require({i for i, a in enumerate(actions) if suffix(a) == "conditional"
+             and params(a).get("WFControlFlowMode") == 0 and i not in internal}
+            == source_conditions, "storage source predicate inventory changed")
     return {"nativeActions": len(actions), "storageOperations": [
         {"native": native, "phaseContext": context} for native, context in observed],
         "sameKeyProducerEveryOperation": True, "originalUnicodeTextReferencePreserved": True,
-        "nativeStorageExecuted": False}
+        "exactTypeComparisons": regions, "nativeStorageExecuted": False}
 
 
 def http_graph(fid, actions):
-    producers, _ = common_graph(actions, BASE | {
-        "dictionary", "getvalueforkey", "detect.dictionary", "downloadurl"})
+    producers, contexts, regions = common_graph(actions, BASE | {
+        "dictionary", "getvalueforkey", "detect.dictionary", "downloadurl"}, http_type_pairs(actions))
     fetched = fid == "qa-http-json-fetch-v2"
     response = output_named(actions, "response")
     network = [a for a in actions if suffix(a) == "downloadurl"]
@@ -239,13 +336,77 @@ def http_graph(fid, actions):
     labels = ("http-json-raw-type-text", "http-json-raw-type-dictionary", "http-json-raw-type-other")
     rendered = json.dumps(actions, ensure_ascii=False)
     require(all(label in rendered for label in labels), "raw type diagnostic trace branch missing")
+    require(sum(suffix(a) == "getitemtype" for a in actions) == 4,
+            "exact four HTTP type witnesses required")
+    first, second, typed = regions
+    first_context = contexts[first["condition"]]
+    second_context = contexts[second["condition"]]
+    require(contexts[first["start"]] == [] and len(first_context) == 1
+            and contexts[second["start"]] == [(first_context[0][0], None, True)]
+            and len(second_context) == 2
+            and second_context[:-1] == contexts[second["start"]]
+            and contexts[typed["start"]] == []
+            and len(contexts[typed["condition"]]) == 1,
+            "HTTP type predicates escaped their source branches")
+    expected_contexts = {
+        labels[0]: first_context,
+        labels[1]: second_context,
+        labels[2]: [*second_context[:-1], (second_context[-1][0], None, True)],
+    }
+    for label, expected_context in expected_contexts.items():
+        found = []
+        for index, action in enumerate(actions):
+            if suffix(action) != "gettext":
+                continue
+            try:
+                event = json.loads(text_parts(action)[0])
+            except (ValueError, TypeError):
+                continue
+            if isinstance(event, dict) and event.get("label") == label:
+                require(event.get("kind") == "INLINE_DEBUG_ACTION" and event.get("stage") == "before",
+                        "HTTP diagnostic label is not the original trace event")
+                found.append(index)
+        require(len(found) == 1 and contexts[found[0]] == expected_context,
+                "HTTP raw type trace moved to another comparison branch")
+    verify_failure_flag(actions, typed["condition"], "typeFlag", "DICTIONARY_FAIL")
+    source_conditions = {r["condition"] for r in regions}
+    for name, flag, failure in (("next", "nextFlag", "NEXT_FAIL"),
+                                ("itemCount", "itemsFlag", "ITEMS_FAIL")):
+        producer = output_named(actions, name)
+        found = [i for i, action in enumerate(actions) if suffix(action) == "conditional"
+                 and params(action).get("WFControlFlowMode") == 0
+                 and refs(params(action).get("WFInput")) == [params(producer)["UUID"]]]
+        require(len(found) == 1, "one original HTTP result predicate required")
+        condition = found[0]
+        if name == "next":
+            verify_equality_region(actions, condition, condition, producer,
+                                   right="two.json", operator=5, dynamic=True,
+                                   coercion="WFStringContentItem", require=require)
+        else:
+            p = params(actions[condition])
+            require(p.get("WFCondition") == 5
+                    and type(p.get("WFNumberValue")) in (int, float) and p["WFNumberValue"] == 1
+                    and p.get("WFConditionalLegacyComparisonBehavior") is True
+                    and "WFConditionalActionString" not in p
+                    and not variables(p["WFInput"])
+                    and not any(isinstance(v, dict) and "Aggrandizements" in v
+                                for v in walk(p["WFInput"])),
+                    "HTTP item-count direct numeric predicate changed")
+        require(len(contexts[condition]) == 1,
+                "HTTP result predicate moved into a different branch")
+        verify_failure_flag(actions, condition, flag, failure)
+        source_conditions.add(condition)
+    internal = {i for r in regions for i in range(r["start"], r["condition"])}
+    require({i for i, a in enumerate(actions) if suffix(a) == "conditional"
+             and params(a).get("WFControlFlowMode") == 0 and i not in internal}
+            == source_conditions, "HTTP source predicate inventory changed")
     return {"nativeActions": len(actions), "fixedGETs": len(network),
             "actualResponseToGetDictionary": True, "rawTypeDiagnostic": "TEXT_DICTIONARY_OTHER",
-            "nativeHTTPConversionExecuted": False}
+            "exactTypeComparisons": regions, "nativeHTTPConversionExecuted": False}
 
 
 def numeric_graph(actions):
-    producers, _ = common_graph(actions, BASE | {"number", "getvariable", "alert", "exit"})
+    producers, _, _ = common_graph(actions, BASE | {"number", "getvariable", "alert", "exit"})
     direct, required, one = [output_named(actions, n) for n in ("direct", "required", "one")]
     require(suffix(direct) == suffix(one) == "number", "independent native Number controls missing")
     require(str(params(direct).get("WFNumberActionNumber")) in ("0", "0.0")
@@ -380,6 +541,81 @@ def causal_faults(fid, actions):
         mutate("positive-control-value", lambda a: params(output_named(a,"one")).update(WFNumberActionNumber="0"))
         mutate("bound-retarget", lambda a: params(next(x for x in a if suffix(x)=="setvariable" and params(x).get("WFVariableName")=="bound")).update(
             WFInput=copy.deepcopy(params(next(x for x in a if suffix(x)=="conditional" and refs(params(x).get("WFInput"))==[params(output_named(a,"direct"))["UUID"]]))["WFInput"])))
+    regions = validate_graph(fid, actions).get("exactTypeComparisons", [])
+    def attachment(items, index, field):
+        values = [v for v in walk(params(items[index])[field])
+                  if isinstance(v, dict) and v.get("Type") == "ActionOutput"]
+        require(len(values) == 1, "causal control must select one actual dependency")
+        return values[0]
+    for region in regions:
+        start, condition = region["start"], region["condition"]
+        prefix = "exact-" + region["name"] + "-"
+        mutate(prefix + "left-source", lambda a: attachment(a, start, "WFTextActionText").update(
+            OutputUUID=region["rightUUID"]))
+        mutate(prefix + "right-source", lambda a: attachment(a, start + 1, "WFTextActionText").update(
+            OutputUUID=region["leftUUID"]))
+        mutate(prefix + "left-sentinel", lambda a: params(a[start])["WFTextActionText"]["Value"].update(
+            string="\ufffc"))
+        mutate(prefix + "quote-escape", lambda a: params(a[start + 2]).update(WFReplaceTextFind="\\Q"))
+        mutate(prefix + "quote-regex-mode", lambda a: params(a[start + 2]).update(
+            WFReplaceTextRegularExpression=True))
+        def unanchor(a):
+            value = params(a[start + 3])["WFMatchTextPattern"]["Value"]
+            token = next(iter(value["attachmentsByRange"].values()))
+            value.update(string="\\Q\ufffc\\E", attachmentsByRange={"{2, 1}": token})
+        mutate(prefix + "unanchored-pattern", unanchor)
+        mutate(prefix + "case-folding", lambda a: params(a[start + 3]).update(
+            WFMatchTextCaseSensitive=False))
+        mutate(prefix + "count-source", lambda a: attachment(a, start + 4, "Input").update(
+            OutputUUID=params(a[start])["UUID"]))
+        mutate(prefix + "count-kind", lambda a: params(a[start + 4]).update(WFCountType="Characters"))
+        mutate(prefix + "count-threshold", lambda a: params(a[start + 5]).update(WFNumberValue=0))
+        mutate(prefix + "comparison-operator", lambda a: params(a[start + 5]).update(
+            WFCondition=5 if region["operator"] == 4 else 4))
+        mutate(prefix + "true-polarity", lambda a: params(a[start + 6]).update(WFNumberActionNumber=0))
+        mutate(prefix + "false-polarity", lambda a: params(a[start + 8]).update(WFNumberActionNumber=1))
+        mutate(prefix + "consumer-polarity", lambda a: params(a[condition]).update(WFNumberValue=0))
+        mutate(prefix + "consumer-source", lambda a: attachment(a, condition, "WFInput").update(
+            OutputUUID=params(a[start + 4])["UUID"]))
+        mutate(prefix + "group-boundary", lambda a: params(a[start + 9]).update(
+            GroupingIdentifier=params(a[condition])["GroupingIdentifier"]))
+        mutate(prefix + "extra-region-action", lambda a: a.insert(start + 3, {
+            "WFWorkflowActionIdentifier": PREFIX + "number",
+            "WFWorkflowActionParameters": {"WFNumberActionNumber": 1}}))
+        mutate(prefix + "extra-match-outside-region", lambda a: a.append(copy.deepcopy(a[start + 3])))
+        def type_source(a):
+            left = next(x for x in a if params(x).get("UUID") == region["leftUUID"])
+            right = next(x for x in a if params(x).get("UUID") == region["rightUUID"])
+            params(left)["WFInput"] = copy.deepcopy(params(right)["WFInput"])
+        mutate(prefix + "type-producer-source", type_source)
+        if "storage" in fid or region["name"] == "parsed-dictionary-type":
+            mutate(prefix + "failure-flag", lambda a: params(a[condition + 2]).update(
+                WFVariableName="unreviewed_flag"))
+    if "storage" in fid:
+        def move_type_to_else(a):
+            region = regions[0]
+            block = a[region["start"] - 2:region["condition"] + 4]
+            del a[region["start"] - 2:region["condition"] + 4]
+            phase = next(x for x in a if suffix(x) == "conditional"
+                         and params(x).get("WFConditionalActionString") == "WRITE")
+            group = params(phase)["GroupingIdentifier"]
+            otherwise = next(i for i, x in enumerate(a) if params(x).get("GroupingIdentifier") == group
+                             and params(x).get("WFControlFlowMode") == 1)
+            a[otherwise + 1:otherwise + 1] = block
+        mutate("exact-storage-type-moved-across-phase", move_type_to_else)
+    elif "http-json" in fid:
+        def move_else_after_dictionary(a):
+            group = params(a[regions[0]["condition"]])["GroupingIdentifier"]
+            otherwise = next(i for i, x in enumerate(a) if params(x).get("GroupingIdentifier") == group
+                             and params(x).get("WFControlFlowMode") == 1)
+            marker = a.pop(otherwise)
+            end = next(i for i, x in enumerate(a) if params(x).get("GroupingIdentifier") == group
+                       and params(x).get("WFControlFlowMode") == 2)
+            a.insert(end, marker)
+        mutate("exact-http-dictionary-outside-else", move_else_after_dictionary)
+    else:
+        mutate("numeric-boolean-is-not-number", lambda a: params(condition(a, "direct")).update(
+            WFNumberValue=False))
     return faults
 
 
@@ -413,6 +649,7 @@ def main():
     require(len(cases)==4 and len({c["id"] for c in cases})==4, "four explicit cases required")
     paths = [manifest_path.relative_to(ROOT).as_posix(), "tools/p10r15/verify_native_continuation_probes.py",
         "tools/shortcuts-simulator-qa/storage_cross_run.py", "tools/shortcuts-simulator-qa/test_storage_cross_run.py",
+        "tools/shortcuts-simulator-qa/native_comparison_graph.py",
         "tools/shortcuts-simulator-qa/prepare_public_artifacts.py", "scripts/ios27_shortcuts_simulator_qa.sh",
         ".github/workflows/cherri-ios27-shortcuts-simulator-qa.yml", ".github/workflows/openminis-skill.yml",
         "tools/shortcuts-simulator-qa/validate_macro_fixtures.py",

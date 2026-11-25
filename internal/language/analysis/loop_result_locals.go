@@ -6,14 +6,28 @@ import (
 	"github.com/electrikmilk/cherri/internal/language/types"
 )
 
-func (a *Analyzer) beginLocalLoopResultBinding(binding *syntax.BindingStmt) func() {
-	previous := a.loopResultLocalBody
-	if a.loopResultLocalPlan != nil && !binding.Mutable && a.loopResultLocalPlan.BindingValues[binding.Value] {
-		if body := schema.LoopResultLocalBody(binding.Value); a.loopResultLocalPlan.Bodies[body] {
+func (a *Analyzer) beginLocalLoopResultValue(value syntax.Expression) func() {
+	var previous = a.loopResultLocalBody
+	if a.loopResultLocalPlan != nil && a.loopResultLocalPlan.BindingValues[value] {
+		if body := schema.LoopResultLocalBody(value); a.loopResultLocalPlan.Bodies[body] {
 			a.loopResultLocalBody = body
 		}
 	}
 	return func() { a.loopResultLocalBody = previous }
+}
+
+func (a *Analyzer) beginLocalLoopResultBinding(binding *syntax.BindingStmt) func() {
+	if a.loopResultLocalPlan == nil || !a.loopResultLocalPlan.BindingValueSourceMatches(binding) {
+		return func() {}
+	}
+	return a.beginLocalLoopResultValue(binding.Value)
+}
+
+func (a *Analyzer) beginLocalLoopResultAssignment(assignment *syntax.AssignStmt) func() {
+	if a.loopResultLocalPlan == nil || !a.loopResultLocalPlan.AssignmentSourceMatches(assignment) {
+		return func() {}
+	}
+	return a.beginLocalLoopResultValue(assignment.Value)
 }
 
 func (a *Analyzer) localLoopResultShapeSupported(body *syntax.BlockStmt) bool {
@@ -56,51 +70,43 @@ func (a *Analyzer) recordLocalLoopResult(expression syntax.Expression, t types.T
 }
 
 func (a *Analyzer) validateLocalLoopResultBinding(binding *syntax.BindingStmt, declared types.Type, scope *Scope) types.Type {
-	element := a.loopResultLocalValues[binding.Value]
+	var element = a.loopResultLocalValues[binding.Value]
 	if element == nil {
 		return nil
 	}
-	mutableAllowed := !binding.Mutable
-	if binding.Mutable && binding.TypeExpr != nil && a.loopResultLocalPlan != nil &&
-		a.loopResultLocalPlan.MutableBindings[binding] {
-		if name, okay := binding.Value.(*syntax.IdentExpr); okay {
-			rhs, found := scope.Lookup(name.Name)
-			mutableAllowed = found && !rhs.Mutable && rhs.loopResultElement != nil &&
-				element.Equals(rhs.loopResultElement)
-		}
+	var valid = a.loopResultLocalPlan != nil && a.loopResultLocalPlan.BindingValueSourceMatches(binding) &&
+		(!binding.Mutable || a.loopResultLocalPlan.MutableBindings[binding])
+	if name, identifier := binding.Value.(*syntax.IdentExpr); identifier {
+		rhs, found := scope.Lookup(name.Name)
+		valid = valid && found && rhs.loopResultElement != nil &&
+			rhs.Mutable == a.loopResultLocalPlan.BindingSources[binding].Source.Mutable &&
+			element.Equals(rhs.loopResultElement) && rhs.Type != nil && types.NewList(element).Equals(rhs.Type)
 	}
-	if !mutableAllowed || declared == nil || !types.NewList(element).Equals(declared) {
-		a.error(CodeTargetValueShape, binding.Span, "local loop-result cells require an exact List binding; mutable aliases require explicit type and source-owned enrollment")
+	if !valid || declared == nil || !types.NewList(element).Equals(declared) {
+		a.error(CodeTargetValueShape, binding.Span, "local loop-result cells require their enrolled source and exact inferred or declared List type")
 	}
 	return element
 }
 
-// Cell metadata is preserved only across the exact admitted whole assignment.
-// Ordinary assignability does not prove a private representation's identity.
+// The source stamp distinguishes actual mutable reads and inferred declarations
+// from mutated metadata. Every store still requires exact semantic equality.
 func (a *Analyzer) validateLocalLoopResultAssignment(assignment *syntax.AssignStmt, target *Symbol, scope *Scope) {
-	element := a.loopResultLocalValues[assignment.Value]
+	var element = a.loopResultLocalValues[assignment.Value]
 	if target.loopResultElement == nil && element == nil {
 		return
 	}
-	var enrolled *syntax.BindingStmt
-	if a.loopResultLocalPlan != nil {
-		enrolled = a.loopResultLocalPlan.Assignments[assignment]
+	var valid = a.loopResultLocalPlan != nil && a.loopResultLocalPlan.AssignmentSourceMatches(assignment)
+	if name, identifier := assignment.Value.(*syntax.IdentExpr); identifier {
+		rhs, found := scope.Lookup(name.Name)
+		valid = valid && found && rhs.loopResultElement != nil &&
+			rhs.Mutable == a.loopResultLocalPlan.AssignmentSources[assignment].Source.Mutable &&
+			element != nil && rhs.loopResultElement.Equals(element) &&
+			rhs.Type != nil && types.NewList(element).Equals(rhs.Type)
 	}
-	name, identifier := assignment.Value.(*syntax.IdentExpr)
-	var rhs *Symbol
-	if identifier {
-		rhs, _ = scope.Lookup(name.Name)
-	}
-	if enrolled == nil || !enrolled.Mutable || !a.loopResultLocalPlan.MutableBindings[enrolled] ||
-		!a.loopResultLocalPlan.AllowedValues[assignment.Value] ||
-		enrolled.Name != assignment.Name || enrolled.TypeExpr == nil ||
-		assignment.Op != syntax.TokenAssign || !target.Mutable ||
-		rhs == nil || rhs.Mutable || rhs.loopResultElement == nil ||
-		target.loopResultElement == nil || element == nil ||
-		!target.loopResultElement.Equals(element) || !rhs.loopResultElement.Equals(element) ||
-		target.Type == nil || !types.NewList(element).Equals(target.Type) ||
-		rhs.Type == nil || !target.Type.Equals(rhs.Type) ||
-		a.exprTypes[assignment.Value] == nil || !target.Type.Equals(a.exprTypes[assignment.Value]) {
-		a.error(CodeTargetValueShape, assignment.Span, "local loop-result assignment requires its enrolled exact List alias and immutable source-owned identifier")
+	if !valid || !target.Mutable || target.loopResultElement == nil || element == nil ||
+		!target.loopResultElement.Equals(element) || target.Type == nil ||
+		!types.NewList(element).Equals(target.Type) || a.exprTypes[assignment.Value] == nil ||
+		!target.Type.Equals(a.exprTypes[assignment.Value]) {
+		a.error(CodeTargetValueShape, assignment.Span, "local loop-result assignment requires its enrolled source and an exact List representation")
 	}
 }

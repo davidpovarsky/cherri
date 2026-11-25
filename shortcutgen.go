@@ -1236,14 +1236,19 @@ func makeConditionalAction(t *token) {
 	switch t.valueType {
 	case If:
 		var cond = t.value.(WFConditions)
+		if len(cond.conditions) == 0 {
+			exit("E_CONDITION_INPUT: a conditional requires at least one input")
+		}
+		if len(cond.conditions) > 1 && iosVersion < 18 {
+			exit("E_CONDITION_TARGET: old-target compound conditions must be lowered before native emission")
+		}
 		spec := ConditionSpec{
 			GroupingIdentifier: t.ident,
 			IsLegacy:           cond.legacyComparison,
 		}
-		if len(cond.conditions) == 1 || iosVersion < 18 {
+		if len(cond.conditions) == 1 {
 			var firstCondition = cond.conditions[0]
-			var firstArg = firstCondition.arguments[0]
-			var firstVar = firstArg.value.(varValue)
+			var firstVar = legacyConditionalReference(firstCondition.arguments)
 			var conditionCode = firstCondition.condition
 			var inputType = conditionalComparisonInputType(&firstVar, firstCondition.arguments, conditionCode)
 			spec.Input = map[string]any{
@@ -1459,7 +1464,7 @@ func makeConditions(wfConditions *WFConditions) WFContentPredicateTableTemplate 
 			}
 		}
 
-		var firstVar = condition.arguments[0].value.(varValue)
+		var firstVar = legacyConditionalReference(condition.arguments)
 		var inputType = conditionalComparisonInputType(&firstVar, condition.arguments, conditionCode)
 		var conditionParam = WFConditionParam{
 			WFCondition: conditionCode,

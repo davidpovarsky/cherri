@@ -1383,18 +1383,27 @@ func collectConditionals(identifier string) {
 
 	var group = groupStatement(Conditional, &identifier)
 
+	producerStart := len(tokens)
+	var stages [][]token
 	var conditions WFConditions
 	conditions.WFActionParameterFilterPrefix = -1
-	for char != 1 && char != '{' {
+	for char != 1 && (len(conditions.conditions) == 0 || char != '{') {
 		collectLegacyComparisonFlag(&conditions)
 
+		stageStart := len(tokens)
 		var conditional = collectConditional()
+		stages = append(stages, append([]token(nil), tokens[stageStart:]...))
 
 		collectFilterPrefix(&conditions)
 		conditions.conditions = append(conditions.conditions, conditional)
 	}
 
 	advance()
+
+	if len(conditions.conditions) > 1 && (iosVersion < 18 || legacyConditionalStagesRequireGuards(stages)) {
+		tokens = tokens[:producerStart]
+		conditions = lowerLegacyConditionalStages(conditions, stages)
+	}
 
 	tokens = append(tokens, token{
 		typeof:    Conditional,
@@ -1467,17 +1476,17 @@ func collectConditional() (conditional condition) {
 		}
 		var variableOneType tokenType
 		var variableOneValue any
-		collectValue(&variableOneType, &variableOneValue, ')')
+		collectLegacyConditionalValue(&variableOneType, &variableOneValue, ')')
 		for char == ' ' || char == '\t' {
 			advance()
 		}
 		advanceUntil(')')
 		advance()
 		skipWhitespace()
-		conditional.arguments = append(conditional.arguments, actionArgument{
+		conditional.arguments = append(conditional.arguments, materializeLegacyConditionalInput(actionArgument{
 			valueType: variableOneType,
 			value:     variableOneValue,
-		})
+		}))
 		return
 	}
 	if consumeFuncPrefix("isFalse") {
@@ -1487,17 +1496,17 @@ func collectConditional() (conditional condition) {
 		}
 		var variableOneType tokenType
 		var variableOneValue any
-		collectValue(&variableOneType, &variableOneValue, ')')
+		collectLegacyConditionalValue(&variableOneType, &variableOneValue, ')')
 		for char == ' ' || char == '\t' {
 			advance()
 		}
 		advanceUntil(')')
 		advance()
 		skipWhitespace()
-		conditional.arguments = append(conditional.arguments, actionArgument{
+		conditional.arguments = append(conditional.arguments, materializeLegacyConditionalInput(actionArgument{
 			valueType: variableOneType,
 			value:     variableOneValue,
-		})
+		}))
 		return
 	}
 
@@ -1509,11 +1518,11 @@ func collectConditional() (conditional condition) {
 
 	var variableOneType tokenType
 	var variableOneValue any
-	collectValue(&variableOneType, &variableOneValue, ' ')
-	conditional.arguments = append(conditional.arguments, actionArgument{
+	collectLegacyConditionalValue(&variableOneType, &variableOneValue, ' ')
+	conditional.arguments = append(conditional.arguments, materializeLegacyConditionalInput(actionArgument{
 		valueType: variableOneType,
 		value:     variableOneValue,
-	})
+	}))
 
 	skipWhitespace()
 
@@ -1544,12 +1553,12 @@ func collectConditional() (conditional condition) {
 
 		var variableTwoType tokenType
 		var variableTwoValue any
+		tokenStart := len(tokens)
 		collectConditionalOperand(&variableTwoType, &variableTwoValue, ' ')
+		argument := materializeLegacyConditionalOperand(actionArgument{valueType: variableTwoType, value: variableTwoValue})
+		snapshotLegacyArgumentsBefore(conditional.arguments, tokenStart)
 		checkConditionalTypes(&collectConditionalToken, variableOneType, variableOneValue, variableTwoType)
-		conditional.arguments = append(conditional.arguments, actionArgument{
-			valueType: variableTwoType,
-			value:     variableTwoValue,
-		})
+		conditional.arguments = append(conditional.arguments, argument)
 
 		skipWhitespace()
 
@@ -1557,11 +1566,11 @@ func collectConditional() (conditional condition) {
 			var variableThreeType tokenType
 			var variableThreeValue any
 
+			tokenStart := len(tokens)
 			collectConditionalOperand(&variableThreeType, &variableThreeValue, '{')
-			conditional.arguments = append(conditional.arguments, actionArgument{
-				valueType: variableThreeType,
-				value:     variableThreeValue,
-			})
+			argument := materializeLegacyConditionalOperand(actionArgument{valueType: variableThreeType, value: variableThreeValue})
+			snapshotLegacyArgumentsBefore(conditional.arguments, tokenStart)
+			conditional.arguments = append(conditional.arguments, argument)
 			skipWhitespace()
 		}
 	}
@@ -1606,6 +1615,10 @@ func checkConditionalTypes(conditional *tokenType, variableType tokenType, value
 	}
 	if variableType == Expression {
 		variableType = Integer
+	}
+	// Raw and interpolated text share native comparison capabilities.
+	if variableType == RawString {
+		variableType = String
 	}
 	if variableType == "" || variableType == Variable || variableType == Nil {
 		return
@@ -1695,7 +1708,7 @@ func collectConditionalOperand(valType *tokenType, val *any, until rune) {
 		*val = legacyCondEnum(strVal)
 		return
 	}
-	collectValue(valType, val, until)
+	collectLegacyConditionalValue(valType, val, until)
 }
 
 func collectMenu(identifier string) {

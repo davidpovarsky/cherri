@@ -2740,3 +2740,20 @@ Implemented the previously prepared bounded alias proposal on S6. Original quali
 ## 2026-11-25: fresh S627c private-corpus S4 accepted
 
 All five original S4 parents executed and passed at compiler `627c3e7eb4a54a0364b5a5563db89291fa953b97`; the independent original intake accepted their source, corpus hashes, exact Go event streams, and summaries. The fixed 38-file cohort retains 27,652 actions (23,353 natural, 4,298 fallback, one invalid action, zero demotions; 137 third-party actions). The fresh Legacy/V2 wire and lifecycle reconciliation gates passed. See [the source-bound report](p15-private-corpus-s627c-five-parents-20261125.md) and Asana story `1220886760407730`. This does not close Apple runtime, AI evaluation, unsupported semantics, all179 acceptance, or release promotion.
+
+## 2026-11-25 — Structured mutable loop-result origins
+
+The isolated successor of K1e027 now analyzes mutable cell values by source declaration identity and finite reaching-origin sets through lexical blocks, If/Else, Menu, Repeat and For. Entry/backedge joins preserve zero iterations; immutable snapshots and writes before same-name declarations retain their original identities. Native lowering preserves the authored AST when it selects a distinct lexical backend name.
+
+A genuine unchanged-K baseline failed16 planner and13 production native-graph cases. The first implementation qualification passed95 named events (87 leaves and8 parents), zero failures/skips, with original source hashes/streams/capacity samples. Seven original boundary sources intentionally become positive obligations; their old rejection semantics are not restamped as unchanged passes. The current330 identity restoration and affected regression remain next work.
+
+The original compiler S627c, implementation K1e027, DocsD16, liveK18, corpus and acceptance contracts remain unchanged. This result proves a source/native-plist increment, not Apple runtime, general T05/L01, allF04 or179/179 acceptance. Mutable RHS, direct producers and inferred types remain explicit follow-up scopes. See [the component proof](p15-f04-structured-mutable-flow-20261125.md).
+
+### Structured-flow follow-up: original330 current identities
+
+The original330 selectors now passed260 root/70 internal exact package+test IDs, with no failures/skips and unchanged tracked Go files during both actual bounded processes. The seven feature-evolution expectations are positive under their original full IDs; all original source cases remain. Receipt `a1c0b6e836d35e964467d6e21ee89ed26fd466358c93b377143f767cf058516e` binds published74d15 plus the sole schema-test identity restoration. This updates the above next-work state without changing the first GREEN's original schema or assigning Apple/full179 credit.
+
+
+## F04 general mutable storage qualification — 2026-11-25
+
+Implementation `82b8201d` admits inferred/mutable-source whole assignments and direct Repeat/For producers in the source-owned local cell slice. Actual focused152, original330 exact identities, and full affected269 tests passed; original failures and all source/ID expectation changes are retained. See `docs/language-v2/p15-f04-general-mutable-candidate-20261125.md` and its verification JSON. F04 remains open for consistent ordinary/cell declaration storage, uninitialized/overwritten versions, compound append and broader interfaces; no native runtime, final179 or release credit is claimed.

@@ -137,31 +137,78 @@ def identity(files,prefix,identity,pins):
     caps=wrappers.strict_json(raw);wrappers.validate_capabilities(caps,pins)
     return caps
 
-def examples_evidence(files,report,pins,repo,docs_repo,source):
-    prefix="consumers/examples/"
-    need(obj(files,prefix+"documentation-examples.json")==report, "detached all88 example report")
+def example_identity(row):
+    """A source location, including each documented inline alternative."""
+    need(isinstance(row,dict),"invalid original example object")
+    role,path,location=(row.get(key) for key in ("repository","path","location"))
+    ordinal,variant=row.get("ordinal"),row.get("variant")
+    need(role in {"compiler","docs","consumer"} and isinstance(path,str) and path
+         and location in {"fence","inline"} and type(ordinal) is int and ordinal>0,
+         "invalid original example source identity")
+    need((location=="fence" and variant is None) or
+         (location=="inline" and type(variant) is int and variant>=0),
+         "invalid original example alternative identity")
+    return role,path,location,ordinal,variant
+
+def verify_example_inventory(report,pins,repo,docs_repo,source,compiler_repo=None):
+    """Reconstruct the complete case set from the exact S/D/K Git blobs.
+
+    This checks source coverage and declared outcomes only. Process receipts,
+    diagnostic bytes and native plist artifacts remain independently required
+    by examples_evidence; metadata alone grants no execution credit.
+    """
     need(report.get("implementationSha")==source and report.get("compilerCommit")==pins["compilerCommit"]
          and report.get("docsCommit")==pins["docsCommit"] and report.get("formalAcceptanceGranted") is False
          and report.get("nativeExecution")=="NOT_RUN", "example tuple/scope mismatch")
     pin_raw=examples.git(repo,"show",source+":skills/cherri-shortcuts/compatibility-manifest.json")
-    need(report.get("manifestSha256")==sha(pin_raw),"example manifest binding mismatch")
-    caps=identity(files,prefix,report["compiler"],pins)
+    need(wrappers.strict_json(pin_raw)==pins and report.get("manifestSha256")==sha(pin_raw),
+         "example manifest binding mismatch")
+    compiler_repo=repo if compiler_repo is None else compiler_repo
     cases=[];tokens=[];sources=[]
     for root,commit,role,paths in (
-        (repo,pins["compilerCommit"],"compiler",examples.COMPILER_GUIDES),
+        (compiler_repo,pins["compilerCommit"],"compiler",examples.COMPILER_GUIDES),
         (docs_repo,pins["docsCommit"],"docs",examples.DOCS_GUIDES),
         (repo,source,"consumer",examples.SKILL_GUIDES)):
         blobs=wrappers.git_files(root,commit,paths)
+        need(set(blobs)==set(paths),"incomplete immutable documentation source inventory")
         for path in paths:
             raw=blobs[path][0]
             sources.append({"repository":role,"commit":commit,"path":path,"bytes":len(raw),"sha256":sha(raw)})
             cases+=examples.fence_examples(raw.decode("utf8"),role,path)
             if role=="consumer":
                 found,inventory=examples.skill_examples(raw.decode("utf8"),path);cases+=found;tokens+=inventory
-    need(len(cases)==88 and report.get("sources")==sources and report.get("inlineInventory")==tokens,
-         "all88 source-derived inventory changed")
+    need({c["repository"] for c in cases}=={"compiler","docs","consumer"}
+         and any(c["expectedErrors"] for c in cases) and any(c["mode"]=="legacy" for c in cases)
+         and any(c["classification"]=="contextual" for c in cases),
+         "missing required source example role/class")
+    expected_ids=[example_identity(case) for case in cases]
+    need(len(expected_ids)==len(set(expected_ids)),"duplicate source-derived example identity")
+    need(canonical(report.get("sources"))==canonical(sources) and
+         canonical(report.get("inlineInventory"))==canonical(tokens),
+         "source-derived documentation inventory changed")
     actual=report.get("examples")
     need(isinstance(actual,list) and len(actual)==len(cases),"missing/extra original example")
+    actual_ids=[example_identity(row) for row in actual]
+    need(len(actual_ids)==len(set(actual_ids)) and actual_ids==expected_ids,
+         "duplicate, reordered or misbound original example")
+    for case,row in zip(cases,actual):
+        need(all(key in row for key in case) and
+             canonical({key:row[key] for key in case})==canonical(case),
+             "altered original example inventory")
+        need(row.get("passed") is True and row.get("failures")==[],"failed original example")
+    summary={"executed":len(cases),"passed":len(cases),"failed":0,
+             "intendedErrorExamples":sum(bool(c["expectedErrors"]) for c in cases),
+             "explicitLegacyExamples":sum(c["mode"]=="legacy" for c in cases),
+             "contextualExamples":sum(c["classification"]=="contextual" for c in cases)}
+    need(canonical(report.get("summary"))==canonical(summary),"example count/type summary differs")
+    return cases
+
+def examples_evidence(files,report,pins,repo,docs_repo,source):
+    prefix="consumers/examples/"
+    need(obj(files,prefix+"documentation-examples.json")==report, "detached complete example report")
+    cases=verify_example_inventory(report,pins,repo,docs_repo,source)
+    caps=identity(files,prefix,report["compiler"],pins)
+    actual=report["examples"]
     for index,(case,row) in enumerate(zip(cases,actual)):
         base=prefix+"example-%04d/"%index
         need(obj(files,base+"example.json")==row and row.get("passed") is True and row.get("failures")==[],
@@ -195,9 +242,6 @@ def examples_evidence(files,report,pins,repo,docs_repo,source):
                  and all(isinstance(a,dict) and isinstance(a.get("WFWorkflowActionIdentifier"),str) and a["WFWorkflowActionIdentifier"]
                          for a in workflow["WFWorkflowActions"]),"invalid native workflow")
             need(row["artifact"].get("actionCount")==len(workflow["WFWorkflowActions"]),"native action count differs")
-    summary={"executed":88,"passed":88,"failed":0,"intendedErrorExamples":sum(bool(c["expectedErrors"]) for c in cases),
-             "explicitLegacyExamples":sum(c["mode"]=="legacy" for c in cases),"contextualExamples":sum(c["classification"]=="contextual" for c in cases)}
-    need(report.get("summary")==summary,"example count/type summary differs")
     return caps
 
 def wrapper_evidence(files,report,pins,repo,docs_repo,source,caps,compiler):

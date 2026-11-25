@@ -242,6 +242,17 @@ jobs:
           retention-days: 3
           if-no-files-found: error
 
+      - name: Upload only sealed simulator session boundary originals
+        if: always() && steps.native_qa.outputs.session_boundary_publication_ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-qa-session-boundaries-${{ github.run_id }}-${{ github.run_attempt }}${{ matrix.sample != 'selected' && format('-{0}', matrix.sample) || '' }}
+          path: |
+            ${{ runner.temp }}/cherri-qa-session-boundaries-${{ github.run_id }}-${{ github.run_attempt }}/*/public/session-originals.zip.p7m
+            ${{ runner.temp }}/cherri-qa-session-boundaries-${{ github.run_id }}-${{ github.run_attempt }}/*/public/summary.json
+          retention-days: 3
+          if-no-files-found: error
+
       - name: Retain explicitly incomplete acquisition after interruption
         id: terminal_receipts
         if: always()

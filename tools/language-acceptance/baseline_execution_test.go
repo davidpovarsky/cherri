@@ -18,7 +18,13 @@ type ownedBaselineFixture struct {
 
 func ownedBaselineFixtureNew(t *testing.T) *ownedBaselineFixture {
 	t.Helper()
-	root := t.TempDir()
+	// macOS exposes its temporary directory through /var -> /private/var.
+	// Select the physical fixture root before pinning it; production continues
+	// to reject a locator that redirects through any symlink.
+	root, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
 	finalProvenanceTestGit(t, root, "init", "-b", "agent/synthetic-source")
 	finalProvenanceTestGit(t, root, "remote", "add", "origin", "https://github.com/davidpovarsky/cherri.git")
 	if err := os.WriteFile(filepath.Join(root, "source.txt"), []byte("base\n"), 0600); err != nil {
@@ -92,6 +98,13 @@ func TestOwnedBaselineControls(t *testing.T) {
 		mutate func(*testing.T, *ownedBaselineFixture)
 	}{
 		{"positive-owned-descendant", nil},
+		{"redirected-source", func(t *testing.T, f *ownedBaselineFixture) {
+			alias := filepath.Join(t.TempDir(), "source-alias")
+			if err := os.Symlink(f.root, alias); err != nil {
+				t.Fatal(err)
+			}
+			f.manifest.SourceDirectory = alias
+		}},
 		{"dirty-current", func(t *testing.T, f *ownedBaselineFixture) {
 			os.WriteFile(filepath.Join(f.root, "source.txt"), []byte("dirty"), 0600)
 		}},
@@ -165,6 +178,45 @@ func TestOwnedBaselineControls(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestOwnedBaselineCanonicalTemporaryRoot(t *testing.T) {
+	parent, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	physical, alias := filepath.Join(parent, "physical"), filepath.Join(parent, "alias")
+	if err := os.Mkdir(physical, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(physical, alias); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"TMPDIR", "TMP", "TEMP"} {
+		t.Setenv(name, alias)
+	}
+	// A fresh child owns a new TempDir cache after the alias is selected.
+	t.Run("physical-root-and-alias-rejection", func(t *testing.T) {
+		f := ownedBaselineFixtureNew(t)
+		if !strings.HasPrefix(f.root, physical+string(filepath.Separator)) {
+			t.Fatalf("fixture did not select the physical temporary root: %s", f.root)
+		}
+		observation, err := executeOwnedBaseline(f.config, f.expected.Source.SHA, "")
+		if err != nil || observation.Status != "PASSED" {
+			t.Fatalf("physical temporary source rejected: %v %+v", err, observation)
+		}
+		// The same source through its real alias remains forbidden.
+		relative, err := filepath.Rel(physical, f.root)
+		if err != nil {
+			t.Fatal(err)
+		}
+		f.manifest.SourceDirectory = filepath.Join(alias, relative)
+		f.pin(t)
+		_, err = executeOwnedBaseline(f.config, f.expected.Source.SHA, "")
+		if err == nil || !strings.Contains(err.Error(), "B01_SOURCE_REDIRECTED") {
+			t.Fatalf("redirected source did not reach the original guard: %v", err)
+		}
+	})
 }
 
 func TestOwnedBaselineDedicatedRecord(t *testing.T) {

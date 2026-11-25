@@ -45,8 +45,8 @@ func TestScopedBlockDiagnosticsAndBranchTypes(t *testing.T) {
 		{`text("x") { text("ignored") }`, "E_BLOCK_UNSUPPORTED"},
 		{`measure("") { 1 }`, CodeLiteralRequired},
 		{`let label = "x"; measure(label) { 1 }`, CodeLiteralRequired},
-		{`measure("x") {}`, "E_BLOCK_VALUE_REQUIRED"},
-		{`let x = measure("x") { wait(1) }`, "E_BLOCK_VALUE_REQUIRED"},
+		{`measure("x") {}`, ""}, // now admitted Void; original source retained
+		{`let x = measure("x") { wait(1) }`, "E_BLOCK_VOID_VALUE"},
 		{`measure("x") { yield 1; text("later") }`, "E_BLOCK_EARLY_YIELD"},
 		{`let x: Number = measure("x") { text("wrong") }`, CodeArgumentType},
 		{`let x: Number = measure("x") { if true { yield 1 } else { yield "wrong" } }`, CodeArgumentType},
@@ -54,7 +54,13 @@ func TestScopedBlockDiagnosticsAndBranchTypes(t *testing.T) {
 		{`collect([1]) { text("no redundant alias") }`, "E_BLOCK_UNSUPPORTED"},
 	} {
 		diagnostics := parseAndAnalyze(test.source)
-		if !hasErrorCode(diagnostics, test.code) {
+		if test.code == "" {
+			for _, diagnostic := range diagnostics {
+				if diagnostic.Severity == SeverityError {
+					t.Errorf("admitted Void source %s: %v", test.source, diagnostic)
+				}
+			}
+		} else if !hasErrorCode(diagnostics, test.code) {
 			t.Errorf("%s: expected %s, got %v", test.source, test.code, diagnostics)
 		}
 		for _, diagnostic := range diagnostics {

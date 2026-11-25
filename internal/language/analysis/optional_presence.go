@@ -24,7 +24,12 @@ func (a *Analyzer) expressionHasPresence(expr syntax.Expression, value types.Typ
 		return a.exprPresence[expr]
 	case *syntax.IfStmt, *syntax.MenuStmt:
 		return a.controlValueHasPresence(expr)
+	case *syntax.MemberExpr:
+		return types.TaggedMapValues(a.exprTypes[node.Target])
 	case *syntax.IndexExpr:
+		if types.TaggedListElements(a.exprTypes[node.Target]) || types.TaggedMapValues(a.exprTypes[node.Target]) {
+			return true
+		}
 		if a.loopResultLocalValues[node.Target] != nil {
 			return true
 		}
@@ -47,5 +52,8 @@ func (a *Analyzer) requireCompilerPresence(expr syntax.Expression, context strin
 // A source-owned, path-local None fact can satisfy an Optional destination
 // without inventing any present inner value or weakening unknown-type rules.
 func (a *Analyzer) optionalAssignmentHasEvidence(actual, expected types.Type, expr syntax.Expression) bool {
+	if result, handled := a.literalContainerAssignmentEvidence(actual, expected, expr); handled {
+		return result
+	}
 	return assignmentHasEvidence(actual, expected, expr) || (a.exprAbsent[expr] && types.MayBeAbsent(expected))
 }

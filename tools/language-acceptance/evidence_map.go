@@ -144,8 +144,12 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 		reqUIAssertions["visual_source_edit_bounded"] = "true"
 		*testIDs = append(*testIDs, "CherriUITests/testE07VisualParameterEditingCanvasUI", "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection")
 	case "BRG25", "BRG27":
-		// Existing one-call bridge and one-document build probes are diagnostics.
-		// They do not authorize any tier of these complete joined scenarios.
+		// Enroll only the three dedicated original-backed records. Generic
+		// bridge/UI probes and the auxiliary BRG27 bridge grant no tier.
+		*testIDs = append(*testIDs, joinedNativeEditorTestIDs(id)...)
+		for key, value := range joinedNativeEditorUIAssertions(id) {
+			reqUIAssertions[key] = value
+		}
 	case "RP40":
 		// Only the dedicated joined UI scenario can supply this separate tier.
 		*testIDs = append(*testIDs, appIntegrationUITestID)
@@ -307,6 +311,10 @@ func BuildRequirementsEvidenceMap(contracts *ContractsSet) (*RequirementsEvidenc
 			FixtureIdentities:    fixtures,
 			Assertions:           assertions,
 			ResultReferences:     resultRefs,
+		}
+		if g.ID == "BRG01" {
+			mapping.RequiredAssertions = map[string]string{"scope": takeoverScope, "closure_complete": "false"}
+			mapping.ResultReferences = []string{"acceptance-local-evidence.json#ev-takeover-preservation-BRG01"}
 		}
 		doc.Mappings[g.ID] = mapping
 		doc.Records = append(doc.Records, mapping)
@@ -816,7 +824,7 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 	base := []string{"tools/language-acceptance:runGates"}
 	switch id {
 	case "BRG01":
-		return append(base, "scripts/verify-backend-recovery.sh")
+		return []string{takeoverTestID}
 	case "BRG02":
 		return append(base,
 			"github.com/electrikmilk/cherri/internal/shortcutcompare:TestAlphaRenamingPasses",
@@ -885,9 +893,15 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 
 func deriveGateFixtures(id string) []string {
 	if _, found := joinedPublicScenarios[id]; found {
-		return joinedPublicSourcePaths(id)
+		paths := joinedPublicSourcePaths(id)
+		for _, path := range joinedNativeSourcePaths {
+			paths = appendUniqueAudit(paths, path)
+		}
+		return paths
 	}
-
+	if id == "BRG01" {
+		return append([]string{}, takeoverSources...)
+	}
 	if id == "BRG11" {
 		return append([]string{}, parameterFormsProductionPaths...)
 	}
