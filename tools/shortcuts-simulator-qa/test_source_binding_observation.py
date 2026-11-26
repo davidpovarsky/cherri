@@ -270,14 +270,18 @@ class SourceBindingObservationTests(unittest.TestCase):
 
     def test_physical_traversal_has_real_whole_deadline_and_receipt(self):
         original = subject.physical_pin
+        physical_entered = []
         def slow(*args, **kwargs):
             if not kwargs.get("critical"):
+                physical_entered.append(True)
+                signal.setitimer(signal.ITIMER_REAL, 0.2)
                 time.sleep(0.5)
             return original(*args, **kwargs)
         previous_handler = signal.getsignal(signal.SIGALRM)
-        with mock.patch.object(subject, "WHOLE_SECONDS", 0.2), mock.patch.object(subject, "physical_pin", slow):
+        with mock.patch.object(subject, "physical_pin", slow):
             with self.assertRaisesRegex(TimeoutError, "WHOLE_DEADLINE"):
                 self.observe()
+        self.assertEqual(physical_entered, [True])
         self.assertIs(signal.getsignal(signal.SIGALRM), previous_handler)
         self.assertEqual(signal.getitimer(signal.ITIMER_REAL), (0.0, 0.0))
         self.assertEqual(self.receipt()["status"], "SOURCE_UNVERIFIED")
