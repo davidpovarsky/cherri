@@ -13,19 +13,9 @@
 
 ## Edit an existing Shortcut from plist (first-class workflow)
 
-Incoming plist from the user's iOS helper Shortcut:
-
-```text
-iOS helper Shortcut shares workflow plist (XML/binary plist or
-unsigned .shortcut containing a workflow plist)
-        -> Open Minis receives the file at an explicit path
-        -> prepare-edit.sh INPUT [WORKSPACE]
-        -> preserved original + decompiled .cherri + unsigned validation build
-        -> agent reads the .cherri and applies the requested edit
-        -> unsigned compile -> fix diagnostics until green
-        -> explicit sign -> AEA1 .shortcut
-        -> return edited .cherri AND signed .shortcut
-```
+Use the exact workflow plist shared by the user's iOS helper Shortcut. Preserve
+that original, import it, edit the generated source, compare the unsigned result
+against the requested native-field policy, and then sign the verified bytes.
 
 Steps:
 
@@ -55,14 +45,27 @@ Steps:
    sh "$SKILL_DIR/scripts/build.sh" WORKSPACE/source/shortcut.cherri WORKSPACE/builds/validation.shortcut --unsigned
    ```
 
-6. Sign explicitly only after the user's edit is complete and validated:
+6. Record the requested change in `WORKSPACE/allowed-delta.json` using the
+   policy in `SKILL.md`. Bind the preserved original SHA-256 and exact existing
+   scalar field paths, before values and requested after values. Do not derive
+   permission by accepting every observed difference. The current policy does
+   not authorize replacing aggregates or inserting/deleting actions.
+
+7. Sign through the required comparison gate:
 
    ```sh
-   sh "$SKILL_DIR/scripts/build.sh" WORKSPACE/source/shortcut.cherri WORKSPACE/builds/final.shortcut --signed
+   sh "$SKILL_DIR/scripts/build.sh" WORKSPACE/source/shortcut.cherri WORKSPACE/builds/final.shortcut --signed \
+     --original=WORKSPACE/original/shortcut.plist --allowed-delta=WORKSPACE/allowed-delta.json
    ```
 
-7. Verify the final file begins `AEA1` (build wrapper checks automatically).
-8. Return both the edited `.cherri` and the signed `.shortcut`. Disclose any
+   The wrapper signs the exact unsigned bytes that passed the comparison.
+   Unlisted identity, reference, metadata or typed-value changes block signing.
+   Pass the preserved original explicitly even when the imported source was
+   copied to another directory. Keep the original and previous delivery on failure.
+
+8. Verify the final file begins `AEA1` (the wrapper checks this format).
+   Successful Apple import and execution require separate observation.
+9. Return both the edited `.cherri` and the signed `.shortcut`. Disclose any
    action that could not be preserved exactly.
 
 Input contract:
@@ -97,7 +100,7 @@ Never invent Apple Shortcuts plist keys from memory when the compiler can genera
 
 On Open Minis/iSH (and non-macOS platforms), signed output uses Cherri's remote signing integration (Shortcuty Sign / HubSign). Signing sends the generated Shortcut plist to the remote signing service. Do not sign automatically if the user explicitly requests local-only/no-network output; return the unsigned result instead.
 
-A successful signed Shortcut must begin with `AEA1`. `scripts/build.sh --signed` validates this.
+A signed result must begin with `AEA1`. `scripts/build.sh --signed` validates this container format. Record the actual signing-service result separately from Apple import and runtime observations.
 
 ## Retry discipline
 
