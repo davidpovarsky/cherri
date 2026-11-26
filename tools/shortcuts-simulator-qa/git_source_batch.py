@@ -24,9 +24,10 @@ from simulator_session_recovery import defer_cancellation_signals, require
 COMMAND = ("git", "--no-replace-objects", "cat-file", "--batch")
 FILE_LIMIT = 4 * 1024 * 1024
 COMMIT_LIMIT = 1024 * 1024
+TREE_LIMIT = 1024 * 1024
 STDERR_LIMIT = 64 * 1024
 PATH_PATTERN = re.compile(r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*")
-HEADER = re.compile(rb"([0-9a-f]{40}) (commit|blob) (0|[1-9][0-9]{0,9})\n")
+HEADER = re.compile(rb"([0-9a-f]{40}) (commit|tree|blob) (0|[1-9][0-9]{0,9})\n")
 REDIRECT_ENV = ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
                 "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
                 "GIT_REPLACE_REF_BASE", "GIT_NAMESPACE", "GIT_SHALLOW_FILE",
@@ -145,6 +146,7 @@ class Batch:
         self.buffer = bytearray()
         self.eof = {"stdout": False, "stderr": False}
         self.process = None
+        self.journal = None
         self.selector = selectors.DefaultSelector()
         self.record = {"argv": list(COMMAND), "startedAt": None, "pid": None,
                        "startNewSession": True, "exitCode": None,
@@ -158,6 +160,8 @@ class Batch:
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 bufsize=0, start_new_session=True)
             self.record.update(pid=self.process.pid, startedAt=utc())
+            if self.journal is not None:
+                self.journal("started", dict(self.record))
         for name in ("stdin", "stdout", "stderr"):
             os.set_blocking(getattr(self.process, name).fileno(), False)
         for name in ("stdout", "stderr"):
@@ -263,6 +267,8 @@ class Batch:
         self.record["streams"] = {name: {"bytes": len(raw), "sha256": digest(raw),
             **({"eof": self.eof[name], "overflow": len(raw) > self.limits[name]} if name != "stdin" else {})}
             for name, raw in self.streams.items()}
+        if self.journal is not None and self.process is not None:
+            self.journal("finished", dict(self.record))
 
     def clean(self):
         return (self.record["parentReaped"] is True
@@ -289,16 +295,78 @@ def retain(originals, value, batch):
         os.fsync(stream.fileno())
 
 
-def verify_raw_sources(repo, source, files, *, deadline, originals=None):
+def tree_entries(raw):
+    """Decode the exact bounded Git tree object, without archive attributes."""
+    require(len(raw) <= TREE_LIMIT, "SOURCE_TREE_SIZE")
+    offset, entries = 0, {}
+    while offset < len(raw):
+        end = raw.find(b"\0", offset)
+        require(end >= 0 and end + 21 <= len(raw), "SOURCE_TREE_TRUNCATED")
+        header = raw[offset:end]
+        require(b" " in header, "SOURCE_TREE_ENTRY")
+        mode, name = header.split(b" ", 1)
+        require(mode in {b"40000", b"100644", b"100755", b"120000", b"160000"}
+                and 0 < len(name) <= 4096 and b"/" not in name and name not in {b".", b".."}
+                and name not in entries, "SOURCE_TREE_ENTRY")
+        entries[name] = (mode.decode("ascii"), raw[end + 1:end + 21].hex())
+        offset = end + 21
+    return entries
+
+
+def selected_tree_entry(batch, root_tree, relative, cache):
+    require(PATH_PATTERN.fullmatch(relative) and all(x not in {".", ".."} for x in relative.split("/")),
+            "ORIGINAL_PATH_INVALID")
+    parts, tree = relative.split("/"), root_tree
+    for index, part in enumerate(parts):
+        if tree not in cache:
+            require(len(cache) < 512, "SOURCE_TREE_COUNT")
+            actual, raw = batch.object(tree, "tree", TREE_LIMIT)
+            require(actual == tree, "SOURCE_TREE_OBJECT")
+            cache[tree] = tree_entries(raw)
+        entry = cache[tree].get(part.encode("ascii"))
+        require(entry is not None, "SOURCE_INVENTORY")
+        mode, digest = entry
+        if index == len(parts) - 1:
+            require(mode in {"100644", "100755"}, "SOURCE_INVENTORY")
+            return mode, digest
+        require(mode == "40000", "SOURCE_INVENTORY")
+        tree = digest
+    raise ValueError("SOURCE_INVENTORY")
+
+
+def verify_raw_sources(repo, source, files, *, deadline, originals=None,
+                       tree_inventory=False, file_limits=None, stdout_limit=None, journal=None):
     root = Path(repo).resolve(strict=True)
     require(os.name == "posix", "SOURCE_POSIX_REQUIRED")
     require(isinstance(source, str) and re.fullmatch(r"[0-9a-f]{40}", source), "SOURCE_INVALID")
     require(isinstance(files, (tuple, list)) and 0 < len(files) <= 512
             and len(set(files)) == len(files), "SOURCE_PATH_SET")
+    require(type(tree_inventory) is bool, "SOURCE_TREE_MODE")
+    require(stdout_limit is None or type(stdout_limit) is int and 0 < stdout_limit <= 4 * FILE_LIMIT,
+            "SOURCE_BATCH_LIMIT")
+    if tree_inventory:
+        require(Path(repo).absolute() == root, "SOURCE_ROOT_ALIAS")
+        require(type(file_limits) is dict and set(file_limits) == set(files)
+                and all(type(x) is int and 0 < x <= FILE_LIMIT for x in file_limits.values()), "SOURCE_FILE_LIMITS")
+        # Preserve listapps' original strict ancestor/read and per-file limits.
+        from project_prerequisite_observation import bound_read
+        def read_selected(relative):
+            remaining(deadline)
+            require(isinstance(relative, str) and len(relative) <= 4096 and PATH_PATTERN.fullmatch(relative)
+                    and all(x not in {".", ".."} for x in relative.split("/")), "ORIGINAL_PATH_INVALID")
+            raw, identity = bound_read(root / relative, file_limits[relative])
+            remaining(deadline)
+            return raw, tuple(identity)
+    else:
+        require(file_limits is None, "SOURCE_FILE_LIMITS")
+        def read_selected(relative):
+            return physical(root, relative, deadline)
     started = time.monotonic()
     # Upper bound preserves the previous per-file 4 MiB allowance. A header
     # may still reject an oversized individual object before reading its body.
-    batch = Batch(root, deadline, len(files) * (FILE_LIMIT + 128) + 2 * (COMMIT_LIMIT + 128))
+    batch = Batch(root, deadline, stdout_limit if stdout_limit is not None else
+                  len(files) * (FILE_LIMIT + 128) + 2 * (COMMIT_LIMIT + 128))
+    batch.journal = journal
     value = {"schema": "cherri-selected-git-batch/1", "sourceCommitSha": source,
              "status": "SOURCE_UNVERIFIED", "completeTrackedSource": False,
              "sourceFiles": [], "error": None, "cleanupError": None, "process": batch.record,
@@ -308,18 +376,34 @@ def verify_raw_sources(repo, source, files, *, deadline, originals=None):
         try:
             metadata = repository_metadata(root, deadline)
             batch.start()
-            initial, _ = batch.object("HEAD", "commit", COMMIT_LIMIT)
+            initial, commit = batch.object("HEAD", "commit", COMMIT_LIMIT)
             require(initial == source, "CHECKOUT_SOURCE_MISMATCH")
+            root_tree, trees = None, {}
+            if tree_inventory:
+                match = re.match(rb"tree ([0-9a-f]{40})\n", commit)
+                require(match is not None, "SOURCE_COMMIT_TREE")
+                root_tree = match[1].decode("ascii")
             observations = {}
             for relative in files:
-                before, identity = physical(root, relative, deadline)
-                blob, raw = batch.object(source + ":" + relative, "blob", FILE_LIMIT)
-                require(raw == before, "ACQUISITION_SOURCE_BYTES")
+                before, identity = read_selected(relative)
+                mode = None
+                if tree_inventory:
+                    mode, blob = selected_tree_entry(batch, root_tree, relative, trees)
+                    actual_blob = hashlib.sha1(b"blob " + str(len(before)).encode() + b"\0" + before).hexdigest()
+                    value["sourceFiles"].append({"path": relative, "bytes": len(before),
+                        "sha256": digest(before), "gitBlob": blob, "actualGitBlob": actual_blob,
+                        "executable": bool(identity[2] & 0o111), "gitMode": mode,
+                        "physicalIdentity": list(identity), "physicalUid": (root / relative).lstat().st_uid})
+                    require(actual_blob == blob, "SOURCE_BYTES")
+                    raw = before
+                else:
+                    blob, raw = batch.object(source + ":" + relative, "blob", FILE_LIMIT)
+                    require(raw == before, "ACQUISITION_SOURCE_BYTES")
+                    value["sourceFiles"].append({"path": relative, "bytes": len(raw),
+                        "sha256": digest(raw), "gitBlob": blob, "executable": bool(identity[2] & 0o111)})
                 observations[relative] = (digest(before), identity)
-                value["sourceFiles"].append({"path": relative, "bytes": len(raw),
-                    "sha256": digest(raw), "gitBlob": blob, "executable": bool(identity[2] & 0o111)})
             for relative in files:
-                after, identity = physical(root, relative, deadline)
+                after, identity = read_selected(relative)
                 require((digest(after), identity) == observations[relative], "SOURCE_PHYSICAL_CHANGED")
             require(repository_metadata(root, deadline) == metadata, "SOURCE_GIT_METADATA_CHANGED")
             # Send this only after every physical closing read. Preloading all
@@ -328,6 +412,9 @@ def verify_raw_sources(repo, source, files, *, deadline, originals=None):
             require(closing == initial == source, "CHECKOUT_SOURCE_MISMATCH")
             batch.close_and_wait()
             value.update(headBefore=initial, headAfter=closing)
+            if tree_inventory:
+                value.update(gitTreeModesVerified=True, physicalBinding="git-tree-blob-sha1",
+                             treeObjectCount=len(trees))
         except BaseException as caught:
             error = caught
             value["error"] = (str(caught) if isinstance(caught, ValueError) else type(caught).__name__)

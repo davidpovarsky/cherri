@@ -17,13 +17,14 @@ on:
         type: boolean
         default: false
       runner_label:
-        description: "Standard runner for the full iOS build (same macOS 15 Xcode/SDK scope)"
+        description: "Existing macOS runner for the full iOS build and original test suite"
         required: true
         type: choice
         default: macos-15
         options:
           - macos-15
           - macos-15-intel
+          - xcode-27
 
 concurrency:
   group: ios-build-${{ github.event.pull_request.number || github.ref }}

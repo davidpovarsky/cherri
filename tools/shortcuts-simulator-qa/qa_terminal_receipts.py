@@ -573,6 +573,16 @@ def validate_terminal(value, root, expected):
 
 
 SOURCE_FILES = (
+    "tools/shortcuts-simulator-qa/hosted_import_observation.py",
+    "tools/shortcuts-simulator-qa/test_hosted_import_observation.py",
+    "tools/shortcuts-simulator-qa/shortcut_library_identity.py",
+    "tools/shortcuts-simulator-qa/test_shortcut_library_identity.py",
+    "tools/shortcuts-simulator-qa/verify_hosted_import_delivery.swift",
+    "tools/shortcuts-simulator-qa/verify_foundation_contracts.sh",
+    "tools/shortcuts-simulator-qa/XcodeProject/UITests/QAImportedShortcutObserver.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/DifferentialImportTiming.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/ImportSheetSelection.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/project.yml",
     "tools/shortcuts-simulator-qa/git_source_batch.py",
     "tools/shortcuts-simulator-qa/test_git_source_batch.py",
     "tools/shortcuts-simulator-qa/XcodeProject/Shared/PrimaryNoInputLaunch.swift",
@@ -601,6 +611,7 @@ SOURCE_FILES = (
     "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift",
     "tools/shortcuts-simulator-qa/simulator_listapps_observation.py",
     "tools/shortcuts-simulator-qa/test_simulator_listapps_observation.py",
+    "tools/shortcuts-simulator-qa/test_listapps_git_batch.py",
     "tools/shortcuts-simulator-qa/project_prerequisite_observation.py",
     "tools/shortcuts-simulator-qa/test_process_capture_journal.py",
     "tools/shortcuts-simulator-qa/simulator_phase_boundary.py",
