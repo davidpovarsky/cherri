@@ -344,6 +344,30 @@ class StorageObserverControls(unittest.TestCase):
                 self.reject(subject.validate_build_source, source)
 
 
+    def test_pre_navigation_and_failed_harness_are_rejected(self):
+        previous = (
+            ("bb9dada0a80c0ef7e83c4097ac2bef5f743541a0", "145b85d8063be775bc44e64fe50fc71e4fd4b352"),
+            ("cfd43b3626823dd78d507c8972541bf7000e1786", "f343466ed12c70c2d87f137427dfa963743f23fb"),
+        )
+        for commit, tree in previous:
+            for surface in ("plan", "metadata", "source"):
+                with self.subTest(commit=commit, surface=surface):
+                    if surface == "plan":
+                        value = plan()
+                        value["builtHarnessCommitSha"] = commit
+                        self.reject(subject.validate_plan, value)
+                    elif surface == "metadata":
+                        build, qualification = clean_build_metadata()
+                        for document in (build, qualification):
+                            document["builtHarnessCommit"] = commit
+                            document["builtHarnessTree"] = tree
+                        self.reject(subject.validate_clean_build_metadata, build, qualification)
+                    else:
+                        value = scoped_source()
+                        value.update(commit=commit, tree=tree)
+                        self.reject(subject.validate_build_source, value)
+
+
 def clean_build_metadata():
     # Synthetic metadata controls; full raw source/process/product joins are
     # additionally required by verify_build before any native installation.
