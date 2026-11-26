@@ -1178,5 +1178,76 @@ class E07PaneObservationTests(unittest.TestCase):
                 self.assertIn(self.rejected, actual)
 
 
+
+class PreviewTransactionRetentionTests(unittest.TestCase):
+    collect = IOSTestEvidenceTests.collect
+    suite = "CherriPreviewEditTransactionTests"
+    methods = (
+        "testSuccessfulEditPublishesOnlyAfterOneRebuildOfCapturedRequest",
+        "testRejectedMappingAndFailedRebuildPreserveCommittedState",
+        "testEachSnapshotChangeDuringEitherAwaitRejectsPublication",
+        "testCancellationAfterMappingDoesNotRebuildOrPublish",
+        "testLegacyDecompileFailureDoesNotPublishLocalPlistMutation",
+        "testLiveTaskIdentityResumesChangedSourceAfterPendingEdit",
+        "testQueuedDOMMessageCannotAcquireNewRenderIdentity",
+        "testRealBridgeMapsExpandedNativeWaitAndPreservesExactSource",
+        "testShowResultConvenienceSelectionUsesUniqueCompilerEntry",
+        "testAutoLegacyRoutesByActualModeAndKeepsRequestedAutoContext",
+        "testMultilineUnicodePreviewValueUsesCherriLiteralEscapes",
+    )
+
+    def transaction(self, method=None, status="passed", body="", target=None):
+        method = method or self.methods[0]
+        target = target or "CherriTests." + self.suite
+        return (f"Test Case '-[{target} {method}]' started.\n{body}\n"
+                f"Test Case '-[{target} {method}]' {status} (0.123 seconds).\n")
+
+    def test_all_eleven_original_transaction_methods_keep_outcomes_without_credit(self):
+        import re
+        source = (SCRIPT.parents[1] / "CherriTests" / (self.suite + ".swift")).read_text()
+        self.assertEqual(re.findall(r"func (test[A-Za-z0-9_]+)\(", source), list(self.methods))
+        diagnostic, records, _ = self.collect("".join(self.transaction(name) for name in self.methods))
+        self.assertEqual(diagnostic["runStatus"], "PASSED")
+        self.assertEqual(diagnostic["testResults"], [
+            {"testId": self.suite + "/" + name, "observedStatus": "passed"}
+            for name in sorted(self.methods)])
+        self.assertEqual(records, [])
+
+    def test_transaction_failure_keeps_location_without_private_payload(self):
+        method = self.methods[0]
+        failure = (f"/Users/runner/{self.suite}.swift:89: error: "
+                   f"-[CherriTests.{self.suite} {method}] : XCTAssertTrue failed - PRIVATE_CANARY")
+        diagnostic, records, outputs = self.collect(
+            self.transaction(status="failed", body=failure), 65)
+        self.assertEqual(diagnostic["testResults"], [
+            {"testId": self.suite + "/" + method, "observedStatus": "failed"}])
+        self.assertEqual(diagnostic["uiFailures"], [{
+            "testId": self.suite + "/" + method, "sourceLine": 89,
+            "failureCategory": "ASSERTION_FAILURE"}])
+        self.assertEqual(records, [])
+        self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+        self.assertNotIn("/Users/runner", "".join(outputs.values()))
+
+    def test_new_transaction_failure_requires_exact_bundle_class_and_active_case(self):
+        method = self.methods[0]
+        original = (f"/Users/runner/{self.suite}.swift:89: error: "
+                    f"-[CherriTests.{self.suite} {method}] : PRIVATE_CANARY")
+        variants = [
+            ("wrong-bundle", self.transaction(target="CherriUITests." + self.suite,
+                                              body=original.replace("CherriTests.", "CherriUITests."))),
+            ("class-suffix", self.transaction(target="CherriTests." + self.suite + "Other",
+                                              body=original.replace(self.suite, self.suite + "Other"))),
+            ("outside-case", original),
+            ("other-active-case", self.transaction(self.methods[1], body=original)),
+        ]
+        for label, log in variants:
+            with self.subTest(label=label):
+                diagnostic, records, outputs = self.collect(log, 65)
+                self.assertEqual(diagnostic["uiFailures"], [])
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+                if label in {"wrong-bundle", "class-suffix", "outside-case"}:
+                    self.assertEqual(diagnostic["testResults"], [])
+
 if __name__ == "__main__":
     unittest.main()
