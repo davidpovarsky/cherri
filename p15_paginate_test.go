@@ -52,7 +52,7 @@ func TestP15PaginateNativeMetadataAndPublicBoundary(t *testing.T) {
 	}
 	reg := schema.DefaultRegistry()
 	macro, found := reg.LookupAction("paginate")
-	if !found || !macro.CompilerConstruct || macro.ScopedBlock ||
+	if !found || !macro.CompilerConstruct || !macro.ScopedBlock || !macro.ScopedBlockOptional ||
 		!macro.OutputType.Equals(types.NewList(types.NewMap(types.Text, types.AnyContent))) {
 		t.Fatal("bounded Dictionary-list macro metadata missing")
 	}

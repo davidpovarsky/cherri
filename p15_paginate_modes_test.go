@@ -263,7 +263,7 @@ func TestP15PaginateTraversalExplicitURLAndDefault(t *testing.T) {
 func TestP15PaginateTraversalSchemaPreservesTypedContract(t *testing.T) {
 	reg := schema.DefaultRegistry()
 	macro, found := reg.LookupAction("paginate")
-	if !found || macro.ScopedBlock || !macro.CompilerConstruct ||
+	if !found || !macro.ScopedBlock || !macro.ScopedBlockOptional || !macro.CompilerConstruct ||
 		!macro.OutputType.Equals(types.NewList(types.NewMap(types.Text, types.AnyContent))) {
 		t.Fatal("typed macro boundary changed")
 	}

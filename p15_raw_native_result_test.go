@@ -547,7 +547,8 @@ func TestP15RawNativeResultReleaseRequiresAnEmittedConsumer(t *testing.T) {
 		{"debug-consumer", BuildProfileDebug, "debugTrace(x)\n", "NATIVE_OUTPUT_ID_MISSING"},
 		{"release-pruned-consumer", BuildProfileRelease, "debugTrace(x)\n", ""},
 		{"release-real-consumer-remains", BuildProfileRelease, "debugTrace(x)\noutput(x)\n", "NATIVE_OUTPUT_ID_MISSING"},
-		{"release-does-not-prune-require", BuildProfileRelease, "require(x)\n", "NATIVE_OUTPUT_ID_MISSING"},
+		{"release-does-not-prune-require", BuildProfileRelease, "require(x, type: \"text\")\n", "NATIVE_OUTPUT_ID_MISSING"},
+		{"release-rejects-unproved-condition", BuildProfileRelease, "require(x)\n", "E_ARGUMENT_TYPE"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			data, err := CompileSourceToPlistWithOptions(tc.name+".cherri", prefix+tc.suffix, CompileOptions{BuildProfile: tc.profile})

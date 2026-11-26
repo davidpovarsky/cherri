@@ -60,8 +60,12 @@ func TestP15S02ExplicitInterpolationAndLegacyBoundary(t *testing.T) {
 			if array["WFSerializationType"] != "WFArrayParameterState" {
 				t.Fatal("Legacy array representation changed")
 			}
-			if _, exists := array["Value"]; exists {
-				t.Fatal("Legacy historical empty-array omission changed")
+			// Newly authored empty arrays retain their explicit typed payload.
+			// The opaque round-trip control below still preserves historical
+			// imported arrays whose Value key was absent.
+			values, okay := array["Value"].([]any)
+			if !okay || values == nil || len(values) != 0 {
+				t.Fatalf("Legacy authored empty-array payload lost: %#v", array)
 			}
 			found = true
 		}
