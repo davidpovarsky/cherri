@@ -53,3 +53,9 @@ swiftc -parse-as-library \
   "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_imported_editor_navigation.swift" \
   -o "$QA_TEST_DIR/qa-imported-editor-navigation-contracts"
 "$QA_TEST_DIR/qa-imported-editor-navigation-contracts"
+
+swiftc -parse-as-library \
+  "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/Shared/ImportSheetSelection.swift" \
+  "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_imported_library_identity.swift" \
+  -o "$QA_TEST_DIR/qa-imported-library-identity-contracts"
+"$QA_TEST_DIR/qa-imported-library-identity-contracts"

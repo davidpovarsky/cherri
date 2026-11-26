@@ -5,7 +5,7 @@ import CoreGraphics
 /// separate observations: UIKit may return hidden matches absent from this tree.
 enum QAImportSheetSelection {
     enum Kind: String {
-        case application, window, other, sheet, scrollView, button, staticText, navigationBar, unsupported
+        case application, window, other, sheet, scrollView, button, staticText, navigationBar, cell, collectionView, unsupported
     }
 
     struct Node {
@@ -258,5 +258,148 @@ enum QAImportedEditorNavigation {
         // No cached element survives capture. The caller resets its selected
         // native element and rechecks the original clock in every observation.
         return try observe()
+    }
+}
+
+
+/// A library confirmation is a fresh, unique current cell. Name existence alone
+/// never establishes a new import; the host independently binds database absence,
+/// the signed input and the single newly stored record before any runtime launch.
+enum QAImportedLibrarySelection {
+    typealias Node = QAImportSheetSelection.Node
+    typealias Candidate = QAImportSheetSelection.Candidate
+
+    struct Context {
+        let expectedName: String
+        let foreground: Bool
+        let dispatchConfirmed: Bool
+        let now: Date
+        let deadline: Date
+    }
+
+    struct Binding: Equatable {
+        let queryIndex: Int
+        let cellPath: [Int]
+        let label: String
+        let identifier: String
+        let frame: CGRect
+    }
+
+    struct Decision {
+        let binding: Binding?
+        let reason: String
+        let currentNamedCellCount: Int
+        let queryCandidateCount: Int
+        var canConfirm: Bool { binding != nil }
+    }
+
+    static func rejected(_ reason: String, current: Int = 0, queries: Int = 0) -> Decision {
+        Decision(binding: nil, reason: reason, currentNamedCellCount: current,
+                 queryCandidateCount: queries)
+    }
+
+    private static func bytes(_ a: String, _ b: String) -> Bool {
+        QAImportSheetSelection.bytesEqual(a, b)
+    }
+
+    private static func frame(_ value: CGRect, positive: Bool = false) -> Bool {
+        [value.minX, value.minY, value.width, value.height].allSatisfy { $0.isFinite } &&
+        value.width >= 0 && value.height >= 0 && (!positive || (value.width > 0 && value.height > 0))
+    }
+
+    private static func same(_ a: Node, _ b: Node) -> Bool {
+        a.kind == b.kind && bytes(a.label, b.label) && bytes(a.identifier, b.identifier) &&
+        a.enabled == b.enabled && a.selected == b.selected && a.frame == b.frame &&
+        a.children.count == b.children.count &&
+        zip(a.children, b.children).allSatisfy { same($0.0, $0.1) }
+    }
+
+    private static func hasExactTitle(_ node: Node, _ name: String) -> Bool {
+        if bytes(node.label, name) { return true }
+        // A metadata suffix on a cell is insufficient by itself: its own current
+        // subtree must also expose the exact title, with no Unicode normalization.
+        guard node.label.utf8.starts(with: (name + ", ").utf8) else { return false }
+        func title(_ child: Node) -> Bool {
+            if child.kind == .cell { return false }
+            return (child.kind == .staticText && bytes(child.label, name)) ||
+                child.children.contains { title($0) }
+        }
+        return node.children.contains { title($0) }
+    }
+
+    static func select(current: Node, candidates: [Candidate], context: Context) -> Decision {
+        guard context.foreground else { return rejected("LIBRARY_NOT_FOREGROUND") }
+        guard context.dispatchConfirmed else { return rejected("IMPORT_DISPATCH_NOT_CONFIRMED") }
+        guard context.now.timeIntervalSince1970.isFinite, context.deadline.timeIntervalSince1970.isFinite,
+              context.now < context.deadline else { return rejected("IMPORT_LIBRARY_DEADLINE") }
+        guard !context.expectedName.isEmpty, context.expectedName.utf8.count <= 4096,
+              current.kind == .application, current.enabled, frame(current.frame, positive: true),
+              candidates.count <= 32, Set(candidates.map(\.queryIndex)).count == candidates.count,
+              candidates.allSatisfy({ $0.queryIndex >= 0 && $0.queryIndex < 32 &&
+                  (!$0.hittable || $0.exists) && ($0.exists == ($0.snapshot != nil)) }) else {
+            return rejected("INVALID_LIBRARY_OBSERVATION")
+        }
+        var count = 0
+        func valid(_ node: Node, depth: Int) -> Bool {
+            count += 1
+            guard count <= 8192, depth <= 64, node.label.utf8.count <= 4096,
+                  node.identifier.utf8.count <= 4096, frame(node.frame) else { return false }
+            return node.children.allSatisfy { valid($0, depth: depth + 1) }
+        }
+        guard valid(current, depth: 0) else { return rejected("INVALID_LIBRARY_OBSERVATION") }
+        for candidate in candidates {
+            if let node = candidate.snapshot {
+                guard valid(node, depth: 0), node.kind == .cell,
+                      hasExactTitle(node, context.expectedName) else {
+                    return rejected("INVALID_LIBRARY_OBSERVATION")
+                }
+            }
+        }
+        var cells: [(path: [Int], snapshot: Node, live: Bool)] = []
+        func visit(_ node: Node, path: [Int], enabled: Bool) {
+            let live = enabled && node.enabled
+            if node.kind == .cell && hasExactTitle(node, context.expectedName) {
+                cells.append((path, node, live))
+            }
+            for (index, child) in node.children.enumerated() {
+                visit(child, path: path + [index], enabled: live)
+            }
+        }
+        visit(current, path: [], enabled: true)
+        guard cells.count == 1 else {
+            return rejected(cells.isEmpty ? "NO_CURRENT_NAMED_LIBRARY_CELL" : "AMBIGUOUS_NAMED_LIBRARY_CELLS",
+                            current: cells.count, queries: candidates.count)
+        }
+        guard candidates.count == 1 else {
+            return rejected(candidates.isEmpty ? "NO_LIBRARY_QUERY_MATCH" : "AMBIGUOUS_LIBRARY_QUERY_MATCHES",
+                            current: cells.count, queries: candidates.count)
+        }
+        let cell = cells[0]
+        let candidate = candidates[0]
+        guard cell.live, frame(cell.snapshot.frame, positive: true),
+              current.frame.contains(cell.snapshot.frame),
+              candidate.exists, candidate.hittable, let observed = candidate.snapshot,
+              observed.enabled, same(cell.snapshot, observed) else {
+            return rejected("NO_UNIQUE_CURRENT_HITTABLE_LIBRARY_CELL", current: 1, queries: 1)
+        }
+        return Decision(binding: Binding(queryIndex: candidate.queryIndex, cellPath: cell.path,
+                                         label: observed.label, identifier: observed.identifier,
+                                         frame: observed.frame),
+                        reason: "UNIQUE_CURRENT_NAMED_LIBRARY_CELL",
+                        currentNamedCellCount: 1, queryCandidateCount: 1)
+    }
+
+    static func inspectForConfirmation(observe: () throws -> Decision,
+                                       capture: () throws -> Void) rethrows -> Decision {
+        let before = try observe()
+        guard before.canConfirm else { return before }
+        try capture()
+        let after = try observe()
+        guard after.canConfirm else { return after }
+        guard after.binding == before.binding else {
+            return rejected("LIBRARY_IDENTITY_CHANGED_DURING_CAPTURE",
+                            current: after.currentNamedCellCount, queries: after.queryCandidateCount)
+        }
+        return after
     }
 }
