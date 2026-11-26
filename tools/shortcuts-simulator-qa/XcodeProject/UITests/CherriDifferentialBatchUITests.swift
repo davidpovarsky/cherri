@@ -350,38 +350,38 @@ final class CherriDifferentialBatchUITests: XCTestCase {
                 guard let deadline = decision.deadline, Date() < deadline else { return "IMPORT_LIBRARY_DEADLINE" }
                 return nil
             }
-            if let failure = boundary() { return .rejected(failure) }
+            if let failure = boundary() { return QAImportedLibrarySelection.rejected(failure) }
             let foreground = shortcuts.state == .runningForeground
-            if let failure = boundary() { return .rejected(failure) }
-            guard foreground else { return .rejected("LIBRARY_NOT_FOREGROUND") }
+            if let failure = boundary() { return QAImportedLibrarySelection.rejected(failure) }
+            guard foreground else { return QAImportedLibrarySelection.rejected("LIBRARY_NOT_FOREGROUND") }
             let cells = shortcuts.cells.matching(NSPredicate(
                 format: "label == %@ OR label BEGINSWITH %@", name, name + ", ")).allElementsBoundByIndex
-            if let failure = boundary() { return .rejected(failure) }
-            guard cells.count <= 32 else { return .rejected("INVALID_LIBRARY_OBSERVATION") }
+            if let failure = boundary() { return QAImportedLibrarySelection.rejected(failure) }
+            guard cells.count <= 32 else { return QAImportedLibrarySelection.rejected("INVALID_LIBRARY_OBSERVATION") }
             var candidates: [QAImportSheetSelection.Candidate] = []
             for (index, cell) in cells.enumerated() {
                 let exists = cell.exists
-                if let failure = boundary() { return .rejected(failure) }
+                if let failure = boundary() { return QAImportedLibrarySelection.rejected(failure) }
                 var hittable = false
                 var observed: QAImportSheetSelection.Node?
                 if exists {
                     hittable = cell.isHittable
-                    if let failure = boundary() { return .rejected(failure) }
+                    if let failure = boundary() { return QAImportedLibrarySelection.rejected(failure) }
                     let snapshot = try cell.snapshot()
-                    if let failure = boundary() { return .rejected(failure) }
+                    if let failure = boundary() { return QAImportedLibrarySelection.rejected(failure) }
                     var count = 0
                     observed = try importSelectionNode(snapshot, count: &count)
                 }
                 candidates.append(.init(queryIndex: index, exists: exists, hittable: hittable, snapshot: observed))
             }
             let snapshot = try shortcuts.snapshot()
-            if let failure = boundary() { return .rejected(failure) }
+            if let failure = boundary() { return QAImportedLibrarySelection.rejected(failure) }
             var count = 0
             let current = try importSelectionNode(snapshot, count: &count)
             let stillForeground = shortcuts.state == .runningForeground
             let clock = checkLibrary()
-            if let failure = clock.failure { return .rejected(failure) }
-            guard let deadline = clock.deadline else { return .rejected("IMPORT_LIBRARY_DEADLINE") }
+            if let failure = clock.failure { return QAImportedLibrarySelection.rejected(failure) }
+            guard let deadline = clock.deadline else { return QAImportedLibrarySelection.rejected("IMPORT_LIBRARY_DEADLINE") }
             let observedAt = Date()
             let selected = QAImportedLibrarySelection.select(current: current, candidates: candidates,
                 context: .init(expectedName: name, foreground: stillForeground,
@@ -427,7 +427,7 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             let url = runDirectory.appendingPathComponent(filename)
             try bytes.write(to: url, options: .withoutOverwriting)
             try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
-            if let failure = boundary() { return .rejected(failure) }
+            if let failure = boundary() { return QAImportedLibrarySelection.rejected(failure) }
             return selected
         }
         var editorBackTapped = false
