@@ -99,7 +99,7 @@ jobs:
         id: runtime_preflight
         run: python3 tools/shortcuts-simulator-qa/runtime_poc_preflight.py --repo . --output native-runtime-preflight
 
-      - name: Run original R22 native gate
+      - name: Run iOS 27 Shortcuts Runtime PoC
         id: r22_gate
         env:
           CHERRI_ALLOW_EXTERNAL_SIGNING: ${{ inputs.allow_public_fixture_hubsign == true && '1' || '0' }}

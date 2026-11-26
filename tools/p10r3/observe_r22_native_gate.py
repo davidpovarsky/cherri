@@ -34,6 +34,7 @@ PRIVATE_LIMIT = 24 * 1024 * 1024
 MAX_FILES = 10000
 SIMCTL = ["xcrun", "simctl", "list", "runtimes"]
 NATIVE = ["bash", SCRIPT_PATH]
+NATIVE_TERMINAL_LINE = b"IOS27_SHORTCUTS_RUNTIME_POC=PASS (All 5 fixtures verified pass)\n"
 
 
 class Rejected(ValueError):
@@ -195,6 +196,47 @@ def verify_gate_row(row, children, private):
             "ORIGINAL_GATE_OUTPUT_BINDING")
 
 
+def native_public_projection(row, children, private):
+    """Select only the captured native terminal line and actual process identity."""
+    verify_gate_row(row, children, private)
+    require([child["argv"] for child in children.rows] == [SIMCTL, NATIVE],
+            "PUBLIC_NATIVE_COMMAND")
+    child = children.rows[1]
+    require(child["spawned"] is True and type(child["pid"]) is int and child["pid"] > 0
+            and child["capture"]["pid"] == child["pid"], "PUBLIC_NATIVE_PROCESS")
+    process = (private / "02-native-poc.process.original.json").read_bytes()
+    require(process == canonical(child), "PUBLIC_NATIVE_PROCESS_CHANGED")
+    stdout = (private / "02-native-poc.stdout.original").read_bytes()
+    stderr = (private / "02-native-poc.stderr.original").read_bytes()
+    # MULTILINE anchors use LF boundaries, as the unchanged Go log consumer does.
+    terminal = re.compile(rb"(?m)^" + re.escape(NATIVE_TERMINAL_LINE))
+    matches = [match.group(0) for match in terminal.finditer(stdout)]
+    require(len(matches) == 1 and terminal.search(stderr) is None,
+            "PUBLIC_NATIVE_TERMINAL_NOT_UNIQUE")
+    command = {"argv": child["argv"], "pid": child["pid"],
+               "processSHA256": digest(process), "stdoutSHA256": digest(stdout),
+               "stderrSHA256": digest(stderr)}
+    # The terminal bytes below are selected from stdout, never reconstructed from status.
+    projection = b"R22_NATIVE_PROCESS_ORIGINAL=" + canonical(command) + matches[0]
+    require(len(projection) <= 1024, "PUBLIC_NATIVE_PROJECTION_BOUND")
+    return projection
+
+
+def emit_public_result(summary, projection, output):
+    payload = canonical(summary)
+    if summary["status"] == "PASS":
+        require(summary.get("sourceUnchanged") is True
+                and summary.get("privateOriginalsEncrypted") is True
+                and summary.get("gateInvocations") == 1
+                and summary.get("nativeScriptInvocations") == 1
+                and summary.get("originalGateStatus") == "PASS"
+                and summary.get("errorCategories") == []
+                and isinstance(projection, bytes), "PUBLIC_NATIVE_FINAL_GUARDS")
+        payload = projection + payload
+    output.write(payload)
+    output.flush()
+
+
 def git_capture(repo, private, capture, label, args, deadline):
     command = ["git", "--no-replace-objects", "-C", str(repo), *args]
     with (private / (label + ".stdout.original")).open("xb") as stdout, \
@@ -318,7 +360,7 @@ def main():
              "nativeScriptInvocations": 0, "wholeSeconds": WHOLE_SECONDS,
              "nativeSeconds": NATIVE_SECONDS, "originalNativeContractChanged": False,
              "otherGatesAccepted": False, "final179Acceptance": False, "errors": []}
-    children, before, gate_row, sealed = None, None, None, None
+    children, before, gate_row, sealed, projection = None, None, None, None, None
     handlers = {s: signal.getsignal(s) for s in (signal.SIGALRM, signal.SIGTERM, signal.SIGINT)}
     def interrupted(signum, _frame):
         state["interruptionSignal"] = signum
@@ -362,6 +404,13 @@ def main():
                                                    for r in children.rows) if children else 0
             state["elapsedSeconds"] = time.monotonic() - started
             state["originalGateStatus"] = gate_row.get("status") if isinstance(gate_row, dict) else None
+            if state["status"] == "PASS":
+                try:
+                    projection = native_public_projection(gate_row, children, private)
+                    write_original(private / "native-public-projection.original", projection)
+                except BaseException as error:
+                    state["status"] = "FAILED"
+                    state["errors"].append(type(error).__name__)
             record(private / "observation-result.original.json", state)
             try:
                 sealed = seal_originals(private, public, capture_module, recipient, context, deadline)
@@ -386,12 +435,13 @@ def main():
                 require({p.name for p in public.iterdir()} == {"summary.json", "r22-originals.zip.p7m"}
                         and all(p.is_file() and not p.is_symlink() for p in public.iterdir()),
                         "PUBLICATION_MEMBERS_CHANGED")
+            require(time.monotonic() < deadline, "WHOLE_OWNER_DEADLINE")
+            emit_public_result(summary, projection, sys.stdout.buffer)
         finally:
             signal.setitimer(signal.ITIMER_REAL, 0)
             for signum, handler in handlers.items():
                 signal.signal(signum, handler)
             os.chdir(old_cwd)
-    print(json.dumps(summary, sort_keys=True))
     return 0 if summary["status"] == "PASS" and summary["privateOriginalsEncrypted"] else 1
 
 

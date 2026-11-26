@@ -1,5 +1,6 @@
 import hashlib
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -9,6 +10,7 @@ import tempfile
 import time
 import types
 import unittest
+from unittest import mock
 import zipfile
 
 HERE = Path(__file__).resolve().parent
@@ -253,10 +255,161 @@ class OriginalR22CaptureTests(unittest.TestCase):
         self.assertEqual(calls, [])
         self.assertEqual(list(public.iterdir()), [])
 
+    def run_synthetic_main(self, *, source_failure=False, encryption_failure=False):
+        private, public = self.root / "main-private", self.root / "main-public"
+        terminal = b"IOS27_SHORTCUTS_RUNTIME_POC=PASS (All 5 fixtures verified pass)\n"
+        outputs = [(b"iOS 27.0 available\n", b"", 0),
+                   (b"PRIVATE_SYNTHETIC_STDOUT\xff\n" + terminal,
+                    b"PRIVATE_SYNTHETIC_STDERR\xfe\n", 0)]
+        def encrypt(source, destination, archive, binding, recipient, deadline):
+            if encryption_failure:
+                raise observer.Rejected("SYNTHETIC_ENCRYPTION_FAILURE")
+            # The production ZIP/readback path runs; this is an explicit fake cipher.
+            raw = b"SYNTHETIC-CIPHER-TRANSPORT"
+            (destination / "project-prerequisite.zip.p7m").write_bytes(raw)
+            return {"bytes": len(raw), "sha256": observer.digest(raw)}
+        def snapshot(repo, private, capture, context, phase, deadline):
+            return {"syntheticSourceControl": "changed" if source_failure and phase == "after" else "same"}
+        recipient = REPO / observer.QA / "xcode_environment_inventory_recipient.pem"
+        capture = types.SimpleNamespace(STREAM_LIMIT=observer.STREAM_LIMIT,
+            ARCHIVE_LIMIT=observer.ARCHIVE_LIMIT, RECIPIENT_SHA256=observer.digest(recipient.read_bytes()),
+            capture=self.capture(outputs), encrypt_archive=encrypt)
+        env = {"GITHUB_ACTIONS": "true", "GITHUB_REPOSITORY": "davidpovarsky/cherri",
+               "GITHUB_WORKFLOW": "iOS 27 Shortcuts Runtime PoC", "GITHUB_SHA": "a" * 40,
+               "GITHUB_RUN_ID": "12345", "GITHUB_RUN_ATTEMPT": "1"}
+        sink = io.BytesIO()
+        stdout = io.TextIOWrapper(sink, encoding="utf-8", write_through=True)
+        with mock.patch.dict(os.environ, env), \
+             mock.patch.dict(sys.modules, {"project_prerequisite_observation": capture}), \
+             mock.patch.object(observer.sys, "platform", "darwin"), \
+             mock.patch.object(observer.sys, "argv", ["observe_r22_native_gate.py", "--repo", str(REPO),
+                                                     "--private", str(private), "--public", str(public)]), \
+             mock.patch.object(observer.sys, "stdout", stdout), \
+             mock.patch.object(observer, "snapshot", snapshot), \
+             mock.patch.object(observer, "load_gate", return_value=self.gate):
+            code = observer.main()
+        raw = sink.getvalue()
+        stdout.detach()
+        return code, raw, private, public, outputs
+
+    def test_actual_main_retains_original_consumer_log_contract(self):
+        consumer = REPO / "tools/language-acceptance/final_gate_native.go"
+        source = consumer.read_bytes()
+        self.assertEqual(observer.digest(source),
+                         "56b47354a43140124a39737f0691b9cda5fcf572d9f57b6f3780f5ec09a53a0c")
+        self.assertIn(b'native.RuntimeStep, "Run iOS 27 Shortcuts Runtime PoC")', source)
+        self.assertIn(b'marker := "IOS27_SHORTCUTS_RUNTIME_POC=PASS (All 5 fixtures verified pass)"', source)
+        self.assertIn(b'count != 1 || !bytes.Contains(log, []byte("scripts/ios27_runtime_poc.sh"))', source)
+        code, raw, private, public, outputs = self.run_synthetic_main()
+        self.assertEqual(code, 0)
+        # These are exactly the original Go consumer's two log predicates.
+        marker = b"IOS27_SHORTCUTS_RUNTIME_POC=PASS (All 5 fixtures verified pass)"
+        self.assertEqual(raw.split(b"\n").count(marker), 1)
+        self.assertIn(b"scripts/ios27_runtime_poc.sh", raw)
+        self.assertNotIn(b"PRIVATE_SYNTHETIC", raw)
+        lines = raw.splitlines()
+        self.assertEqual(len(lines), 3)
+        command = json.loads(lines[0].removeprefix(b"R22_NATIVE_PROCESS_ORIGINAL="))
+        process = (private / "02-native-poc.process.original.json").read_bytes()
+        self.assertEqual(command["argv"], json.loads(process)["argv"])
+        self.assertEqual(command["pid"], json.loads(process)["pid"])
+        self.assertEqual(command["processSHA256"], observer.digest(process))
+        self.assertEqual(command["stdoutSHA256"], observer.digest(outputs[1][0]))
+        self.assertEqual(command["stderrSHA256"], observer.digest(outputs[1][1]))
+        self.assertEqual((private / "02-native-poc.stdout.original").read_bytes(), outputs[1][0])
+        with zipfile.ZipFile(private / "r22-originals.zip") as archive:
+            self.assertEqual(archive.read("native-public-projection.original"),
+                             (private / "native-public-projection.original").read_bytes())
+        self.assertEqual({p.name for p in public.iterdir()}, {"summary.json", "r22-originals.zip.p7m"})
+        self.assertEqual(self.invocations, [(observer.SIMCTL, 15), (observer.NATIVE, 3600)])
+
+    def test_public_projection_rejects_inexact_or_duplicate_terminal(self):
+        marker = b"IOS27_SHORTCUTS_RUNTIME_POC=PASS (All 5 fixtures verified pass)\n"
+        cases = {"prefix_only": (b"IOS27_SHORTCUTS_RUNTIME_POC=PASS\n", b""),
+                 "duplicate": (marker + marker, b""), "stderr_only": (b"", marker),
+                 "both_streams": (marker, marker), "crlf": (marker[:-1] + b"\r\n", b""),
+                 "unterminated": (marker[:-1], b""), "padded": (b" " + marker, b""),
+                 "embedded": (b"prefix:" + marker, b""), "cr_only_boundary": (b"prefix\r" + marker, b"")}
+        for name, (out, err) in cases.items():
+            with self.subTest(boundary=name):
+                private = self.root / name
+                private.mkdir()
+                self.invocations = []
+                children = observer.OriginalGateChildren(REPO, private,
+                    self.capture([(b"iOS 27.0 available\n", b"", 0), (out, err, 0)]),
+                    time.monotonic() + observer.WHOLE_SECONDS)
+                row = observer.invoke_original(self.gate, children)
+                self.assertEqual(row["status"], "PASS")  # Original prefix gate alone is insufficient.
+                with self.assertRaisesRegex(observer.Rejected, "PUBLIC_NATIVE_TERMINAL_NOT_UNIQUE"):
+                    observer.native_public_projection(row, children, private)
+
+    def test_public_projection_binds_retained_actual_process(self):
+        marker = b"IOS27_SHORTCUTS_RUNTIME_POC=PASS (All 5 fixtures verified pass)\n"
+        for name in ("argv", "unspawned", "pid", "capture_pid", "process_bytes", "stream_bytes"):
+            with self.subTest(boundary=name):
+                private = self.root / name
+                private.mkdir()
+                self.invocations = []
+                children = observer.OriginalGateChildren(REPO, private,
+                    self.capture([(b"iOS 27.0 available\n", b"", 0), (marker, b"", 0)]),
+                    time.monotonic() + observer.WHOLE_SECONDS)
+                row = observer.invoke_original(self.gate, children)
+                child = children.rows[1]
+                if name == "argv":
+                    child["argv"] = ["bash", "unrelated.sh"]
+                elif name == "unspawned":
+                    child["spawned"] = False
+                elif name == "pid":
+                    child["pid"] = 0
+                elif name == "capture_pid":
+                    child["capture"]["pid"] += 1
+                elif name == "process_bytes":
+                    (private / "02-native-poc.process.original.json").write_bytes(b"{}\n")
+                else:
+                    (private / "02-native-poc.stdout.original").write_bytes(marker + b"changed\n")
+                with self.assertRaises(observer.Rejected):
+                    observer.native_public_projection(row, children, private)
+
+    def test_actual_main_source_or_encryption_failure_cannot_publish_terminal(self):
+        original_root = self.root
+        for name in ("source_failure", "encryption_failure"):
+            with self.subTest(boundary=name):
+                self.root = original_root / name
+                self.root.mkdir()
+                self.invocations = []
+                try:
+                    code, raw, private, public, outputs = self.run_synthetic_main(**{name: True})
+                finally:
+                    self.root = original_root
+                self.assertEqual(code, 1)
+                self.assertNotIn(b"IOS27_SHORTCUTS_RUNTIME_POC=PASS", raw)
+                self.assertNotIn(b"R22_NATIVE_PROCESS_ORIGINAL", raw)
+                self.assertNotIn(b"PRIVATE_SYNTHETIC", raw)
+                self.assertEqual(json.loads(raw)["status"], "FAILED")
+                self.assertEqual((private / "02-native-poc.stdout.original").read_bytes(), outputs[1][0])
+
+    def test_final_public_projection_requires_all_observation_guards(self):
+        healthy = {"status": "PASS", "sourceUnchanged": True, "privateOriginalsEncrypted": True,
+                   "gateInvocations": 1, "nativeScriptInvocations": 1,
+                   "originalGateStatus": "PASS", "errorCategories": []}
+        cases = {"sourceUnchanged": False, "privateOriginalsEncrypted": False, "gateInvocations": 2,
+                 "nativeScriptInvocations": 2, "originalGateStatus": "FAIL", "errorCategories": ["error"]}
+        for field, value in cases.items():
+            with self.subTest(boundary=field):
+                sink = io.BytesIO()
+                with self.assertRaisesRegex(observer.Rejected, "PUBLIC_NATIVE_FINAL_GUARDS"):
+                    observer.emit_public_result(dict(healthy, **{field: value}), b"synthetic", sink)
+                self.assertEqual(sink.getvalue(), b"")
+        with self.subTest(boundary="missing_projection"):
+            sink = io.BytesIO()
+            with self.assertRaisesRegex(observer.Rejected, "PUBLIC_NATIVE_FINAL_GUARDS"):
+                observer.emit_public_result(healthy, None, sink)
+            self.assertEqual(sink.getvalue(), b"")
+
     def test_workflow_preserves_every_original_step_and_publication_rule(self):
         path = HERE.parents[1] / ".github/workflows/ios27-shortcuts-runtime-poc.yml"
         current = path.read_text()
-        replacement = '''      - name: Run original R22 native gate
+        replacement = '''      - name: Run iOS 27 Shortcuts Runtime PoC
         id: r22_gate
         env:
           CHERRI_ALLOW_EXTERNAL_SIGNING: ${{ inputs.allow_public_fixture_hubsign == true && '1' || '0' }}
