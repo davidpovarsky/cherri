@@ -433,6 +433,86 @@ class ListAppsGitBatchTests(unittest.TestCase):
         self.assertFalse(value["nativeExecution"])
         self.assertFalse(value["formalAcceptanceGranted"])
 
+    def test_descriptor_reads_reject_replaced_or_symlinked_ancestors(self):
+        for kind, expected in (("replacement", "ANCESTOR_CHANGED"),
+                               ("symlink", "ANCESTOR_NOT_DIRECTORY")):
+            with self.subTest(kind=kind):
+                path, moved = self.repo / "tools", self.root / ("old-tools-" + kind)
+                original_entry, original_open = batch.selected_tree_entry, os.open
+                owned_fds, changed = [], []
+                def track_open(name, flags, *args, **kwargs):
+                    fd = original_open(name, flags, *args, **kwargs)
+                    if flags & os.O_DIRECTORY:
+                        owned_fds.append(fd)
+                    return fd
+                def change_ancestor(*args):
+                    result = original_entry(*args)
+                    if args[2] == self.files[-1] and not changed:
+                        path.rename(moved)
+                        if kind == "replacement":
+                            shutil.copytree(moved, path, copy_function=os.link)
+                        else:
+                            path.symlink_to(moved, target_is_directory=True)
+                        changed.append(kind)
+                    return result
+                native = mock.Mock(side_effect=AssertionError("No native call permitted"))
+                probe = self.probe("ancestor-" + kind, runner=native)
+                try:
+                    with mock.patch.object(batch, "selected_tree_entry", side_effect=change_ancestor), \
+                            mock.patch.object(os, "open", side_effect=track_open), \
+                            mock.patch.object(subprocess, "Popen", side_effect=self.record):
+                        self.assertFalse(probe.observe())
+                    value = self.original(probe)
+                    self.assertEqual(value["error"], expected)
+                    self.assertEqual(value["status"], "SOURCE_UNVERIFIED")
+                    self.assertTrue(value["process"]["parentReaped"])
+                    self.assertEqual(value["process"]["groupAfterCleanup"]["state"], "ABSENT")
+                    self.assertTrue(owned_fds)
+                    for fd in owned_fds:
+                        with self.assertRaises(OSError):
+                            os.fstat(fd)
+                    native.assert_not_called()
+                finally:
+                    if changed:
+                        if path.is_symlink():
+                            path.unlink()
+                        else:
+                            shutil.rmtree(path)
+                        moved.rename(path)
+
+    def test_cancellation_at_directory_or_file_open_closes_owned_handles(self):
+        for kind in ("directory", "file"):
+            with self.subTest(kind=kind):
+                original_open = os.open
+                owned_fds, fired = [], []
+                def interrupt_open(name, flags, *args, **kwargs):
+                    fd = original_open(name, flags, *args, **kwargs)
+                    directory = bool(flags & os.O_DIRECTORY)
+                    relative_file = not directory and kwargs.get("dir_fd") is not None
+                    if directory or relative_file:
+                        owned_fds.append(fd)
+                    if not fired and ((kind == "directory" and directory)
+                                      or (kind == "file" and relative_file)):
+                        fired.append(fd)
+                        os.kill(os.getpid(), signal.SIGTERM)
+                    return fd
+                native = mock.Mock(side_effect=AssertionError("No native call permitted"))
+                probe = self.probe("cancel-open-" + kind, runner=native)
+                with mock.patch.object(os, "open", side_effect=interrupt_open), \
+                        mock.patch.object(subprocess, "Popen", side_effect=self.record):
+                    self.assertFalse(probe.observe())
+                self.assertEqual(len(fired), 1)
+                value = self.original(probe)
+                self.assertEqual(value["error"], "SourceInterrupted")
+                self.assertEqual(value["status"], "SOURCE_UNVERIFIED")
+                self.assertTrue(value["process"]["parentReaped"])
+                self.assertEqual(value["process"]["groupAfterCleanup"]["state"], "ABSENT")
+                self.assertEqual(probe.commands[0]["journalEvents"], ["started", "finished"])
+                for fd in owned_fds:
+                    with self.assertRaises(OSError):
+                        os.fstat(fd)
+                native.assert_not_called()
+
 
 class RawTreeParsingTests(unittest.TestCase):
     def test_exact_regular_tree_entries_and_typed_child_entries(self):
