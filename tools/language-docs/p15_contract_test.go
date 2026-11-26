@@ -186,6 +186,18 @@ func TestP15D01ScopedMacroDialectAndBodyContract(t *testing.T) {
 			"native cache acceptance remains pending.",
 			") { <#body#> } -> AnyContent",
 		}},
+		{"paginate", []string{
+			"An optional { page in ... } body receives the immutable native page Dictionary once per validated page",
+			"preserves lexical captured writes and must be Void; either zero cap skips it.",
+			"either zero cap emits no GET.",
+			"Typed item selectors/returned items, Link parsing, HTTP status verification, retry and transport timeout remain separate contracts.",
+			"Native runtime acceptance remains required.",
+			") { <#body#> } -> List<Map<Text, AnyContent>>",
+		}},
+	}
+	paginate, found := reg.LookupAction("paginate")
+	if !found || !paginate.CompilerConstruct || !paginate.ScopedBlock || !paginate.ScopedBlockOptional {
+		t.Fatal("paginate must retain its optional compiler-owned page callback")
 	}
 	var scopedNames []string
 	for _, action := range reg.CompilerMacros() {
@@ -193,7 +205,7 @@ func TestP15D01ScopedMacroDialectAndBodyContract(t *testing.T) {
 			scopedNames = append(scopedNames, action.CallableName)
 		}
 	}
-	if strings.Join(scopedNames, ",") != "cache,measure" {
+	if strings.Join(scopedNames, ",") != "cache,measure,paginate" {
 		t.Fatalf("review dialect/body contracts for changed scoped-macro inventory: %v", scopedNames)
 	}
 	for _, contract := range contracts {

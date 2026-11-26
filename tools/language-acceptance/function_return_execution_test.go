@@ -57,7 +57,7 @@ func TestFunctionReturnProducerInventory(t *testing.T) {
 			t.Fatal("missing source witness", path, err)
 		}
 	}
-	if len(functionReturnProductionPaths) != 72 || !reflect.DeepEqual(deriveRepairTestIDs(row.ID, row.Title), functionReturnTestIDs()) || !reflect.DeepEqual(deriveRepairFixtures(row.ID), functionReturnProductionPaths) {
+	if len(functionReturnProductionPaths) != 73 || !seen["p15_tagged_boundary_alignment_test.go"] || !reflect.DeepEqual(deriveRepairTestIDs(row.ID, row.Title), functionReturnTestIDs()) || !reflect.DeepEqual(deriveRepairFixtures(row.ID), functionReturnProductionPaths) {
 		t.Fatal("complete return/recursion producer mapping changed")
 	}
 	var ids []string
