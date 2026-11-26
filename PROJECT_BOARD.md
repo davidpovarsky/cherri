@@ -409,3 +409,18 @@ Apple execution and integrated full-suite acceptance remain separate.
 - [x] Qualify native main37 cases plus Q40 in each fork lane. Retain every Q41 attempt and evidence-strength limitation in the final native ledger; timer cases remain structure-only. The new dispatch/Add timing harness passes24 host controls,50 actual Swift controls and Xcode build-for-testing, independently of subsequent native observations.
 
 This is a source-bound finite audit at2add, with actual compiler build21ead and a verified compiler-input identity bridge. It does not close historical P10R15/179-ID release obligations or prove arbitrary-program correctness. [Source pins, causes, exact receipts and boundaries](docs/language-v2/compiler-differential-audit-20261125.md).
+
+
+## 2026-11-26 — Current-CI require binding and preserved regression contracts
+
+The actual M CI exposed require analysis that disagreed with the existing pure
+literal evaluator and positional binder. Production a407a732 now consumes the
+canonical bound expressions once. Clean88c6 passed783 focused named events and
+93original producer/intake events; the separate structured cohort passed all
+1,356names and produced8local T05/L01/F04/RP20 records. Original F04 fixtures
+now prove the supported tagged collection region and still reject private
+public-output escape; historical native failures remain. Authored empty arrays
+and opaque imported absent-Value arrays retain separate tests. Optional
+paginate callbacks and semantic Release require consumers remain protected.
+See [source and original qualification](docs/language-v2/p15-root-ci-regressions-20261126.md).
+Final integration/179/Apple/provider/release closure remains open.

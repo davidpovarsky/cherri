@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.16 | **Current audit:** 2026-11-24 | **Status:** P10R15 IN_PROGRESS. Latest complete original K476 local execution remains **111/179 PASSED, 4 FAILED, 28 NOT_RUN, 36 PENDING_EXTERNAL**, **closure_complete=false**. Chapter 37 records published source **64f7c6ecbf528f64c066b64b403dba4bb71108c9**, its preserved failed automatic Build, and the independently accepted **154-test Linux-only AI harness fixture qualification**. The next AI-only source/CI remain future; the separate F04 mutable-alias proposal is unqualified. Free space remains below the original focused/producer gates. Chapters 0–36 and their continuation/projection originals retain their historical cutoffs.
+> **Plan version:** 2.9.17 | **Current audit:** 2026-11-26 | **Status:** P10R15 IN_PROGRESS. Latest complete historical K476 report remains **111/179 PASSED, 4 FAILED, 28 NOT_RUN, 36 PENDING_EXTERNAL**, **closure_complete=false**. Chapter 38 records integration M, qualified root CI repairs on **88c6fe0**, the actual complete structured cohort, and outstanding integration/native/provider/release work. The new full179 attempt on M stopped on capacity before producing a report. Earlier chapters retain their historical cutoffs.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -2799,3 +2799,68 @@ Apple execution and integrated full-suite acceptance remain separate.
 - [x] Qualify native main37 cases plus Q40 in each fork lane. Retain every Q41 attempt and evidence-strength limitation in the final native ledger; timer cases remain structure-only. The new dispatch/Add timing harness passes24 host controls,50 actual Swift controls and Xcode build-for-testing, independently of subsequent native observations.
 
 This is a source-bound finite audit at2add, with actual compiler build21ead and a verified compiler-input identity bridge. It does not close historical P10R15/179-ID release obligations or prove arbitrary-program correctness. [Source pins, causes, exact receipts and boundaries](compiler-differential-audit-20261125.md).
+
+## 38. Integrated M and qualified root CI repairs — 2026-11-26
+
+### Current source and milestone board
+
+Integration M is `f1eaa704d15d21835facb5e12b8cfe3f057274e5` on
+`agent/cherri-p10r15-final-owned-integration-20261125`, not main.
+Qualified root repair `88c6fe0652bbd9ca93602d35d03f569ae839b489` is on
+`agent/cherri-p10r15-root-ci-regressions-20261126`; production fix is
+`a407a732dbea1154bf6a7729965084855aafbeeb`.
+
+The original raw505/C0/C1/C2 chain completed before M. C3 produced55PASS,
+R22BLOCKED_PLATFORM, zero failures. Later source changes require affected
+report regeneration. S4's five original private-corpus checks passed on S708;
+their evidence is not restamped onto later sources.
+
+E07 source0471fbfb and R23 successor1cafc8ce preserve all protected methods
+and assertions. The original full iOS45780580372 was dispatched; no terminal
+result is asserted at this checkpoint.
+
+### Acceptance matrix and evidence log
+
+| Item | Verified observation | Remaining boundary |
+|---|---|---|
+| Root focused regression |783unique passes; complete source unchanged|Component88c6 only|
+| T05/L01/F04/RP20 cohort |1,356nested passes;8canonical local records|Apple/final candidate tiers separate|
+| S02/L03/T02 original producers |Own local tiers passed|No unrelated-ID inheritance|
+| M Build45770101343 |Linux/macOS FAILED;Nix passed; original330F04 identities passed in both|Root repairs qualified;D01/inventory/macOS harness repairs integrating|
+| M OpenMinis45770105065 |FAILED; repaired e1a197a44 passed all3original validators|Integrated workflow required|
+| M iOS45770108822 |77PASS/1E07FAIL;0formal records for failed suite|New E07 full suite required|
+| M PoC45770113076 |6records/10runtime facets;17diagnostics;canonical intake verified|No general179/hardware credit|
+| F01/Nested45773063433/45773075820 |Phase0 passed;Phase1 listApps blocked,exit70|No signing/import/runtime credit|
+| M full179 attempt02 |Capacity stop before report;owned process reaped|Historical111/4/28/36 remains latest full report|
+| AI01/RP50 |Unchanged count request returned low-credit error;0/12results|No purchase/protocol substitution|
+| Physical iPad |Mac observed inventory contained simulated devices only|Physical execution unavailable in that inventory|
+
+[Root component qualification](p15-root-ci-regressions-20261126.md) retains
+the exact sources, original streams, causal controls and independent review.
+Stopped179owner SHA:
+`b0ba1d1f4bff06dbc446dc782266efe68c4fcfb6ccb845a41821288bebcaec63`.
+CurrentM PoC intake SHA:
+`38af2034056ab3154952cb5b5bc833d0a3133bce07718739f32e19cc60650e0b`.
+
+### Open defects and decisions
+
+Require now consumes canonical bound expressions through existing pure
+evaluators. Original runtime probes and negative boundaries remain; positive
+compiler graphs never become Apple observations. Storage native05 stopped in
+source metadata validation before device/import/runtime. Its guard is being
+qualified without changing original semantic expectations or deadlines.
+
+Resource ownership remains explicit. Other project processes are observed
+without termination/cleanup. Only identified stopped-build intermediates may
+be reclaimed; originals stay preserved. Capacity is rechecked per producer.
+
+### Next work
+
+Refresh relevant branch tips and join the reviewed root/CI/E07/Apple fixes;
+regenerate affected raw505/C0/C1/C2 and56release gates; execute complete
+Linux/macOS/Nix/OpenMinis/iOS and original179 on one integrated candidate.
+Complete native import/runtime, supplemental macros/Inspector, authorized AI
+when credit is available, final S/D/Skill alignment, RemoteBuilder39/58/usage/
+package/promotion/rollback/reapply, consumer installations, main/release and
+Apple archive/TestFlight with their actual evidence. Existing signing resources
+are prepared; no app archive or TestFlight upload is claimed.
