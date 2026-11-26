@@ -1,0 +1,35 @@
+{
+  "completedUTC": "2026-11-26T21:31:56.618098+00:00",
+  "findingsClosed": [
+    "cleanup-completed flag is set only after successful private retention and scratch removal; repeated cleanup returns early only for absent non-symlink scratch",
+    "original 10-second retention alarm remains active through closing JSON write, flush and fsync",
+    "test extractor preserves complete comment line before filtering; all nine test method ASTs unchanged"
+  ],
+  "newGo": 0,
+  "newTests": 0,
+  "pins": {
+    "oracle-qualification-03/result.original.json": "b9a532b3e94b81fef8ff1ce0190a96ee5040b41b5132eeac54398658ae458114",
+    "preparation-02/delta.original.patch": "e8e742cdb27e35defc806c88f81f685c5eb3143dd46e84a203d71bdbd9bd72dc",
+    "preparation-02/result.original.json": "583b87f19c6e998d107a58f179f74bcabe3041c0ed28e5a7b830e4a4194cb6d1",
+    "preparation-02/test_xcresult_retention.original.py": "78d7c75e6e6f1b2322689005bb5e775cfe1b748ed43805beea99daca64f259c3",
+    "preparation-03/result.original.json": "50567cbaced51e0473e479c75329e9068f022aabe3ba329ca96f490da47807dd",
+    "preparation-03/shell.after.original.sh": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c",
+    "preparation-03/test_xcresult_retention.original.py": "e474ff491d1b2d6db29daa921865c518b7efac4c9f45586e5a393e3088d03196",
+    "qualification-intake-01/result.original.json": "a1c9e311b50c2d5dc26732fadc2d206e86718509be2025ac1365c39f8ea6ca79"
+  },
+  "qualification": {
+    "currentProductionControlIdentities": 9,
+    "originalFailuresRetained": true,
+    "originalQualification02UnchangedPasses": 4,
+    "qualification02ClosingSnapshotAbsent": true,
+    "qualification03AffectedPasses": 5,
+    "singleNineGreenRun": false
+  },
+  "reviewedProductionSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c",
+  "reviewedTestSHA256": "e474ff491d1b2d6db29daa921865c518b7efac4c9f45586e5a393e3088d03196",
+  "reviewer": "ci_release_gates",
+  "schema": "cherri-xctest-retention-narrow-source-review/1",
+  "scope": "Narrow source and retained-result review only. Original successful test02 resets EXIT; repeated early-trap edge is not claimed as an observed normal F01 failure. No native/XCTest execution or acceptance. Joined qualification is not a single nine-method run.",
+  "sourceEdits": 0,
+  "status": "PASS_SOURCE_REVIEW_NO_RERUN"
+}

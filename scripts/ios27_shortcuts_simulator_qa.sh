@@ -52,6 +52,7 @@ HTTP_PROBE_PID=""
 HTTP_PROBE_STARTED="false"
 HTTP_PROBE_DIAGNOSTIC_RC=0
 POST_TEST_INSPECTION_RC=0
+XCTEST_SCRATCH_CLEANED="false"
 http_probe() {
   # Only fixed, reviewed fixture IDs may select an endpoint implementation.
   case "$TARGET_FIXTURE_ID" in
@@ -71,6 +72,96 @@ stop_http_probe() {
     HTTP_PROBE_PID=""
   fi
 }
+retain_xcresult_originals() {
+  if [ "${XCTEST_SCRATCH_CLEANED:-false}" = "true" ] && \
+    [ ! -e "$QA_SCRATCH_DIR" ] && [ ! -L "$QA_SCRATCH_DIR" ]; then
+    return 0
+  fi
+  # Completed or partial XCTest bundles are private originals. Rename them on
+  # this filesystem before scratch cleanup; a failure leaves scratch intact.
+  python3 -I -B - "$ARTIFACT_DIR" "$QA_SCRATCH_DIR" <<'PY'
+import datetime, json, os, pathlib, signal, stat, sys, tempfile
+
+root, scratch = map(pathlib.Path, sys.argv[1:3])
+os.umask(0o077)
+signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(TimeoutError("RETENTION_DEADLINE")))
+signal.alarm(10)
+receipt = None
+result = {"schema": "cherri-private-xctest-retention/1", "status": "FAILED",
+          "nativeCompletionInferred": False, "formalAcceptanceGranted": False,
+          "objects": []}
+exit_code = 70
+try:
+    for directory in (root, root / "builds", root / "tests", scratch):
+        current = directory.lstat()
+        # /tmp is the normal macOS alias for /private/tmp. Do not reject that
+        # existing ancestor spelling; the actual selected directories and
+        # every moved original must themselves be ordinary, owned objects.
+        if (not stat.S_ISDIR(current.st_mode) or stat.S_ISLNK(current.st_mode)
+                or current.st_uid != os.getuid()):
+            raise ValueError("RETENTION_DIRECTORY_IDENTITY")
+    private = root / "builds/xcresult-originals"
+    try:
+        private.mkdir(mode=0o700)
+    except FileExistsError:
+        pass
+    current = private.lstat()
+    if (not stat.S_ISDIR(current.st_mode) or stat.S_ISLNK(current.st_mode)
+            or current.st_uid != os.getuid() or stat.S_IMODE(current.st_mode) != 0o700):
+        raise ValueError("RETENTION_PRIVATE_DIRECTORY")
+    receipt = pathlib.Path(tempfile.mkdtemp(prefix="retention-", dir=private))
+    selections = [(scratch / name, name, True) for name in (
+        "CherriSimulatorQA.xcresult", "CherriSimulatorQA-Part1.xcresult",
+        "CherriSimulatorQAConfirm.xcresult")]
+    selections += [(root / "tests" / name, name, False) for name in (
+        "xcresult-part1.json", "xcresult-part2.json", "xcodebuild-test.log")]
+    for source, name, is_directory in selections:
+        row = {"name": name, "source": str(source), "state": "ABSENT"}
+        result["objects"].append(row)
+        try:
+            before = source.lstat()
+        except FileNotFoundError:
+            continue
+        if (stat.S_ISLNK(before.st_mode) or before.st_uid != os.getuid()
+                or not (stat.S_ISDIR(before.st_mode) if is_directory else stat.S_ISREG(before.st_mode))):
+            raise ValueError("RETENTION_ORIGINAL_TYPE_OR_OWNER")
+        destination = private / name
+        if os.path.lexists(destination):
+            raise ValueError("RETENTION_DESTINATION_EXISTS")
+        # os.rename refuses cross-filesystem moves. Never copy then discard the
+        # only original, and never treat an existing destination as a success.
+        os.rename(source, destination)
+        after = destination.lstat()
+        if (before.st_dev, before.st_ino, before.st_mode) != (after.st_dev, after.st_ino, after.st_mode):
+            raise ValueError("RETENTION_RENAME_IDENTITY")
+        row.update(state="RENAMED_ORIGINAL", destination=str(destination),
+                   device=after.st_dev, inode=after.st_ino, mode=stat.S_IMODE(after.st_mode))
+    result["status"] = "AVAILABLE_ORIGINALS_RETAINED"
+    exit_code = 0
+except BaseException as error:
+    result["errorType"] = type(error).__name__
+    result["error"] = str(error)[:256]
+finally:
+    result["completedUTC"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    if receipt is not None:
+        with (receipt / "result.original.json").open("x", encoding="utf-8") as stream:
+            json.dump(result, stream, sort_keys=True)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+    if exit_code:
+        sys.stderr.write("Private XCTest retention failed; original scratch is preserved.\n")
+    signal.alarm(0)
+sys.exit(exit_code)
+PY
+}
+
+cleanup_qa_scratch() {
+  retain_xcresult_originals || return 70
+  rm -rf "${QA_SCRATCH_DIR:-}" || return 70
+  XCTEST_SCRATCH_CLEANED="true"
+}
+
 trap 'stop_http_probe' EXIT
 
 echo "=== Cherri iPadOS 27 Simulator QA ($RUN_ID) ==="
@@ -2248,7 +2339,7 @@ PY
         PHASE4_LOG_PID=""
       fi
     }
-    trap 'stop_http_probe; cleanup_handshake; seal_hosted_import; rm -rf "${XCRESULT_PATH:-}" "${XCRESULT_PART1_PATH:-}" "${CONFIRM_XCRESULT:-}" "${QA_SCRATCH_DIR:-}"' EXIT
+    trap 'stop_http_probe; cleanup_handshake; seal_hosted_import; cleanup_qa_scratch' EXIT
 
     # Xcode must currently advertise this same owned simulator as an eligible
     # destination. One non-reboot readiness refresh and test02 share the original
@@ -2371,8 +2462,7 @@ if raw:
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(raw + "\n")
 PY
-    rm -rf "$XCRESULT_PATH" "$XCRESULT_PART1_PATH" "$PART1_JSON" "$PART2_JSON"
-    rm -f "$ARTIFACT_DIR/tests/xcodebuild-test.log"
+    retain_xcresult_originals || exit 70
 
     # Extract receiver callback events from app data container (or Part1 snapshot if Simulator resprung)
     RECEIVER_DATA_DIR="$(python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/qa_terminal_receipts.py" receiver-path \
@@ -2565,7 +2655,8 @@ PY
           if [ -f "$ARTIFACT_DIR/builds/xcodebuild-confirm.log" ]; then
             sed "s/$UDID/<UDID>/g; s|/Users/[^/ ]*|/Users/<redacted>|g" "$ARTIFACT_DIR/builds/xcodebuild-confirm.log" | tail -n 60 || true
           fi
-          rm -rf "$CONFIRM_XCRESULT" "$ARTIFACT_DIR/editor/confirm-dialog-mode.txt"
+          retain_xcresult_originals || exit 70
+          rm -f "$ARTIFACT_DIR/editor/confirm-dialog-mode.txt"
           for poll_idx in $(seq 1 10); do
             if [ -n "$RECEIVER_DATA_DIR" ] && [ -f "$RECEIVER_DATA_DIR/Documents/callback-events.json" ]; then
               cp "$RECEIVER_DATA_DIR/Documents/callback-events.json" "$ARTIFACT_DIR/runtime/callback-events.json"
@@ -2952,7 +3043,8 @@ fi
 
 # Keep private build originals for hash-bound receipt validation. The existing
 # explicit publisher quarantines them; no build/raw path is uploaded.
-rm -rf "$ARTIFACT_DIR/tests/"*.log "$ARTIFACT_DIR/tests/"*.xcresult "${QA_SCRATCH_DIR:-}" "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
+cleanup_qa_scratch || exit 70
+rm -rf "$ARTIFACT_DIR/tests/"*.log "$ARTIFACT_DIR/tests/"*.xcresult "${RAW_SIM_LOG:-}" "${PHASE4_SIM_LOG:-}"
 
 # Bind the actual current invocation before the normal assertion emitter.
 # Storage cross-run may have advanced to its reader nonce after test02.
