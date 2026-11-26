@@ -52,16 +52,13 @@ Updates stage and validate the compiler and pinned docs before replacing the act
 
 The user's iOS helper Shortcut extracts and shares a workflow plist (XML
 plist, binary plist, or unsigned `.shortcut` containing a workflow plist).
-This is a first-class workflow of the skill:
-
-```text
-plist received from iOS helper Shortcut
-        -> prepare-edit.sh <path> [WORKSPACE]
-        -> preserved original + editable .cherri + unsigned validation build
-        -> agent edits the .cherri per the user request
-        -> unsigned compile (validate)
-        -> explicit sign -> AEA1 .shortcut
-```
+Use the shared file's exact path with `prepare-edit.sh`, preserve the original,
+edit the generated Cherri source, and compile unsigned. Before signing, record
+the requested scalar-field changes in an original-hash-bound allowed-delta policy
+as described in `SKILL.md`. Pass both `--original` and `--allowed-delta`
+to `build.sh --signed`; the existing comparison gate must verify the exact
+unsigned bytes. An `AEA1` output confirms the expected container format, while
+successful Apple import and execution need separate observation.
 
 `prepare-edit.sh` lives in `scripts/`. It creates
 `/var/minis/shared/cherri-edits/<safe-name>-<timestamp>/` with

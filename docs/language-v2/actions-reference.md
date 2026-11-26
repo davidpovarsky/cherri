@@ -8564,7 +8564,7 @@ url(url: Text)
 
 ## Compiler macros
 
-**Compiler Macro Fingerprint:** `747aeae202f541b1a66fad508eb3b151abd604aa4198dc52efab492e1f842629`
+**Compiler Macro Fingerprint:** `bfa446ea152ef48e9a2b7f7177ef0c54409bc98bc2d1dfcf9b8e282e1f3c580e`
 
 **Compiler Macros:** 16
 
@@ -8756,10 +8756,10 @@ measure(label: text) { <#body#> } -> AnyContent
 
 ### `paginate`
 
-Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Default URL mode accepts same-origin absolute URLs or simple sibling filenames. Optional cursor/page/offset modes use a fixed authored URL and replace one configured query value; cursor Text is encoded and roundtrip-checked, numeric next markers are exact bounded integers. Query byte order and unrelated query values remain unchanged. Exact marker and resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. No Link parsing, HTTP status verification, retry, transport timeout or trailing block contract. Native runtime acceptance remains required.
+Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Default URL mode accepts same-origin absolute URLs or simple sibling filenames. Optional cursor/page/offset modes use a fixed authored URL and replace one configured query value; cursor Text is encoded and roundtrip-checked, numeric next markers are exact bounded integers. Query byte order and unrelated query values remain unchanged. Exact marker and resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. An optional { page in ... } body receives the immutable native page Dictionary once per validated page, preserves lexical captured writes and must be Void; either zero cap skips it. Typed item selectors/returned items, Link parsing, HTTP status verification, retry and transport timeout remain separate contracts. Native runtime acceptance remains required.
 
 ```cherri
-paginate(startURL: Text, itemsKey?: Text = "items", nextKey?: Text = "next", maxPages?: Number = 20, maxItems?: Number = 1000, headers?: Map<Text, AnyContent>, mode?: Text = "url", queryKey?: Text) -> List<Map<Text, AnyContent>>
+paginate(startURL: Text, itemsKey?: Text = "items", nextKey?: Text = "next", maxPages?: Number = 20, maxItems?: Number = 1000, headers?: Map<Text, AnyContent>, mode?: Text = "url", queryKey?: Text) { <#body#> } -> List<Map<Text, AnyContent>>
 ```
 
 | Parameter | Type | Optional | Literal required | Default |
@@ -8775,7 +8775,7 @@ paginate(startURL: Text, itemsKey?: Text = "items", nextKey?: Text = "next", max
 
 ### `require`
 
-Validate text, number or dictionary native content and optional nonempty character/key/item count, then return the original value. Type and nonEmpty are compile-time literals.
+Require a source-proved Boolean condition, or validate text, number or dictionary native content and optional nonempty character/key/item count, then return the original value. Type and nonEmpty are compile-time literals.
 
 ```cherri
 require(value: AnyContent, type?: Text, nonEmpty?: Bool, message?: Text) -> AnyContent

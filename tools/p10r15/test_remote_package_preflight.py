@@ -147,11 +147,17 @@ class PairedPackagePreflight(unittest.TestCase):
                        "liveHashesBefore": {p: promotion.sha((live / p).read_bytes()) for p in promotion.PROTECTED},
                        "candidateHashes": {p: promotion.sha((candidate / p).read_bytes()) for p in promotion.PROTECTED}}}
             paths = {}
-            for kind, count in (("source", 23), ("runtime", 29)):
+            committed, _ = package_skill.committed_files(self.skill, self.skill_revision)
+            source_names = set(committed) | {package_skill.RECEIPT}
+            runtime_names = {package_skill.PREFIX + "bin/" + name + suffix
+                             for name in ("cherri", "cherri-migrate")
+                             for suffix in ("", ".commit", ".sha256")}
+            for kind, expected_names in (("source", source_names),
+                                         ("runtime", source_names | runtime_names)):
                 kwargs = {"compiler": self.binaries["cherri"], "migrator": self.binaries["cherri-migrate"],
                           "go": self.go} if kind == "runtime" else {}
                 files, receipt = package_skill.expected_package(self.skill, self.skill_revision, kind, **kwargs)
-                self.assertEqual(len(files), count)
+                self.assertEqual(set(files), expected_names)
                 archive = root / (kind + ".zip")
                 package_skill.create_archive(archive, files)
                 paths[kind + "Archive"] = archive
@@ -194,7 +200,8 @@ class SourcePackagePreflight(unittest.TestCase):
         commit = subprocess.check_output(
             ["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
         source_files, source_receipt = package_skill.expected_package(repo, commit, "source")
-        self.assertEqual(len(source_files), 23)
+        committed, _ = package_skill.committed_files(repo, commit)
+        self.assertEqual(set(source_files), set(committed) | {package_skill.RECEIPT})
         self.assertIsNone(source_receipt["runtime"])
         self.assertNotIn(package_skill.PREFIX + "bin/cherri", source_files)
 

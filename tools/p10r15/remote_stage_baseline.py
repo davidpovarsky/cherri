@@ -72,13 +72,40 @@ def load_previous_stage(path, expected_sha, live_home):
     }
 
 
-def wrapper_templates(live_home, previous_receipt, previous_sha, runner, legacy, *, installed=False):
+def load_current_installed(path, expected_sha, live_home):
+    """Use a real current before-state without granting historical acceptance."""
+    from remote_current_baseline import validate_capture
+    raw = original_bytes(path, expected_sha, 2 * 1024 * 1024)
+    record = json.loads(raw, object_pairs_hook=unique_object)
+    state = validate_capture(record, live_home)
+    protected = {name: value["sha256"] for name, value in state["protected"].items()}
+    require(set(protected) == set(PROTECTED) | TOOL_PATHS,
+            "Incomplete current protected inventory")
+    require(protected["bin/cherri-shortcut-lint.py"] ==
+            ORIGINAL_LIVE_HASHES["bin/cherri-shortcut-lint.py"],
+            "Current validator requires a separately reviewed template")
+    return protected, {"path": str(Path(path).resolve()), "sha256": expected_sha,
+                       "kind": "CURRENT_INSTALLED", "tuple": state["tuple"],
+                       "historyUnavailable": True, "liveBytesMatch": True,
+                       "acceptanceGranted": False}
+
+
+def wrapper_templates(live_home, previous_receipt, previous_sha, runner, legacy, *,
+                      installed=False, current_baseline=None, current_sha=None):
     """Keep the reviewed original transformations independent of the live version."""
+    current_selected = current_baseline is not None or current_sha is not None
+    if current_selected:
+        require(installed and current_baseline is not None and current_sha is not None
+                and all(value is None for value in (previous_receipt, previous_sha, runner, legacy)),
+                "Current baseline requires installed mode, its receipt/SHA, and no historical options")
     if installed:
-        require(previous_receipt is not None and previous_sha is not None and
-                runner is None and legacy is None,
-                "Installed immutable templates require a predecessor receipt/SHA and no historical wrapper options")
-        protected, previous = load_previous_stage(previous_receipt, previous_sha, live_home)
+        if current_selected:
+            protected, previous = load_current_installed(current_baseline, current_sha, live_home)
+        else:
+            require(previous_receipt is not None and previous_sha is not None and
+                    runner is None and legacy is None,
+                    "Installed immutable templates require a predecessor receipt/SHA and no historical wrapper options")
+            protected, previous = load_previous_stage(previous_receipt, previous_sha, live_home)
         values, witnesses = {}, {}
         for role in ("runner", "legacy"):
             relative = "bin/cherri-remote-" + role + ".sh"

@@ -1,6 +1,6 @@
 ---
 name: cherri-shortcuts
-description: Create, inspect, compile, sign, import, decompile, and repair Apple Shortcuts using the real Cherri compiler and current Cherri documentation. Use for requests to build an Apple Shortcut, generate a signed .shortcut file, translate natural-language Shortcut requirements into Cherri code, search Cherri actions/glyphs/docs, debug Cherri compilation errors, or convert an existing Shortcut/plist/iCloud Shortcut into editable Cherri. Also handles "edit this Shortcut", "modify this existing Shortcut", "here is a plist", "change this action in my Shortcut", "add an action to this Shortcut", and "fix this Shortcut and sign it again" as a first-class existing-Shortcut editing workflow (receive plist -> prepare workspace -> edit Cherri -> validate -> sign). Designed to run in Open Minis/iSH/Alpine or any agent environment with a POSIX shell and network access.
+description: Create, inspect, compile, sign, import, decompile and repair Apple Shortcuts with the real Cherri CLI. Use when building a Shortcut, editing an existing shared plist or unsigned .shortcut, translating requirements into Cherri, discovering actions or glyphs, diagnosing compiler errors, or preparing a signed deliverable. Includes the preserved-original import, edit, compare and sign workflow. Intended for Open Minis, iSH, Alpine or POSIX agent environments.
 ---
 
 # Cherri Shortcuts
@@ -70,7 +70,7 @@ sh "$SKILL_DIR/scripts/build.sh" source.cherri output.shortcut --unsigned
 sh "$SKILL_DIR/scripts/build.sh" source.cherri output.shortcut --signed
 ```
 
-9. Verify a signed result starts with `AEA1`. The build wrapper performs this check automatically.
+9. Verify a signed result starts with `AEA1`. The build wrapper performs this format check automatically; it does not establish successful Apple import or execution.
 10. Return both the `.cherri` source and final `.shortcut` when practical so the workflow remains editable and reproducible.
 
 ## Edit an existing Shortcut (first-class workflow)
@@ -162,16 +162,25 @@ structure Cherri cannot represent must be reported, not silently dropped.
 
 ## Local loop values and mutable aliases
 
-For a loop that yields nested Lists or Optional values, consult the pinned
-Language Guide before choosing a representation. The current V2 compiler admits
-a bounded local flow through immutable `let` producers, `count`, checked indexing
-and `for` consumers. A mutable alias needs an explicit exact `List<T>` type;
-straight-line reassignment must read an immutable producer or snapshot of the
-same type, with a supported consumer for every reaching version. Branch or loop
-writes, mutable right-hand-side aliases and arbitrary representation joins are
-still rejected. Do not widen to `AnyContent`, flatten a nested value, or replace
-absence with `false`, zero or empty text to suppress `E_TARGET_VALUE_SHAPE`.
-Successful compilation alone does not establish signed Apple runtime behavior.
+Use the pinned compiler and its Language Guide for nested Lists, Maps, JSON null
+and Optional values. Typed local loop sequences support immutable snapshots and
+mutable declarations, branch and loop writes, matching mutable RHS values, direct
+producers and `+=`. Inference uses actual source types; an empty value alone
+does not establish an arbitrary element type. A later assignment does not change
+an earlier immutable snapshot.
+
+Use supported typed `count`, checked indexing and `for` consumers. Private
+container carriers are an implementation detail, not a public native Dictionary
+or a persistence format. Arbitrary native actions, implicit Previous, imports or
+function boundaries do not gain conversion permission from a matching spelling.
+Keep `none` distinct from present `false`, zero, empty text/collections and
+JSON `null`. Do not widen to `AnyContent`, flatten a nested value, or substitute
+a sentinel to suppress `E_TARGET_VALUE_SHAPE`.
+
+Read [language and macro boundaries](references/language-boundaries.md) before
+combining scoped macros, mutable containers or native output. Successful
+compilation establishes a source/native-graph result; signed Apple execution
+requires its own evidence.
 
 ## Debug logging and native object previews
 

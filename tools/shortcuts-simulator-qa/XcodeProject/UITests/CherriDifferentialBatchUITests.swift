@@ -44,14 +44,146 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         return nil
     }
 
+    // This explicit diagnostic command records the current AX hierarchy only.
+    // It never opens a shortcut, taps consent or supplies runtime evidence.
+    private func observeImportSheet(_ command: DifferentialCommand) throws -> [String: Any] {
+        let name = try XCTUnwrap(command.shortcutName)
+        let folder = runDirectory.appendingPathComponent(command.id + "-sheet-observation", isDirectory: true)
+        guard !FileManager.default.fileExists(atPath: folder.path) else {
+            throw NSError(domain: "CherriQAImportObservation", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "OBSERVATION_OUTPUT_EXISTS"])
+        }
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: false,
+                                               attributes: [.posixPermissions: 0o700])
+        let started = Date()
+        let deadline = started.addingTimeInterval(25)
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        func require(_ condition: Bool, _ code: String) throws {
+            guard condition else {
+                throw NSError(domain: "CherriQAImportObservation", code: 2,
+                              userInfo: [NSLocalizedDescriptionKey: code])
+            }
+        }
+        func budget() throws { try require(Date() < deadline, "OBSERVATION_DEADLINE") }
+        func save(_ value: Any, _ filename: String) throws {
+            let bytes = try JSONSerialization.data(withJSONObject: value, options: [.prettyPrinted, .sortedKeys])
+            try require(bytes.count <= 2 * 1024 * 1024, "OBSERVATION_BYTES")
+            let url = folder.appendingPathComponent(filename)
+            try bytes.write(to: url, options: .withoutOverwriting)
+            try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
+        }
+        func flatten(_ snapshot: XCUIElementSnapshot) throws -> [[String: Any]] {
+            var rows: [[String: Any]] = []
+            func visit(_ node: XCUIElementSnapshot, _ path: [Int]) throws {
+                try require(rows.count < 8192 && path.count <= 64, "OBSERVATION_TREE_BOUNDS")
+                try require(node.label.utf8.count <= 4096 && node.identifier.utf8.count <= 4096,
+                            "OBSERVATION_LABEL_BOUNDS")
+                let f = node.frame
+                try require([f.minX, f.minY, f.width, f.height].allSatisfy { $0.isFinite },
+                            "OBSERVATION_FRAME")
+                rows.append(["path": path, "type": Int(node.elementType.rawValue),
+                             "label": node.label, "identifier": node.identifier,
+                             "enabled": node.isEnabled, "selected": node.isSelected,
+                             "frame": ["x": Double(f.minX), "y": Double(f.minY),
+                                       "width": Double(f.width), "height": Double(f.height)],
+                             "childCount": node.children.count])
+                for (index, child) in node.children.enumerated() {
+                    try visit(child, path + [index])
+                }
+            }
+            try visit(snapshot, [])
+            return rows
+        }
+        try save(["schema": "cherri-import-sheet-observation/1", "expectedName": name,
+                  "startedUTC": formatter.string(from: started), "nativeImportInvoked": false,
+                  "nativeRuntimeInvoked": false, "tapCount": 0], "intent.original.json")
+        let state = shortcuts.state
+        try budget()
+        try require(state == .runningForeground || state == .runningBackground,
+                    "OBSERVATION_SHORTCUTS_NOT_RUNNING")
+        if state != .runningForeground {
+            shortcuts.activate()
+            try budget()
+            let foreground = shortcuts.wait(for: .runningForeground, timeout: min(8, deadline.timeIntervalSinceNow))
+            try budget()
+            try require(foreground, "OBSERVATION_SHORTCUTS_NOT_FOREGROUND")
+        }
+        let before = try shortcuts.snapshot()
+        try save(try flatten(before), "snapshot.before.original.json")
+        try budget()
+        let buttons = shortcuts.buttons.matching(NSPredicate(
+            format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Replace'")).allElementsBoundByIndex
+        try budget()
+        try require(buttons.count <= 32, "OBSERVATION_CANDIDATE_BOUNDS")
+        var candidates: [[String: Any]] = []
+        for (index, button) in buttons.enumerated() {
+            let exists = button.exists
+            try budget()
+            let hittable = exists && button.isHittable
+            try budget()
+            var row: [String: Any] = ["queryIndex": index, "exists": exists,
+                                     "hittable": hittable, "observedUTC": formatter.string(from: Date())]
+            if exists {
+                let candidate = try button.snapshot()
+                try budget()
+                row["snapshot"] = try flatten(candidate)
+            }
+            candidates.append(row)
+            try save(row, String(format: "candidate-%02d.original.json", index))
+        }
+        let after = try shortcuts.snapshot()
+        try save(try flatten(after), "snapshot.after.original.json")
+        try budget()
+        let png = XCUIScreen.main.screenshot().pngRepresentation
+        try require(png.count <= 8 * 1024 * 1024, "OBSERVATION_IMAGE_BOUNDS")
+        try png.write(to: folder.appendingPathComponent("screen.original.png"), options: .withoutOverwriting)
+        try FileManager.default.setAttributes([.posixPermissions: 0o600],
+            ofItemAtPath: folder.appendingPathComponent("screen.original.png").path)
+        try budget()
+        let result: [String: Any] = ["schema": "cherri-import-sheet-observation/1",
+            "outcome": "OBSERVED_AX_ONLY", "expectedName": name, "candidateCount": candidates.count,
+            "completedUTC": formatter.string(from: Date()), "nativeImportInvoked": false,
+            "nativeRuntimeInvoked": false, "tapCount": 0, "formalAcceptanceGranted": false]
+        try save(result, "result.original.json")
+        return result
+    }
+
+
+
+    private func importSelectionNode(_ snapshot: XCUIElementSnapshot, depth: Int = 0,
+                                     count: inout Int) throws -> QAImportSheetSelection.Node {
+        count += 1
+        guard count <= 8192, depth <= 64,
+              snapshot.label.utf8.count <= 4096, snapshot.identifier.utf8.count <= 4096 else {
+            throw NSError(domain: "CherriQAImportSelection", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "IMPORT_SNAPSHOT_BOUNDS"])
+        }
+        let kind: QAImportSheetSelection.Kind
+        switch snapshot.elementType {
+        case .application: kind = .application
+        case .window: kind = .window
+        case .other: kind = .other
+        case .sheet: kind = .sheet
+        case .scrollView: kind = .scrollView
+        case .button: kind = .button
+        case .staticText: kind = .staticText
+        default: kind = .unsupported
+        }
+        let children = try snapshot.children.map {
+            try importSelectionNode($0, depth: depth + 1, count: &count)
+        }
+        return QAImportSheetSelection.Node(kind: kind, label: snapshot.label,
+            identifier: snapshot.identifier, enabled: snapshot.isEnabled, selected: snapshot.isSelected,
+            frame: snapshot.frame, children: children)
+    }
+
     private func importShortcut(_ command: DifferentialCommand) throws -> [String: Any] {
         let name = try XCTUnwrap(command.shortcutName)
         if shortcuts.state != .runningForeground {
             shortcuts.activate()
             _ = shortcuts.wait(for: .runningForeground, timeout: 8)
         }
-        let button = shortcuts.buttons.matching(
-            NSPredicate(format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Replace'")).firstMatch
         var timing = QADifferentialImportTiming(searchStartedAt: Date())
         let dispatchPath = runDirectory.appendingPathComponent("dispatch-" + command.id + ".json")
         let formatter = ISO8601DateFormatter()
@@ -121,20 +253,55 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         // receipt and the clock again after each call, before using its result.
         // Every invocation reads fresh values, including after capture().
         var identity = false
+        var selectedButton: XCUIElement?
         func observeSheet() throws -> QADifferentialImportTiming.SheetDecision {
-            if let failure = checkAdd().failure { return .rejected(failure) }
-            let found = button.exists
-            if let failure = checkAdd().failure { return .rejected(failure) }
-            var hittable = false
+            selectedButton = nil
             identity = false
-            if found {
-                hittable = button.isHittable
+            if let failure = checkAdd().failure { return .rejected(failure) }
+            let buttons = shortcuts.buttons.matching(NSPredicate(
+                format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Replace'")).allElementsBoundByIndex
+            if let failure = checkAdd().failure { return .rejected(failure) }
+            guard buttons.count <= 32 else { return .rejected("IMPORT_QUERY_BOUNDS") }
+            var candidates: [QAImportSheetSelection.Candidate] = []
+            for (index, button) in buttons.enumerated() {
+                let exists = button.exists
                 if let failure = checkAdd().failure { return .rejected(failure) }
-                let snapshot = try shortcuts.snapshot()
-                if let failure = checkAdd().failure { return .rejected(failure) }
-                identity = hasName(snapshot, name: name)
+                var hittable = false
+                var observed: QAImportSheetSelection.Node?
+                if exists {
+                    hittable = button.isHittable
+                    if let failure = checkAdd().failure { return .rejected(failure) }
+                    let snapshot = try button.snapshot()
+                    if let failure = checkAdd().failure { return .rejected(failure) }
+                    var count = 0
+                    observed = try importSelectionNode(snapshot, count: &count)
+                }
+                candidates.append(QAImportSheetSelection.Candidate(queryIndex: index, exists: exists,
+                                                                   hittable: hittable, snapshot: observed))
             }
-            return checkSheet(found: found, hittable: hittable, identity: identity)
+            let snapshot = try shortcuts.snapshot()
+            if let failure = checkAdd().failure { return .rejected(failure) }
+            var count = 0
+            let current = try importSelectionNode(snapshot, count: &count)
+            let selected = QAImportSheetSelection.select(current: current, candidates: candidates, expectedName: name)
+            timingReceipt["sheetSelectionContract"] = "current-container-bound-add-v1"
+            timingReceipt["sheetSelectionReason"] = selected.reason
+            timingReceipt["sheetQueryCandidateCount"] = candidates.count
+            timingReceipt["sheetCurrentContainerCount"] = selected.currentContainerCount
+            timingReceipt["sheetMatchedCandidateCount"] = selected.matchedCandidateCount
+            for key in ["sheetSelectedQueryIndex", "sheetSelectedContainerPath", "sheetSelectedTitlePath", "sheetSelectedButtonPath"] {
+                timingReceipt.removeValue(forKey: key)
+            }
+            if let binding = selected.binding {
+                selectedButton = buttons[binding.queryIndex]
+                identity = true
+                timingReceipt["sheetSelectedQueryIndex"] = binding.queryIndex
+                timingReceipt["sheetSelectedContainerPath"] = binding.containerPath
+                timingReceipt["sheetSelectedTitlePath"] = binding.titlePath
+                timingReceipt["sheetSelectedButtonPath"] = binding.buttonPath
+            }
+            return checkSheet(found: candidates.contains { $0.exists },
+                              hittable: candidates.contains { $0.exists && $0.hittable }, identity: identity)
         }
         while true {
             let decision = try QADifferentialImportTiming.inspectSheetForConsent(
@@ -152,7 +319,7 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             Thread.sleep(forTimeInterval: max(0, min(0.2, remaining)))
         }
         XCTAssertTrue(identity, "Signed import sheet must identify " + name)
-        guard identity else {
+        guard identity, let button = selectedButton else {
             return receipt(["outcome": "IMPORT_IDENTITY_MISMATCH", "name": name])
         }
         button.tap()
@@ -287,6 +454,7 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             try write(started, to: "phase-started-" + command.id + ".json")
             var receipt: [String: Any]
             switch command.operation {
+            case "observe-import": receipt = try observeImportSheet(command)
             case "import": receipt = try importShortcut(command)
             case "runtime": receipt = try consentForRuntime(command)
             case "finish":

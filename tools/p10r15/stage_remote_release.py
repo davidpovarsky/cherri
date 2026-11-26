@@ -123,6 +123,8 @@ def main():
     parser.add_argument("--branch", required=True)
     parser.add_argument("--previous-stage-receipt", type=Path)
     parser.add_argument("--previous-stage-sha256")
+    parser.add_argument("--current-installed-baseline", type=Path)
+    parser.add_argument("--current-installed-baseline-sha256")
     parser.add_argument("--original-runner", type=Path)
     parser.add_argument("--original-legacy", type=Path)
     parser.add_argument("--installed-wrapper-templates", action="store_true",
@@ -163,7 +165,9 @@ def main():
             raise ValueError("Compiler capability mismatch: " + field)
     protected, previous, templates, template_witnesses = wrapper_templates(
         args.live_home, args.previous_stage_receipt, args.previous_stage_sha256,
-        args.original_runner, args.original_legacy, installed=args.installed_wrapper_templates)
+        args.original_runner, args.original_legacy, installed=args.installed_wrapper_templates,
+        current_baseline=args.current_installed_baseline,
+        current_sha=args.current_installed_baseline_sha256)
     for name, expected in protected.items():
         if digest(args.live_home / name) != expected:
             raise ValueError("Concurrent/unreviewed live change: " + name)
