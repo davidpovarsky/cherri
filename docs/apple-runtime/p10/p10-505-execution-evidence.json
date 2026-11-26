@@ -286,7 +286,7 @@
       "legacySource": "#define name ExecTest\naddItemToList(Ask, Ask)",
       "legacyEmittedIdent": "is.workflow.actions.additemtolist",
       "v2Supported": true,
-      "v2Source": "addItemToList(Ask, list: Ask)",
+      "v2Source": "addItemToList(\"sample\", list: Ask)",
       "v2EmittedIdent": "is.workflow.actions.additemtolist",
       "plistIdentifierVerified": true,
       "parameterContractVerified": true,
@@ -833,7 +833,7 @@
       "legacySource": "#define name ExecTest\n#include 'actions/documents'\nappendToFile(\"com.apple.Notes\", Ask)",
       "legacyEmittedIdent": "is.workflow.actions.file.append",
       "v2Supported": true,
-      "v2Source": "appendToFile(\"com.apple.Notes\", text: Ask)",
+      "v2Source": "appendToFile(\"com.apple.Notes\", text: \"com.apple.Notes\")",
       "v2EmittedIdent": "is.workflow.actions.file.append",
       "plistIdentifierVerified": true,
       "parameterContractVerified": true,
@@ -6864,7 +6864,7 @@
       "legacySource": "#define name ExecTest\n#include 'actions/contacts'\ngetPhoneNumbers(Ask)",
       "legacyEmittedIdent": "is.workflow.actions.detect.phonenumber",
       "v2Supported": true,
-      "v2Source": "getPhoneNumbers(Ask)",
+      "v2Source": "getPhoneNumbers(\"sample\")",
       "v2EmittedIdent": "is.workflow.actions.detect.phonenumber",
       "plistIdentifierVerified": true,
       "parameterContractVerified": true,
@@ -8429,7 +8429,7 @@
       "legacySource": "#define name ExecTest\njoinText(Ask)",
       "legacyEmittedIdent": "is.workflow.actions.text.combine",
       "v2Supported": true,
-      "v2Source": "joinText(Ask)",
+      "v2Source": "joinText(\"sample\")",
       "v2EmittedIdent": "is.workflow.actions.text.combine",
       "plistIdentifierVerified": true,
       "parameterContractVerified": true,
@@ -10826,7 +10826,7 @@
       "legacySource": "#define name ExecTest\n#include 'actions/documents'\nprependToFile(\"sample\", Ask)",
       "legacyEmittedIdent": "is.workflow.actions.file.append",
       "v2Supported": true,
-      "v2Source": "prependToFile(\"sample\", text: Ask)",
+      "v2Source": "prependToFile(\"sample\", text: \"sample\")",
       "v2EmittedIdent": "is.workflow.actions.file.append",
       "plistIdentifierVerified": true,
       "parameterContractVerified": true,
@@ -15695,7 +15695,7 @@
         "BLOCKED_DEVICE"
       ],
       "emittedKeysSample": [
-        "WFInput",
+        "Input",
         "WFStatisticsOperation"
       ]
     },
