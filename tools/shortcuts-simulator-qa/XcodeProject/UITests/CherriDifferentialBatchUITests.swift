@@ -353,27 +353,27 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         }
         func observeEditorBack() throws -> QAImportedEditorNavigation.Decision {
             selectedEditorBack = nil
-            if let failure = editorNavigationBoundary() { return .rejected(failure) }
+            if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
             let foreground = shortcuts.state == .runningForeground
-            if let failure = editorNavigationBoundary() { return .rejected(failure) }
-            guard foreground else { return .rejected("EDITOR_NOT_FOREGROUND") }
+            if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+            guard foreground else { return QAImportedEditorNavigation.rejected("EDITOR_NOT_FOREGROUND") }
             let namedBars = shortcuts.navigationBars.matching(identifier: name).allElementsBoundByIndex
-            if let failure = editorNavigationBoundary() { return .rejected(failure) }
-            guard namedBars.count == 1 else { return .rejected("NO_UNIQUE_CURRENT_REQUESTED_EDITOR") }
+            if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+            guard namedBars.count == 1 else { return QAImportedEditorNavigation.rejected("NO_UNIQUE_CURRENT_REQUESTED_EDITOR") }
             let buttons = namedBars[0].buttons.matching(identifier: "BackButton").allElementsBoundByIndex
-            if let failure = editorNavigationBoundary() { return .rejected(failure) }
-            guard buttons.count <= 32 else { return .rejected("INVALID_EDITOR_OBSERVATION") }
+            if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+            guard buttons.count <= 32 else { return QAImportedEditorNavigation.rejected("INVALID_EDITOR_OBSERVATION") }
             var candidates: [QAImportSheetSelection.Candidate] = []
             for (index, button) in buttons.enumerated() {
                 let exists = button.exists
-                if let failure = editorNavigationBoundary() { return .rejected(failure) }
+                if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
                 var hittable = false
                 var observed: QAImportSheetSelection.Node?
                 if exists {
                     hittable = button.isHittable
-                    if let failure = editorNavigationBoundary() { return .rejected(failure) }
+                    if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
                     let snapshot = try button.snapshot()
-                    if let failure = editorNavigationBoundary() { return .rejected(failure) }
+                    if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
                     var count = 0
                     observed = try importSelectionNode(snapshot, count: &count)
                 }
@@ -381,13 +381,13 @@ final class CherriDifferentialBatchUITests: XCTestCase {
                                                                    hittable: hittable, snapshot: observed))
             }
             let snapshot = try shortcuts.snapshot()
-            if let failure = editorNavigationBoundary() { return .rejected(failure) }
+            if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
             var count = 0
             let current = try importSelectionNode(snapshot, count: &count)
             let stillForeground = shortcuts.state == .runningForeground
             let decision = checkLibrary()
-            if let failure = decision.failure { return .rejected(failure) }
-            guard let deadline = decision.deadline else { return .rejected("IMPORT_LIBRARY_DEADLINE") }
+            if let failure = decision.failure { return QAImportedEditorNavigation.rejected(failure) }
+            guard let deadline = decision.deadline else { return QAImportedEditorNavigation.rejected("IMPORT_LIBRARY_DEADLINE") }
             let selected = QAImportedEditorNavigation.select(current: current, candidates: candidates,
                 context: .init(expectedName: name, foreground: stillForeground,
                                dispatchConfirmed: decision.canConfirm, alreadyNavigated: editorBackTapped,
