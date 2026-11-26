@@ -17,6 +17,7 @@ import documentation_evidence as docs
 import joined_editor_evidence as joined
 import preview_native_evidence as preview
 import e07_pane_observations as e07
+import ui_readiness_observations as readiness
 
 # UI automation tests map to (requirements, assertions, required_checkpoint_marker)
 # The BRG25 bridge probe and BRG27 single-document build remain diagnostics.
@@ -431,8 +432,14 @@ def bounded_log(raw_text):
     joined_guard = joined.LogGuard(Path(__file__).resolve().parents[2])
     preview_guard = preview.LogGuard(Path(__file__).resolve().parents[2])
     e07_guard = e07.LogGuard()
+    readiness_guard = readiness.LogGuard()
     for raw_line in raw_text.splitlines():
         line = raw_line.strip()
+        readiness_line = readiness_guard.observe(raw_line, active_test)
+        if readiness_line is not None:
+            if readiness_line:
+                lines.append(readiness_line)
+            continue
         e07_line = e07_guard.observe(raw_line, active_test)
         if e07_line is not None:
             lines.append(e07_line)

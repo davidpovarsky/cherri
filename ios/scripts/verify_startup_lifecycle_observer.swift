@@ -51,6 +51,10 @@ enum VerifyStartupLifecycleObserver {
         let env = ["CHERRI_STARTUP_OBSERVATION_NONCE": nonce,
                    "CHERRI_STARTUP_OBSERVATION_TEST": testID]
         let context = CherriStartupLifecycleObserver.Context(arguments: ["--uitesting"], environment: env)!
+        var e07 = env
+        e07["CHERRI_STARTUP_OBSERVATION_TEST"] = "CherriEditorUITests/testE07VisualParameterEditingCanvasUI"
+        expect(CherriStartupLifecycleObserver.Context(arguments: ["--uitesting"], environment: e07) != nil,
+               "the exact E07 diagnostic context uses the original nonce admission")
         expect(CherriStartupLifecycleObserver.Context(arguments: [], environment: env) == nil, "normal launch disabled")
         for bad in ["", "../private", String(repeating: "a", count: 31), String(repeating: "A", count: 32), nonce + "\n"] {
             var invalid = env; invalid["CHERRI_STARTUP_OBSERVATION_NONCE"] = bad

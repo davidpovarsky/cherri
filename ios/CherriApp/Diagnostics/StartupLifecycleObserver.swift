@@ -1,7 +1,7 @@
 import Foundation
 import Dispatch
 
-/// Event-only diagnostics for three fixed UI tests. This observer never queries
+/// Event-only diagnostics for fixed UI tests. This observer never queries
 /// accessibility, creates a document, or participates in readiness decisions.
 final class CherriStartupLifecycleObserver: @unchecked Sendable {
     enum Phase: String, Sendable {
@@ -33,6 +33,7 @@ final class CherriStartupLifecycleObserver: @unchecked Sendable {
             "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
             "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
             "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+            "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
         ]
         let nonce: String
         let testID: String

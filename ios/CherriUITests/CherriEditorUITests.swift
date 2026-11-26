@@ -56,6 +56,7 @@ final class CherriEditorUITests: XCTestCase {
             "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI",
             "CherriEditorUITests/testD03CurrentDocumentationSearchUI",
             "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI",
+            "CherriEditorUITests/testE07VisualParameterEditingCanvasUI",
         ]
         guard selected.contains(testID) else { return }
         let nonce = UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()

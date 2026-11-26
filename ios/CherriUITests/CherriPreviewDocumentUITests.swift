@@ -211,25 +211,44 @@ final class CherriPreviewDocumentUITests: XCTestCase {
     }
 
 
-    private func pane(_ name: String) throws {
+    @discardableResult
+    private func pane(_ name: String) throws -> [String: Any] {
         let control = app.segmentedControls.buttons[name]
-        if control.exists {
-            try require(control.isHittable, "The real workspace pane must be selectable")
+        let exists = control.exists
+        if exists {
+            let hittable = control.isHittable
+            try require(hittable, "The real workspace pane must be selectable")
             control.tap()
+            return ["target": name, "exists": exists, "hittable": hittable,
+                    "tapIssued": true, "selectionObserved": false]
         }
+        return ["target": name, "exists": exists, "hittable": NSNull(),
+                "tapIssued": false, "selectionObserved": false]
     }
 
-    private func fields(_ key: String, value: String) -> [XCUIElement] {
+    private func fields(_ key: String, value: String,
+                        trace: CherriUIReadinessTrace? = nil) -> [XCUIElement] {
         let web = app.webViews.firstMatch
-        guard web.exists else { return [] }
+        let webExists = web.exists
+        guard webExists else {
+            trace?.fields(webExists: webExists, candidateCount: 0, matchingCount: 0)
+            return []
+        }
         let predicate = NSPredicate(format: "label == %@ OR identifier == %@", key, key)
         let candidates = web.textViews.matching(predicate).allElementsBoundByAccessibilityElement
             + web.textFields.matching(predicate).allElementsBoundByAccessibilityElement
-        return candidates.filter { ($0.value as? String)?.utf16.elementsEqual(value.utf16) == true }
+        let matches = candidates.filter { ($0.value as? String)?.utf16.elementsEqual(value.utf16) == true }
+        trace?.fields(webExists: webExists, candidateCount: candidates.count, matchingCount: matches.count)
+        return matches
     }
 
-    private func field(_ key: String, value: String) throws -> XCUIElement {
-        try require(wait(8) { self.fields(key, value: value).count == 1 },
+    private func field(_ key: String, value: String,
+                       boundary: CherriUIReadinessTrace.Boundary? = nil,
+                       pane: [String: Any]? = nil) throws -> XCUIElement {
+        let trace = boundary.map { CherriUIReadinessTrace($0, pane: pane) }
+        let fieldReady = wait(8) { self.fields(key, value: value, trace: trace).count == 1 }
+        trace?.finish(waitCompleted: fieldReady)
+        try require(fieldReady,
                     "Exactly one actual WebKit editable field must expose this key and synthetic value")
         return try XCTUnwrap(fields(key, value: value).first)
     }
@@ -263,9 +282,9 @@ final class CherriPreviewDocumentUITests: XCTestCase {
         try replaceSource(editor, source)
         try build(editor, source: source, succeeds: true)
         try previewStage("actual-source-built", source: source)
-        try pane("Preview")
-        let target = try field("Text", value: "BRG28_EDIT")
-        let kept = try field("Text", value: "BRG28_KEEP")
+        let initialPane = try pane("Preview")
+        let target = try field("Text", value: "BRG28_EDIT", boundary: .firstText, pane: initialPane)
+        let kept = try field("Text", value: "BRG28_KEEP", boundary: .keptText, pane: initialPane)
         let started = ProcessInfo.processInfo.systemUptime
         try replaceField(target, old: "BRG28_EDIT", new: "BRG28_CHANGED")
         // Blur through another real DOM textbox; this invokes the existing

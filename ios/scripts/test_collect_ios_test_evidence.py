@@ -1251,3 +1251,166 @@ class PreviewTransactionRetentionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UIReadinessObservationTests(unittest.TestCase):
+    collect = IOSTestEvidenceTests.collect
+    prefix = "[CHERRI_UI_READINESS] "
+    rejected = "[CHERRI_UI_READINESS_REJECTED] "
+    sign_test = "CherriJoinedContractUITests/testBRG25ActualAppRejectedAndLiteralRoutesUI"
+    field_test = "CherriPreviewDocumentUITests/testBRG28ActualWebKitFieldEditAndNumericRejectionUI"
+
+    def row(self, boundary="brg25-malformed-sign", completed=False):
+        sign = boundary.startswith("brg25-")
+        return {
+            "schema": "cherri-ui-readiness-observation/1",
+            "testId": self.sign_test if sign else self.field_test,
+            "boundary": boundary,
+            "query": "button:signButton" if sign else "firstWebView:Text",
+            "budgetMilliseconds": 5000 if sign else 8000,
+            "elapsedMilliseconds": 5001 if sign else 8001,
+            "observations": 5, "observationsClamped": False,
+            "waitCompleted": completed,
+            "state": ({"exists": True, "hittable": completed, "enabled": True if completed else None}
+                      if sign else {"webExists": True, "candidateCount": 2,
+                                    "matchingCount": 1 if completed else 0, "countsClamped": False}),
+            **({} if sign else {"pane": {"target": "Preview", "exists": True,
+                                         "hittable": True, "tapIssued": True,
+                                         "selectionObserved": False}}),
+        }
+
+    def line(self, row):
+        return self.prefix + json.dumps(row, sort_keys=True)
+
+    def block(self, row, body=None, status="failed", test_id=None):
+        suite, method = (test_id or row["testId"]).split("/")
+        return (f"Test Case '-[CherriUITests.{suite} {method}]' started.\n"
+                + (self.line(row) if body is None else body) + "\n"
+                + f"Test Case '-[CherriUITests.{suite} {method}]' {status} (0.123 seconds).\n")
+
+    def admitted(self, output):
+        return [line for line in output.splitlines() if line.startswith(self.prefix)]
+
+    def test_four_fixed_boundaries_preserve_exact_rows_and_original_terminal_only(self):
+        for boundary in ("brg25-type-sign", "brg25-malformed-sign", "brg28-first-text", "brg28-kept-text"):
+            for completed in (False, True):
+                with self.subTest(boundary=boundary, completed=completed):
+                    row = self.row(boundary, completed)
+                    status = "passed" if completed else "failed"
+                    diagnostic, records, outputs = self.collect(
+                        self.block(row, status=status), 0 if completed else 65)
+                    self.assertEqual(self.admitted(outputs["xcodetest.log"]), [self.line(row)])
+                    self.assertEqual(diagnostic["testResults"], [
+                        {"testId": row["testId"], "observedStatus": status}])
+                    self.assertEqual(records, [])
+
+    def test_short_circuit_sign_states_and_unobserved_predicate_are_distinct(self):
+        states = [
+            {"exists": False, "hittable": None, "enabled": None},
+            {"exists": True, "hittable": False, "enabled": None},
+            {"exists": True, "hittable": True, "enabled": False},
+            {"exists": True, "hittable": True, "enabled": True},
+            {},
+        ]
+        for state in states:
+            with self.subTest(state=state):
+                row = self.row(); row["state"] = state
+                if not state:
+                    row["observations"] = 0
+                _, records, outputs = self.collect(self.block(row), 65)
+                self.assertEqual(self.admitted(outputs["xcodetest.log"]), [self.line(row)])
+                self.assertEqual(records, [])
+
+    def test_web_missing_wrong_value_ambiguous_match_and_clamped_counts_are_distinct(self):
+        cases = [(False, 0, 0, False), (True, 0, 0, False), (True, 2, 0, False),
+                 (True, 2, 2, False), (True, 255, 1, True)]
+        for present, candidates, matches, clamped in cases:
+            with self.subTest(case=(present, candidates, matches, clamped)):
+                row = self.row("brg28-first-text")
+                row["state"] = dict(webExists=present, candidateCount=candidates,
+                                    matchingCount=matches, countsClamped=clamped)
+                _, _, outputs = self.collect(self.block(row), 65)
+                self.assertEqual(self.admitted(outputs["xcodetest.log"]), [self.line(row)])
+
+    def test_closed_schema_rejects_wrong_context_types_identity_and_impossible_state(self):
+        import copy
+        mutations = [
+            ("schema", lambda r: r.update(schema="other")),
+            ("test", lambda r: r.update(testId=self.field_test)),
+            ("boundary", lambda r: r.update(boundary="private")),
+            ("query", lambda r: r.update(query="button:private")),
+            ("budget", lambda r: r.update(budgetMilliseconds=5001)),
+            ("boolean-budget", lambda r: r.update(budgetMilliseconds=True)),
+            ("elapsed-type", lambda r: r.update(elapsedMilliseconds=1.5)),
+            ("elapsed-bound", lambda r: r.update(elapsedMilliseconds=120001)),
+            ("observations-bool", lambda r: r.update(observations=True)),
+            ("observations-bound", lambda r: r.update(observations=129)),
+            ("overflow", lambda r: r.update(observationsClamped=True)),
+            ("unobserved-ready", lambda r: r.update(observations=0, state={}, waitCompleted=True)),
+            ("state-type", lambda r: r.update(state=[])),
+            ("fake-hittable", lambda r: r["state"].update(exists=False, hittable=True)),
+            ("fake-enabled", lambda r: r["state"].update(hittable=False, enabled=True)),
+            ("ready-false-state", lambda r: r.update(waitCompleted=True)),
+            ("extra-source", lambda r: r.update(source="PRIVATE_CANARY")),
+            ("extra-ax", lambda r: r["state"].update(axTree="PRIVATE_CANARY")),
+        ]
+        for label, change in mutations:
+            with self.subTest(label=label):
+                row = copy.deepcopy(self.row()); change(row)
+                _, records, outputs = self.collect(self.block(row, test_id=self.sign_test), 65)
+                self.assertEqual(self.admitted(outputs["xcodetest.log"]), [])
+                self.assertIn(self.rejected, outputs["xcodetest.log"])
+                self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+                self.assertEqual(records, [])
+
+    def test_field_bounds_and_unobserved_selection_do_not_invent_native_state(self):
+        import copy
+        for label, change in [
+            ("boolean-count", lambda r: r["state"].update(candidateCount=True)),
+            ("negative-count", lambda r: r["state"].update(matchingCount=-1)),
+            ("too-many-matches", lambda r: r["state"].update(matchingCount=3)),
+            ("missing-web-with-fields", lambda r: r["state"].update(webExists=False)),
+            ("wrong-pane", lambda r: r["pane"].update(target="Code")),
+            ("invented-selection", lambda r: r["pane"].update(selectionObserved=True)),
+            ("tap-without-match", lambda r: r["pane"].update(exists=False, hittable=None)),
+            ("private-pane", lambda r: r["pane"].update(label="PRIVATE_CANARY")),
+        ]:
+            with self.subTest(label=label):
+                row = copy.deepcopy(self.row("brg28-kept-text")); change(row)
+                _, records, outputs = self.collect(self.block(row), 65)
+                self.assertEqual(self.admitted(outputs["xcodetest.log"]), [])
+                self.assertIn(self.rejected, outputs["xcodetest.log"])
+                self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+                self.assertEqual(records, [])
+
+    def test_raw_padding_duplicate_json_keys_and_foreign_test_are_rejected(self):
+        row = self.row()
+        line = self.line(row)
+        invalid = [" " * 2100 + line, line + " " * 2100,
+                   line.replace('"waitCompleted": false', '"waitCompleted": false, "waitCompleted": true')]
+        for raw in invalid:
+            _, _, outputs = self.collect(self.block(row, body=raw), 65)
+            self.assertEqual(self.admitted(outputs["xcodetest.log"]), [])
+            self.assertIn(self.rejected, outputs["xcodetest.log"])
+        _, records, outputs = self.collect(self.block(row, test_id=self.field_test), 65)
+        self.assertEqual(self.admitted(outputs["xcodetest.log"]), [])
+        self.assertIn(self.rejected, outputs["xcodetest.log"])
+        self.assertEqual(records, [])
+
+    def test_duplicate_boundary_and_rows_after_case_cannot_supply_evidence(self):
+        row = self.row()
+        raw = self.block(row, body=self.line(row) + "\n" + self.line(row)) + self.line(row)
+        diagnostic, records, outputs = self.collect(raw, 65)
+        self.assertEqual(self.admitted(outputs["xcodetest.log"]), [self.line(row)])
+        self.assertEqual(outputs["xcodetest.log"].count(self.rejected), 2)
+        self.assertEqual(diagnostic["testResults"], [{"testId": self.sign_test, "observedStatus": "failed"}])
+        self.assertEqual(records, [])
+
+    def test_rejection_volume_is_bounded_without_erasing_failed_terminal(self):
+        row = self.row()
+        diagnostic, records, outputs = self.collect(
+            self.block(row, body="\n".join([self.line(row)] * 20)), 65)
+        self.assertEqual(self.admitted(outputs["xcodetest.log"]), [self.line(row)])
+        self.assertLessEqual(outputs["xcodetest.log"].count(self.rejected), 8)
+        self.assertEqual(diagnostic["testResults"], [{"testId": self.sign_test, "observedStatus": "failed"}])
+        self.assertEqual(records, [])
