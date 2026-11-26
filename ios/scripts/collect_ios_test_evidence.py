@@ -16,6 +16,7 @@ import re
 import documentation_evidence as docs
 import joined_editor_evidence as joined
 import preview_native_evidence as preview
+import e07_pane_observations as e07
 
 # UI automation tests map to (requirements, assertions, required_checkpoint_marker)
 # The BRG25 bridge probe and BRG27 single-document build remain diagnostics.
@@ -427,8 +428,13 @@ def bounded_log(raw_text):
     rp40_ui_stage_index = 0
     joined_guard = joined.LogGuard(Path(__file__).resolve().parents[2])
     preview_guard = preview.LogGuard(Path(__file__).resolve().parents[2])
+    e07_guard = e07.LogGuard()
     for raw_line in raw_text.splitlines():
         line = raw_line.strip()
+        e07_line = e07_guard.observe(raw_line, active_test)
+        if e07_line is not None:
+            lines.append(e07_line)
+            continue
         joined_line = joined_guard.observe(raw_line)
         preview_line = preview_guard.observe(raw_line)
         if preview_line is not None:
@@ -442,6 +448,9 @@ def bounded_log(raw_text):
             if CASE_LINE.fullmatch(line) is None:
                 continue
         if case := CASE_LINE.fullmatch(line):
+            e07_boundary = e07_guard.boundary(case.group(1), case.group(2), case.group(3))
+            if e07_boundary is not None:
+                lines.append(e07_boundary)
             active_test = (case.group(1).split(".")[1] + "/" + case.group(2)) if case.group(3) == "started." else None
             original_paste_wait_observed = False
             if active_test == RP40_UI_TEST:

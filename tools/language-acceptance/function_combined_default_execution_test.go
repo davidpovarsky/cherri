@@ -57,7 +57,7 @@ func TestFunctionCombinedDefaultProducerInventory(t *testing.T) {
 			t.Fatal("missing source witness", path, err)
 		}
 	}
-	if len(functionCombinedDefaultProductionPaths) != 72 || !reflect.DeepEqual(deriveRepairTestIDs(row.ID, row.Title), functionCombinedDefaultTestIDs()) || !reflect.DeepEqual(deriveRepairFixtures(row.ID), functionCombinedDefaultProductionPaths) {
+	if len(functionCombinedDefaultProductionPaths) != 73 || !seen["p15_tagged_boundary_alignment_test.go"] || !reflect.DeepEqual(deriveRepairTestIDs(row.ID, row.Title), functionCombinedDefaultTestIDs()) || !reflect.DeepEqual(deriveRepairFixtures(row.ID), functionCombinedDefaultProductionPaths) {
 		t.Fatal("complete typed default/transport producer mapping changed")
 	}
 	var ids []string

@@ -819,6 +819,94 @@ final class CherriEditorUITests: XCTestCase {
     }
 
     // E07 & RP41 & BRG28: Visual parameter editing and fallback rendering in preview canvas
+    /// E07 observes only fixed controls in its already-reset synthetic document.
+    /// Readiness and selection share the original three-second pane budget.
+    private func selectE07Pane(_ name: String, stage: String,
+                               file: StaticString = #filePath, line: UInt = #line) -> Bool {
+        let started = ProcessInfo.processInfo.systemUptime
+        let deadline = started + 3
+        let selectors = app.segmentedControls
+        let editor = app.textViews["cherriCodeEditor"]
+        let preview = app.webViews.firstMatch
+        var control: XCUIElement?
+        var dualPane = false
+        var observation: [String: Any] = [:]
+
+        func observe() -> Bool {
+            let selectorCount = selectors.count
+            var codeCount = 0
+            var previewCount = 0
+            control = nil
+            if selectorCount == 1 {
+                let selector = selectors.element(boundBy: 0)
+                codeCount = selector.buttons.matching(identifier: "Code").count
+                previewCount = selector.buttons.matching(identifier: "Preview").count
+                if codeCount == 1 && previewCount == 1 {
+                    control = selector.buttons[name]
+                }
+            }
+            let editorExists = editor.exists
+            let previewExists = preview.exists
+            dualPane = selectorCount == 0 && editorExists && previewExists
+                && editor.isHittable && preview.isHittable
+            let hittable = control?.isHittable ?? false
+            observation = [
+                "selectorCount": selectorCount, "codeCount": codeCount,
+                "previewCount": previewCount, "targetHittable": hittable,
+                "targetSelected": control?.isSelected ?? false,
+                "editorExists": editorExists, "previewExists": previewExists,
+                "dualPaneVisible": dualPane,
+            ]
+            return dualPane || hittable
+        }
+
+        func wait(_ predicate: @escaping () -> Bool) -> Bool {
+            let remaining = deadline - ProcessInfo.processInfo.systemUptime
+            guard remaining > 0 else { return false }
+            let expectation = XCTNSPredicateExpectation(
+                predicate: NSPredicate { _, _ in predicate() }, object: app)
+            return XCTWaiter.wait(for: [expectation], timeout: remaining) == .completed
+                && ProcessInfo.processInfo.systemUptime <= deadline
+        }
+
+        func record(_ phase: String, tapIssued: Bool) {
+            var row = observation
+            row["schema"] = "cherri-e07-pane-transition/1"
+            row["testId"] = "CherriEditorUITests/testE07VisualParameterEditingCanvasUI"
+            row["stage"] = stage
+            row["target"] = name
+            row["phase"] = phase
+            row["tapIssued"] = tapIssued
+            row["budgetMilliseconds"] = 3_000
+            row["elapsedMilliseconds"] = Int(
+                (ProcessInfo.processInfo.systemUptime - started) * 1_000)
+            if let bytes = try? JSONSerialization.data(withJSONObject: row, options: [.sortedKeys]),
+               bytes.count <= 2_048, let json = String(data: bytes, encoding: .utf8) {
+                print("[CHERRI_E07_PANE_TRANSITION] \(json)")
+            }
+        }
+
+        let ready = wait { observe() }
+        record(ready ? "ready" : "not-ready", tapIssued: false)
+        guard ready else {
+            XCTFail("E07 requires one selectable workspace segment or two visible panes", file: file, line: line)
+            return false
+        }
+        if dualPane {
+            record("dual-pane", tapIssued: false)
+            return true
+        }
+        guard let target = control, ProcessInfo.processInfo.systemUptime < deadline else {
+            XCTFail("E07 workspace selection must stay within its original deadline", file: file, line: line)
+            return false
+        }
+        target.tap()
+        let selected = wait { observe() && !dualPane && (control?.isSelected ?? false) }
+        record(selected ? "selected" : "not-selected", tapIssued: true)
+        XCTAssertTrue(selected, "E07 must observe its selected workspace segment", file: file, line: line)
+        return selected
+    }
+
     func testE07VisualParameterEditingCanvasUI() throws {
         let editor = ensureEditorReady()
         let initialSource = "// Header comment preserved\nshow(\"CanvasPreviewFixture\")\n// Footer comment preserved\n"
@@ -833,10 +921,7 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertTrue(compiledStatus.waitForExistence(timeout: 8), "Fixture must compile cleanly before preview inspection")
 
         // Switch to Preview pane if segmented picker is present (compact layout)
-        let previewSegment = app.buttons["Preview"]
-        if previewSegment.waitForExistence(timeout: 3) && previewSegment.isHittable {
-            previewSegment.tap()
-        }
+        guard selectE07Pane("Preview", stage: "initial-preview") else { return }
 
         // Verify WebKit preview canvas element exists
         let webView = app.webViews.firstMatch
@@ -848,10 +933,7 @@ final class CherriEditorUITests: XCTestCase {
         previewEditBtn.tap()
 
         // Switch back to Code pane
-        let codeSegment = app.buttons["Code"]
-        if codeSegment.waitForExistence(timeout: 3) && codeSegment.isHittable {
-            codeSegment.tap()
-        }
+        guard selectE07Pane("Code", stage: "edited-code") else { return }
 
         // Verify exact source change: parameter updated, unrelated comments preserved
         XCTAssertTrue(editor.waitForExistence(timeout: 5), "Editor must remain present")
@@ -865,9 +947,7 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertTrue(val.contains("// Footer comment preserved"), "Footer comment must remain preserved")
 
         // Test negative / unmappable case: attempting invalid edit rejects safely
-        if previewSegment.waitForExistence(timeout: 3) && previewSegment.isHittable {
-            previewSegment.tap()
-        }
+        guard selectE07Pane("Preview", stage: "invalid-preview") else { return }
         let invalidEditBtn = app.buttons["previewParamInvalidEditButton"]
         XCTAssertTrue(invalidEditBtn.waitForExistence(timeout: 5), "Invalid parameter edit button must exist")
         invalidEditBtn.tap()
@@ -876,22 +956,16 @@ final class CherriEditorUITests: XCTestCase {
         XCTAssertTrue(diagStatus.waitForExistence(timeout: 5), "Invalid visual edit must produce rejection diagnostic")
 
         // Switch back to Code pane and verify source was not corrupted
-        if codeSegment.waitForExistence(timeout: 3) && codeSegment.isHittable {
-            codeSegment.tap()
-        }
+        guard selectE07Pane("Code", stage: "rejected-code") else { return }
         XCTAssertTrue(waitForEditorValue(editor) { $0.utf16.elementsEqual(updatedSource.utf16) },
                       "Rejected edit must preserve the exact source after returning to Code")
         let preservedVal = (editor.value as? String) ?? ""
         XCTAssertTrue(preservedVal.contains("VisualParamUpdated"), "Source must remain intact after rejected edit")
 
         // Persistence: toggle preview again and confirm persistence
-        if previewSegment.waitForExistence(timeout: 3) && previewSegment.isHittable {
-            previewSegment.tap()
-        }
+        guard selectE07Pane("Preview", stage: "reopened-preview") else { return }
         XCTAssertTrue(webView.waitForExistence(timeout: 5), "Preview must persist across view transitions")
-        if codeSegment.waitForExistence(timeout: 3) && codeSegment.isHittable {
-            codeSegment.tap()
-        }
+        guard selectE07Pane("Code", stage: "reopened-code") else { return }
         XCTAssertTrue(waitForEditorValue(editor) { $0.utf16.elementsEqual(updatedSource.utf16) },
                       "Reopened Code pane must expose the exact preserved source")
         let finalVal = (editor.value as? String) ?? ""

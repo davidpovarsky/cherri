@@ -57,7 +57,7 @@ func TestParameterFormsProducerInventory(t *testing.T) {
 			t.Fatal("missing source witness", path, err)
 		}
 	}
-	if len(parameterFormsProductionPaths) != 84 || !reflect.DeepEqual(deriveGateTestIDs(row.ID, row.ProposedTestPrefix), parameterFormsTestIDs()) || !reflect.DeepEqual(deriveGateFixtures(row.ID), parameterFormsProductionPaths) {
+	if len(parameterFormsProductionPaths) != 85 || !seen["p15_tagged_boundary_alignment_test.go"] || !reflect.DeepEqual(deriveGateTestIDs(row.ID, row.ProposedTestPrefix), parameterFormsTestIDs()) || !reflect.DeepEqual(deriveGateFixtures(row.ID), parameterFormsProductionPaths) {
 		t.Fatal("complete canonical parameter-forms producer mapping changed")
 	}
 	var ids []string

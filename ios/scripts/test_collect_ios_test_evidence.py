@@ -985,5 +985,198 @@ class IOSTestEvidenceTests(unittest.TestCase):
         self.assertNotIn(secret, "".join(outputs.values()))
 
 
+
+
+class E07PaneObservationTests(unittest.TestCase):
+    prefix = "[CHERRI_E07_PANE_TRANSITION] "
+    rejected = "[CHERRI_E07_PANE_REJECTED] INVALID_TRANSITION"
+    test_id = "CherriEditorUITests/testE07VisualParameterEditingCanvasUI"
+    method = "testE07VisualParameterEditingCanvasUI"
+    stages = (("initial-preview", "Preview"), ("edited-code", "Code"),
+              ("invalid-preview", "Preview"), ("rejected-code", "Code"),
+              ("reopened-preview", "Preview"), ("reopened-code", "Code"))
+    checkpoint = "[CHECKPOINT:E07_PREVIEW_EDIT_VERIFIED]"
+
+    def row(self, index, phase, dual=False):
+        stage, target = self.stages[index]
+        return {
+            "schema": "cherri-e07-pane-transition/1", "testId": self.test_id,
+            "stage": stage, "target": target, "phase": phase,
+            "selectorCount": 0 if dual else 1, "codeCount": 0 if dual else 1,
+            "previewCount": 0 if dual else 1, "targetHittable": not dual,
+            "targetSelected": phase == "selected", "editorExists": True,
+            "previewExists": True, "dualPaneVisible": dual,
+            "tapIssued": phase in ("selected", "not-selected"),
+            "budgetMilliseconds": 3000, "elapsedMilliseconds": 100 if phase == "ready" else 200,
+        }
+
+    def lines(self, dual=False):
+        return [self.prefix + json.dumps(self.row(i, phase, dual), sort_keys=True)
+                for i in range(6) for phase in ("ready", "dual-pane" if dual else "selected")]
+
+    def block(self, lines, status="passed", target="CherriUITests.CherriEditorUITests", method=None):
+        method = method or self.method
+        return (f"Test Case '-[{target} {method}]' started.\n"
+                + "\n".join(lines) + "\n" + self.checkpoint + "\n"
+                + f"Test Case '-[{target} {method}]' {status} (0.123 seconds).\n")
+
+    def retained(self, raw):
+        return collector.bounded_log(raw)[0]
+
+    def observation_lines(self, retained):
+        return [line for line in retained.splitlines() if line.startswith(self.prefix)]
+
+    def test_exact_segmented_observations_are_retained(self):
+        lines = self.lines()
+        actual = self.retained(self.block(lines))
+        self.assertEqual(self.observation_lines(actual), lines)
+        self.assertNotIn(self.rejected, actual)
+        self.assertIn(self.checkpoint, actual)
+
+    def test_proved_dual_pane_observations_are_retained(self):
+        lines = self.lines(dual=True)
+        actual = self.retained(self.block(lines))
+        self.assertEqual(self.observation_lines(actual), lines)
+        self.assertTrue(all(not json.loads(line[len(self.prefix):])["tapIssued"] for line in lines))
+
+    def test_accepted_observation_bytes_are_not_reconstructed(self):
+        lines = self.lines()
+        lines[0] = self.prefix + json.dumps(self.row(0, "ready"), separators=(", ", ": "))
+        self.assertEqual(self.observation_lines(self.retained(self.block(lines))), lines)
+
+    def test_old_E07_log_without_new_observations_is_unchanged(self):
+        raw = self.block([])
+        self.assertEqual(self.retained(raw), raw.replace("\n\n", "\n"))
+
+    def test_failed_readiness_is_retained_without_success_credit(self):
+        row = self.row(0, "not-ready")
+        row.update(selectorCount=2, codeCount=0, previewCount=0,
+                   targetHittable=False, elapsedMilliseconds=3100)
+        line = self.prefix + json.dumps(row)
+        diagnostic, records, outputs = IOSTestEvidenceTests().collect(self.block([line], "failed"), 65)
+        self.assertEqual(self.observation_lines(outputs["xcodetest.log"]), [line])
+        self.assertEqual(diagnostic["runStatus"], "FAILED")
+        self.assertEqual(records, [])
+
+    def test_failed_selection_retains_the_actual_tap_and_elapsed(self):
+        rows = [self.row(0, "ready"), self.row(0, "not-selected")]
+        rows[1]["elapsedMilliseconds"] = 3200
+        lines = [self.prefix + json.dumps(row) for row in rows]
+        diagnostic, records, outputs = IOSTestEvidenceTests().collect(self.block(lines, "failed"), 65)
+        self.assertEqual(self.observation_lines(outputs["xcodetest.log"]), lines)
+        self.assertEqual(diagnostic["testResults"], [{"testId": self.test_id, "observedStatus": "failed"}])
+        self.assertEqual(records, [])
+
+    def test_fixed_schema_causal_corruptions_are_excluded(self):
+        faults = {
+            "schema": {"schema": "private"}, "test": {"testId": "Other/test"},
+            "stage": {"stage": "PRIVATE_CANARY"}, "target": {"target": "Other"},
+            "phase": {"phase": "OTHER"}, "extra_source": {"source": "PRIVATE_CANARY"},
+            "extra_AX": {"axTree": "PRIVATE_CANARY"}, "count_boolean": {"selectorCount": True},
+            "count_negative": {"codeCount": -1}, "count_large": {"previewCount": 33},
+            "string_boolean": {"targetHittable": "PRIVATE_CANARY"},
+            "budget_boolean": {"budgetMilliseconds": True}, "budget_drift": {"budgetMilliseconds": 3001},
+            "elapsed_negative": {"elapsedMilliseconds": -1}, "elapsed_float": {"elapsedMilliseconds": 1.0},
+            "elapsed_large": {"elapsedMilliseconds": 60001},
+        }
+        for name, change in faults.items():
+            with self.subTest(fault=name):
+                row = self.row(0, "ready"); row.update(change)
+                actual = self.retained(self.block([self.prefix + json.dumps(row)]))
+                self.assertEqual(self.observation_lines(actual), [])
+                self.assertEqual(actual.count(self.rejected), 1)
+                self.assertNotIn("PRIVATE_CANARY", actual)
+                self.assertIn("passed (0.123 seconds).", actual)
+
+    def test_duplicate_keys_malformed_and_oversized_JSON_are_excluded(self):
+        valid = json.dumps(self.row(0, "ready"))
+        cases = ["{invalid", "null", "[]", '{"schema":"wrong",' + valid[1:],
+                 valid[:-1] + ',"private":"' + "PRIVATE_CANARY" * 200 + '"}',
+                 "[" * 1000 + "]" * 1000]
+        for raw in cases:
+            with self.subTest(shape=raw[:20]):
+                actual = self.retained(self.block([self.prefix + raw]))
+                self.assertEqual(self.observation_lines(actual), [])
+                self.assertEqual(actual.count(self.rejected), 1)
+                self.assertNotIn("PRIVATE_CANARY", actual)
+
+    def test_wrong_test_or_target_never_admits_observations(self):
+        for target, method in (("CherriTests.CherriEditorUITests", self.method),
+                               ("CherriUITests.CherriEditorUITests", "testE01CompletionDisplayAndInsertionUI")):
+            with self.subTest(target=target, method=method):
+                actual = self.retained(self.block(self.lines(), target=target, method=method))
+                self.assertEqual(self.observation_lines(actual), [])
+                self.assertIn(self.rejected, actual)
+
+    def test_outside_test_and_forged_rejection_retain_no_payload(self):
+        raw = self.lines()[0] + "\n[CHERRI_E07_PANE_REJECTED] PRIVATE_CANARY\n"
+        actual = self.retained(raw)
+        self.assertEqual(actual, self.rejected + "\n")
+        self.assertNotIn("PRIVATE_CANARY", actual)
+
+    def test_transition_state_faults_are_rejected(self):
+        ready, selected = self.row(0, "ready"), self.row(0, "selected")
+        faults = {
+            "no_ready": [selected],
+            "duplicate_ready": [ready, ready],
+            "wrong_order": [self.row(1, "ready")],
+            "missing_unique_control": [dict(ready, codeCount=2)],
+            "early_tap": [dict(ready, tapIssued=True)],
+            "selected_without_tap": [ready, dict(selected, tapIssued=False)],
+            "selected_without_selected": [ready, dict(selected, targetSelected=False)],
+            "selected_wrong_control": [ready, dict(selected, previewCount=0)],
+            "success_after_budget": [ready, dict(selected, elapsedMilliseconds=3001)],
+            "reversed_time": [ready, dict(selected, elapsedMilliseconds=99)],
+            "unproved_dual": [dict(self.row(0, "ready", True), editorExists=False)],
+            "wrong_terminal_branch": [ready, self.row(0, "dual-pane", True)],
+        }
+        for name, rows in faults.items():
+            with self.subTest(fault=name):
+                actual = self.retained(self.block([self.prefix + json.dumps(row) for row in rows]))
+                self.assertIn(self.rejected, actual)
+                self.assertLessEqual(len(self.observation_lines(actual)), 1)
+
+    def test_duplicate_stage_and_extra_events_are_bounded(self):
+        lines = self.lines()
+        actual = self.retained(self.block(lines + [lines[0]] * 64))
+        self.assertEqual(self.observation_lines(actual), lines)
+        self.assertEqual(actual.count(self.rejected), 1)
+        self.assertLess(len(actual.encode()), 20000)
+
+    def test_stage_cannot_continue_across_test_boundaries(self):
+        raw = self.block([self.lines()[0]], "failed") + self.block([self.lines()[1]])
+        actual = self.retained(raw)
+        self.assertEqual(self.observation_lines(actual), [self.lines()[0]])
+        self.assertIn(self.rejected, actual)
+        self.assertIn("failed (0.123 seconds).", actual)
+        self.assertIn("passed (0.123 seconds).", actual)
+
+    def test_missing_stage_on_a_passed_test_is_diagnostic_rejection(self):
+        actual = self.retained(self.block(self.lines()[:-2]))
+        self.assertEqual(self.observation_lines(actual), self.lines()[:-2])
+        self.assertIn(self.rejected, actual)
+        self.assertIn("passed (0.123 seconds).", actual)
+
+    def test_original_failure_and_terminal_are_never_erased(self):
+        failure = ("/Users/runner/project/ios/CherriUITests/CherriEditorUITests.swift:895: error: "
+                   "-[CherriUITests.CherriEditorUITests " + self.method + "] : XCTAssertTrue failed")
+        raw = self.block([self.prefix + "{invalid", failure], "failed")
+        diagnostic, records, outputs = IOSTestEvidenceTests().collect(raw, 65)
+        self.assertEqual(diagnostic["testResults"], [{"testId": self.test_id, "observedStatus": "failed"}])
+        self.assertEqual(diagnostic["uiFailures"][0]["sourceLine"], 895)
+        self.assertEqual(records, [])
+        self.assertIn(self.rejected, outputs["xcodetest.log"])
+
+
+    def test_padded_valid_observation_cannot_bypass_raw_byte_bound(self):
+        valid = self.lines()[0]
+        for raw in (" " * 2200 + valid, valid + "\t" * 2200):
+            with self.subTest(padding="leading" if raw.startswith(" ") else "trailing"):
+                actual = self.retained(self.block([raw], "failed"))
+                self.assertEqual(self.observation_lines(actual), [])
+                self.assertNotIn(raw, actual)
+                self.assertIn(self.rejected, actual)
+
+
 if __name__ == "__main__":
     unittest.main()

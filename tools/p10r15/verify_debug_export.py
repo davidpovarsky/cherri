@@ -272,7 +272,7 @@ def main():
           source_path=out/f"negative-{legacy}-{profile}-{name}.cherri";target=source_path.with_suffix(".shortcut")
           source_path.write_bytes(source.encode())
           target.unlink(missing_ok=True)
-          command=[exe,"compile",source_path,"-o",target,"--build-profile",profile]+(["--legacy"] if legacy else [])
+          command=[exe,"compile",source_path,"-o",target,"--build-profile="+profile]+(["--legacy"] if legacy else [])
           if name == "unproved-dates":
               # Preserve the exact former rejection source/identity. This
               # feature evolution admits its source graph, not native dates or
