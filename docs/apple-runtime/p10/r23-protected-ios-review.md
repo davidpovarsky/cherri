@@ -6,7 +6,7 @@ on 2026-11-25 while retaining all tests and the purpose of the protection.
 ## Exact scope
 
 - Historical baseline: 76d722502e20db977e84a095444d0172442655b8.
-- Reviewed source: 0471fbfb735ede0ceb291761383ded2e7785fc6e.
+- Reviewed source: 57dd62d77f5cc1470d9fecd677efc7ba0ff6f2ae.
 - Protected paths remain ios/CherriUITests/CherriEditorUITests.swift and
   ios/CherriApp/Views/CodeEditorView.swift.
 - The editor UI suite retains all nine original XCTest methods and adds four.
@@ -153,3 +153,37 @@ committed Swift change as unreviewed. That failure is retained; its historical
 baseline result remains FAIL. This review grants only exact source retention.
 Swift compilation and the focused E07 native replay have not yet run; the
 complete iOS workflow on the joined candidate remains independently required.
+
+## Review of the 2026-11-26 E07 startup observation
+
+Reviewed Swift source: 57dd62d77f5cc1470d9fecd677efc7ba0ff6f2ae.
+The protected source adds only
+`CherriEditorUITests/testE07VisualParameterEditingCanvasUI` to the existing
+startup-observation allowlist. Removing that one line restores the previously
+reviewed protected file byte-for-byte. All 13 current methods, nine immutable
+baseline methods, E07 fixture bytes, assertions, checkpoints, pane transitions,
+and readiness deadlines remain unchanged. Both baseline snapshots and both
+protected paths remain exact; the second path remains absent.
+
+This follows the actual startup failure in full iOS run 45780580372 on 1caf:
+the original E07 startup assertion failed before any pane transition or source
+reset. The existing trace had completed repeated polls without finding an
+editor. This does not establish application source corruption or a functional
+navigation defect. The new app-side observation uses the existing nonce,
+96-event, 65,536-byte and 120-second bounds, with no additional AX query or
+readiness condition.
+
+The same source includes closed observations of already-read Sign properties
+and initial WebKit field counts outside the protected test file. Their exact
+scope, real Python RED/GREEN and source-preservation receipt are documented in
+`docs/apple-runtime/p10r15/ui-readiness-boundary-observations-20261126.md`.
+The implementation preserves every original assertion and original 5/8-second
+predicate. No workflow selection, skip, retry or acceptance mapping changes.
+
+The unchanged R23 gate rejected this committed protected-source change before
+the successor review; its original receipt is
+`/var/cache/cherri-e07-pane-transition-20261126/ui-readiness-r23-before-review-01/result.original.json`,
+SHA-256 b39f2a1b2544ded82fe89472881a0302e8493f1959017ddf3bc14d76a1999a5a.
+The historical baseline result remains FAIL. This review concerns exact source
+retention only. Swift compilation and actual observation of these additions
+remain requirements of the next complete integrated iOS workflow.

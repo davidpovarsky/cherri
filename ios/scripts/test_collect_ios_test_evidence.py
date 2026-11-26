@@ -1249,8 +1249,6 @@ class PreviewTransactionRetentionTests(unittest.TestCase):
                 if label in {"wrong-bundle", "class-suffix", "outside-case"}:
                     self.assertEqual(diagnostic["testResults"], [])
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 class UIReadinessObservationTests(unittest.TestCase):
@@ -1414,3 +1412,7 @@ class UIReadinessObservationTests(unittest.TestCase):
         self.assertLessEqual(outputs["xcodetest.log"].count(self.rejected), 8)
         self.assertEqual(diagnostic["testResults"], [{"testId": self.sign_test, "observedStatus": "failed"}])
         self.assertEqual(records, [])
+
+
+if __name__ == "__main__":
+    unittest.main()

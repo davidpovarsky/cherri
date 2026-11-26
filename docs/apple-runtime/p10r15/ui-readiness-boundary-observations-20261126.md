@@ -52,6 +52,7 @@ All paths below are under
 | `ui-readiness-red-01/result.original.json` | Nine new methods failed on the unchanged collector/startup allowlist: 48 failing subcases, no setup errors | `30b1a84a1ea780c9ac145ab8b6e3f6fcf680e9ab6d41acf7a952e336ea124660` |
 | `ui-readiness-green-01/result.original.json` | 30 methods passed: eight new collector methods, two unchanged collector controls, and all 20 startup-capture methods including the new E07 control; 0.474 seconds | `21e922c62d5e27f2102fcc717aa7b4e333935e4c285398d6260385d3ec55ec0b` |
 | `ui-readiness-preservation-01/result.original.json` | Exact reversal of each narrow source edit recovers the original bytes; all original test-method inventories and existing AX-read/tap/deadline token counts retained; all collector non-logging function ASTs unchanged | `5d7b4700e3ce883c8193b99e9f62df91d18ebf9361420ce788f3ade792cf379a` |
+| `ui-readiness-entrypoint-correction-01/result.original.json` | The unchanged main guard moved to the physical end. Direct-entry and original workflow discovery both enumerate 87 methods, including all eight new methods; no test body executed or changed | `ce989c12dddebc770a854d5d9c6266941eb5944a44fbde3c8cec7fe63844d0c8` |
 
 The GREEN owner ran one bounded Python command under UID 1001, retained the
 original stdout/stderr and before/after source pins, reaped its parent, proved
