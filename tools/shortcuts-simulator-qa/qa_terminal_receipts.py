@@ -573,6 +573,8 @@ def validate_terminal(value, root, expected):
 
 
 SOURCE_FILES = (
+    "tools/shortcuts-simulator-qa/git_source_batch.py",
+    "tools/shortcuts-simulator-qa/test_git_source_batch.py",
     "tools/shortcuts-simulator-qa/XcodeProject/Shared/PrimaryNoInputLaunch.swift",
     "tools/shortcuts-simulator-qa/verify_primary_no_input.py",
     "tools/shortcuts-simulator-qa/verify_primary_no_input.swift",
@@ -621,26 +623,23 @@ SOURCE_FILES = (
 )
 
 
-def verify_checkout(repo, source):
+def verify_checkout(repo, source, *, originals=None):
     repo = Path(repo).resolve()
     require(Path(__file__).resolve().parents[2] == repo, "ACQUISITION_SOURCE_OWNER")
     require(isinstance(source, str) and re.fullmatch(r"[0-9a-f]{40}", source), "SOURCE_INVALID")
     deadline = time.monotonic() + 10
-    def git(*args):
-        remaining = deadline - time.monotonic()
-        require(remaining > 0, "SOURCE_GUARD_DEADLINE")
-        return subprocess.run(["git", "--no-replace-objects", *args], cwd=repo,
-                              capture_output=True, timeout=remaining, check=True).stdout
-    require(git("rev-parse", "HEAD").decode().strip() == source, "CHECKOUT_SOURCE_MISMATCH")
-    for relative in SOURCE_FILES:
-        path = contained(repo, relative)
-        require(path.stat().st_size <= 4 * MAX_PARSE_BYTES, "SOURCE_FILE_SIZE")
-        require(path.read_bytes() == git("show", source + ":" + relative), "ACQUISITION_SOURCE_BYTES")
+    from git_source_batch import verify_raw_sources
+    return verify_raw_sources(repo, source, SOURCE_FILES, deadline=deadline, originals=originals)
 
 
 def _cli_context(args):
     repo, root = Path(args.repo), Path(args.root)
-    verify_checkout(repo, args.source_sha)
+    # Raw source/process transcripts remain private build originals. Each CLI
+    # invocation owns a fresh directory, including failed closing checks.
+    builds = contained(root, "builds", exists=False)
+    require(builds.is_dir(), "PRIVATE_ORIGINAL_DIRECTORY")
+    originals = Path(tempfile.mkdtemp(prefix="qa-source-" + args.mode + "-", dir=builds))
+    verify_checkout(repo, args.source_sha, originals=originals)
     from prepare_public_artifacts import trusted_fixture_sources, verify_synthetic_sources
     verify_synthetic_sources(root, trusted_fixture_sources(repo / "tools/shortcuts-simulator-qa/fixtures"))
     fixture = args.fixture_id
