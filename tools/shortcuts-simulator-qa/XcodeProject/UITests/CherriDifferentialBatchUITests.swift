@@ -4,6 +4,7 @@ private struct DifferentialCommand: Decodable {
     let id: String
     let operation: String
     let shortcutName: String?
+    let requiresAbsentLibraryRecord: Bool?
 }
 
 final class CherriDifferentialBatchUITests: XCTestCase {
@@ -167,6 +168,8 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         case .sheet: kind = .sheet
         case .scrollView: kind = .scrollView
         case .navigationBar: kind = .navigationBar
+        case .cell: kind = .cell
+        case .collectionView: kind = .collectionView
         case .button: kind = .button
         case .staticText: kind = .staticText
         default: kind = .unsupported
@@ -328,8 +331,6 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         let addTappedAt = Date()
         timingReceipt["addTappedUTC"] = formatter.string(from: addTappedAt)
         timingReceipt["libraryContract"] = "dispatch-exit-anchored-library-v1"
-        let libraryItem = shortcuts.cells.matching(
-            NSPredicate(format: "label == %@ OR label BEGINSWITH %@", name, name + ", ")).firstMatch
         func checkLibrary() -> QADifferentialImportTiming.LibraryDecision {
             let dispatch = observeDispatch()
             let now = Date()
@@ -340,6 +341,94 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             }
             timingReceipt["libraryCanConfirm"] = decision.canConfirm
             return decision
+        }
+        var libraryObservationOrdinal = 0
+        func observeLibrary() throws -> QAImportedLibrarySelection.Decision {
+            func boundary() -> String? {
+                let decision = checkLibrary()
+                if let failure = decision.failure { return failure }
+                guard let deadline = decision.deadline, Date() < deadline else { return "IMPORT_LIBRARY_DEADLINE" }
+                return nil
+            }
+            if let failure = boundary() { return .rejected(failure) }
+            let foreground = shortcuts.state == .runningForeground
+            if let failure = boundary() { return .rejected(failure) }
+            guard foreground else { return .rejected("LIBRARY_NOT_FOREGROUND") }
+            let cells = shortcuts.cells.matching(NSPredicate(
+                format: "label == %@ OR label BEGINSWITH %@", name, name + ", ")).allElementsBoundByIndex
+            if let failure = boundary() { return .rejected(failure) }
+            guard cells.count <= 32 else { return .rejected("INVALID_LIBRARY_OBSERVATION") }
+            var candidates: [QAImportSheetSelection.Candidate] = []
+            for (index, cell) in cells.enumerated() {
+                let exists = cell.exists
+                if let failure = boundary() { return .rejected(failure) }
+                var hittable = false
+                var observed: QAImportSheetSelection.Node?
+                if exists {
+                    hittable = cell.isHittable
+                    if let failure = boundary() { return .rejected(failure) }
+                    let snapshot = try cell.snapshot()
+                    if let failure = boundary() { return .rejected(failure) }
+                    var count = 0
+                    observed = try importSelectionNode(snapshot, count: &count)
+                }
+                candidates.append(.init(queryIndex: index, exists: exists, hittable: hittable, snapshot: observed))
+            }
+            let snapshot = try shortcuts.snapshot()
+            if let failure = boundary() { return .rejected(failure) }
+            var count = 0
+            let current = try importSelectionNode(snapshot, count: &count)
+            let stillForeground = shortcuts.state == .runningForeground
+            let clock = checkLibrary()
+            if let failure = clock.failure { return .rejected(failure) }
+            guard let deadline = clock.deadline else { return .rejected("IMPORT_LIBRARY_DEADLINE") }
+            let observedAt = Date()
+            let selected = QAImportedLibrarySelection.select(current: current, candidates: candidates,
+                context: .init(expectedName: name, foreground: stillForeground,
+                               dispatchConfirmed: clock.canConfirm, now: observedAt, deadline: deadline))
+            timingReceipt["librarySelectionContract"] = "unique-current-library-cell-v1"
+            timingReceipt["librarySelectionReason"] = selected.reason
+            timingReceipt["libraryCurrentNamedCellCount"] = selected.currentNamedCellCount
+            timingReceipt["libraryQueryCandidateCount"] = selected.queryCandidateCount
+            timingReceipt["librarySelectionObservedUTC"] = formatter.string(from: observedAt)
+            for key in ["librarySelectedQueryIndex", "librarySelectedCellPath", "librarySelectedCellLabel",
+                        "librarySelectedCellIdentifier"] { timingReceipt.removeValue(forKey: key) }
+            if let binding = selected.binding {
+                timingReceipt["librarySelectedQueryIndex"] = binding.queryIndex
+                timingReceipt["librarySelectedCellPath"] = binding.cellPath
+                timingReceipt["librarySelectedCellLabel"] = binding.label
+                timingReceipt["librarySelectedCellIdentifier"] = binding.identifier
+            }
+            func serialized(_ node: QAImportSheetSelection.Node) -> [String: Any] {
+                ["kind": node.kind.rawValue, "label": node.label, "identifier": node.identifier,
+                 "enabled": node.enabled, "selected": node.selected,
+                 "frame": ["x": Double(node.frame.minX), "y": Double(node.frame.minY),
+                           "width": Double(node.frame.width), "height": Double(node.frame.height)],
+                 "children": node.children.map { serialized($0) }]
+            }
+            libraryObservationOrdinal += 1
+            let raw: [String: Any] = [
+                "schema": "cherri-current-library-selection-observation/1", "phase": command.id,
+                "ordinal": libraryObservationOrdinal, "observedUTC": formatter.string(from: observedAt),
+                "deadlineUTC": formatter.string(from: deadline), "expectedName": name,
+                "foreground": stillForeground, "dispatchConfirmed": clock.canConfirm,
+                "current": serialized(current), "candidates": candidates.map { candidate -> [String: Any] in
+                    ["queryIndex": candidate.queryIndex, "exists": candidate.exists,
+                     "hittable": candidate.hittable, "snapshot": candidate.snapshot.map { serialized($0) as Any } ?? NSNull()]
+                }, "decision": selected.reason, "canConfirm": selected.canConfirm,
+                "currentNamedCellCount": selected.currentNamedCellCount,
+                "queryCandidateCount": selected.queryCandidateCount]
+            let bytes = try JSONSerialization.data(withJSONObject: raw, options: [.sortedKeys])
+            guard bytes.count <= 2 * 1024 * 1024 else {
+                throw NSError(domain: "CherriQALibrarySelection", code: 1,
+                              userInfo: [NSLocalizedDescriptionKey: "LIBRARY_OBSERVATION_BYTES"])
+            }
+            let filename = command.id + "-library-observation-" + String(format: "%04d", libraryObservationOrdinal) + ".json"
+            let url = runDirectory.appendingPathComponent(filename)
+            try bytes.write(to: url, options: .withoutOverwriting)
+            try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
+            if let failure = boundary() { return .rejected(failure) }
+            return selected
         }
         var editorBackTapped = false
         var selectedEditorBack: XCUIElement?
@@ -413,25 +502,22 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             var decision = checkLibrary()
             if let failure = decision.failure { return stop(failure) }
             if Date() >= decision.deadline! { break }
-            let exists = libraryItem.exists
+            let library = try QAImportedLibrarySelection.inspectForConfirmation(
+                observe: observeLibrary, capture: { self.capture(command.id + "-library") })
             decision = checkLibrary()
             if let failure = decision.failure { return stop(failure) }
             if Date() >= decision.deadline! { break }
-            if exists {
-                let hittable = libraryItem.isHittable
-                decision = checkLibrary()
-                if let failure = decision.failure { return stop(failure) }
-                if Date() >= decision.deadline! { break }
-                if hittable && decision.canConfirm {
-                    capture(command.id + "-library")
-                    decision = checkLibrary()
-                    if let failure = decision.failure { return stop(failure) }
-                    if Date() >= decision.deadline! { break }
-                    if decision.canConfirm {
-                        return receipt(["outcome": "IMPORTED", "name": name, "identityVerified": identity,
-                                        "libraryIdentityVerified": true, "replaceTapped": replaceTapped])
-                    }
-                }
+            if library.reason.hasPrefix("AMBIGUOUS_") ||
+                library.reason == "LIBRARY_IDENTITY_CHANGED_DURING_CAPTURE" ||
+                library.reason == "INVALID_LIBRARY_OBSERVATION" {
+                return stop(library.reason)
+            }
+            if library.canConfirm && decision.canConfirm {
+                timingReceipt["libraryMatchedAfterCaptureUTC"] = formatter.string(from: Date())
+                return receipt(["outcome": "IMPORTED", "name": name, "identityVerified": identity,
+                                "libraryIdentityVerified": true, "libraryUniqueCurrentCellVerified": true,
+                                "requiresAbsentLibraryRecord": command.requiresAbsentLibraryRecord == true,
+                                "replaceTapped": replaceTapped])
             }
             if !editorBackTapped {
                 let navigation = try QAImportedEditorNavigation.inspectForNavigation(
@@ -465,6 +551,9 @@ final class CherriDifferentialBatchUITests: XCTestCase {
                 if let failure = decision.failure { return stop(failure) }
                 if Date() >= decision.deadline! { break }
                 if hittable {
+                    if command.requiresAbsentLibraryRecord == true {
+                        return stop("UNEXPECTED_REPLACEMENT_FOR_FRESH_IMPORT")
+                    }
                     capture(command.id + "-replace")
                     decision = checkLibrary()
                     if let failure = decision.failure { return stop(failure) }
