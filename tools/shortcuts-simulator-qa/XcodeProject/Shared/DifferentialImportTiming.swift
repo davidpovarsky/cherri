@@ -3,6 +3,11 @@ import Foundation
 /// Reads only the receipt for the current command. UI consent may be needed
 /// before openurl exits, so pending delivery permits inspection, never success.
 struct QADifferentialImportTiming {
+    enum DeliveryBudget: Double {
+        case differential = 60
+        case hostedPrimary = 45
+    }
+
     enum DispatchState: Equatable {
         case pending(deadline: Date)
         case exited(at: Date)
@@ -103,12 +108,14 @@ struct QADifferentialImportTiming {
     }
 
     let searchStartedAt: Date
+    private let deliveryBudget: DeliveryBudget
     private var launch: Launch?
     private var completed: Receipt?
     private var failure: String?
 
-    init(searchStartedAt: Date) {
+    init(searchStartedAt: Date, deliveryBudget: DeliveryBudget = .differential) {
         self.searchStartedAt = searchStartedAt
+        self.deliveryBudget = deliveryBudget
     }
 
     private static func timestamp(_ text: String) -> Date? {
@@ -133,7 +140,7 @@ struct QADifferentialImportTiming {
         guard now.timeIntervalSince1970.isFinite,
               searchStartedAt.timeIntervalSince1970.isFinite,
               now >= searchStartedAt,
-              receipt.schemaVersion == 1, receipt.timeoutSeconds == 60,
+              receipt.schemaVersion == 1, receipt.timeoutSeconds == deliveryBudget.rawValue,
               receipt.pid > 0, receipt.command.count == 5,
               Array(receipt.command.prefix(3)) == ["xcrun", "simctl", "openurl"],
               !receipt.command[3].isEmpty,
@@ -158,7 +165,7 @@ struct QADifferentialImportTiming {
             return reject("IMPORT_DISPATCH_RECEIPT_CHANGED")
         }
         if receipt.timedOut { return reject("IMPORT_DISPATCH_TIMED_OUT") }
-        let dispatchDeadline = started.addingTimeInterval(60)
+        let dispatchDeadline = started.addingTimeInterval(deliveryBudget.rawValue)
         switch receipt.outcome {
         case "LAUNCHED":
             guard receipt.exitCode == nil, receipt.exitObservedUTC == nil,
@@ -180,7 +187,7 @@ struct QADifferentialImportTiming {
                   exit >= published, ended >= exit, ended <= now else {
                 return reject("IMPORT_DISPATCH_RECEIPT_MALFORMED")
             }
-            guard exit <= dispatchDeadline, elapsed <= 60 else {
+            guard exit <= dispatchDeadline, elapsed <= deliveryBudget.rawValue else {
                 return reject("IMPORT_DISPATCH_LATE_EXIT")
             }
             completed = receipt

@@ -480,6 +480,76 @@ final class CherriSimulatorQAUITests: XCTestCase {
         XCTAssertTrue(statusText.label.contains("SUCCESS"), "Expected receiver self-callback status SUCCESS, got \(statusText.label)")
     }
 
+    private func observeHostedUniqueImport(shortcuts: XCUIApplication, outDir: URL,
+                                           expectedName: String, nonce: String) throws -> [String: Any] {
+        let environment = ProcessInfo.processInfo.environment
+        let path = try XCTUnwrap(environment["CHERRI_QA_IMPORT_PRIVATE_DIR"])
+        let root = URL(fileURLWithPath: path, isDirectory: true)
+        let preparedPath = root.appendingPathComponent("prepared.original.json")
+        let raw = try Data(contentsOf: preparedPath)
+        guard raw.count <= 4 * 1024 * 1024,
+              let prepared = try JSONSerialization.jsonObject(with: raw) as? [String: Any],
+              prepared["schema"] as? String == "cherri-hosted-unique-import/1",
+              prepared["testId"] as? String == "CherriSimulatorQAUITests/test02_ShortcutsImportLibraryAndActionEditorCoverage",
+              prepared["privateRoot"] as? String == path,
+              prepared["deliverySeconds"] as? Int == 45,
+              let context = prepared["context"] as? [String: String],
+              context["expectedName"] == expectedName, context["runNonce"] == nonce,
+              context["compilerCommitSha"] == environment["CHERRI_QA_SOURCE_SHA"],
+              context["builtHarnessCommitSha"] == environment["CHERRI_QA_SOURCE_SHA"],
+              context["controllerCommitSha"] == environment["CHERRI_QA_SOURCE_SHA"],
+              context["runId"] == environment["CHERRI_QA_WORKFLOW_RUN_ID"],
+              prepared["workflowRunAttempt"] as? String == environment["CHERRI_QA_WORKFLOW_RUN_ATTEMPT"],
+              let phase = context["phaseId"], phase == "import-" + nonce else {
+            throw NSError(domain: "CherriQAHostedImport", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "HOSTED_IMPORT_PREPARATION_CONTEXT"])
+        }
+        let preparedDigest = SHA256.hash(data: raw).map { String(format: "%02x", $0) }.joined()
+        try Data(expectedName.utf8).write(to: root.appendingPathComponent("request-import.txt"), options: .withoutOverwriting)
+        let dispatch = root.appendingPathComponent("dispatch-" + phase + ".json")
+        // Keep the existing60s request allowance. Once the actual process has
+        // started, the shared decoder enforces its distinct original45s budget.
+        guard waitForHandshakeFile(dispatch, timeout: 60) else {
+            throw NSError(domain: "CherriQAHostedImport", code: 2,
+                          userInfo: [NSLocalizedDescriptionKey: "HOSTED_IMPORT_DISPATCH_NOT_STARTED"])
+        }
+        var sheetCaptured = false
+        let observer = QAImportedShortcutObserver(runDirectory: root, shortcuts: shortcuts,
+            deliveryBudget: .hostedPrimary, capture: { label in
+                let isImport = label.hasSuffix("-import")
+                let name = isImport ? "import-consent-sheet" : "library-after-import"
+                do {
+                    try XCUIScreen.main.screenshot().pngRepresentation.write(
+                        to: outDir.appendingPathComponent(name + ".png"), options: .atomic)
+                    if isImport { sheetCaptured = true }
+                    if let snapshot = try? shortcuts.snapshot() {
+                        let frame = shortcuts.frame.isEmpty ? CGRect(x: 0, y: 0, width: 1024, height: 1366) : shortcuts.frame
+                        let nodes = self.flattenSnapshot(snapshot, screenIndex: 0, viewport: frame)
+                        let encoder = JSONEncoder()
+                        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+                        try encoder.encode(nodes).write(to: outDir.appendingPathComponent(
+                            isImport ? "import-sheet-tree.json" : "library-after-import-tree.json"), options: .atomic)
+                    }
+                } catch {
+                    // Snapshot failure cannot create positive capture evidence.
+                    if isImport { sheetCaptured = false }
+                }
+            })
+        var receipt = try observer.importShortcut(QAImportCommand(id: phase, operation: "import",
+            shortcutName: expectedName, requiresAbsentLibraryRecord: true))
+        receipt["id"] = phase
+        receipt["operation"] = "import"
+        receipt["testId"] = prepared["testId"]
+        receipt["context"] = context
+        receipt["workflowRunAttempt"] = prepared["workflowRunAttempt"]
+        receipt["preparedSha256"] = preparedDigest
+        receipt["sheetCaptureWritten"] = sheetCaptured
+        receipt["formalAcceptanceGranted"] = false
+        let data = try JSONSerialization.data(withJSONObject: receipt, options: [.sortedKeys])
+        try data.write(to: root.appendingPathComponent("ui-receipt.original.json"), options: .withoutOverwriting)
+        return receipt
+    }
+
     func test02_ShortcutsImportLibraryAndActionEditorCoverage() throws {
         let outDir = sharedOutputDirectory()
         let maxPages = min(20, max(1, Int(ProcessInfo.processInfo.environment["CHERRI_QA_MAX_EDITOR_PAGES"] ?? "12") ?? 12))
@@ -487,6 +557,19 @@ final class CherriSimulatorQAUITests: XCTestCase {
         let expectSignedImport = (ProcessInfo.processInfo.environment["CHERRI_QA_EXPECT_SIGNED_IMPORT"] == "true")
         let expectRuntimeRun = (ProcessInfo.processInfo.environment["CHERRI_QA_EXPECT_RUNTIME_RUN"] == "true")
         let execRunNonce = ProcessInfo.processInfo.environment["CHERRI_QA_EXEC_RUN_NONCE"] ?? ""
+        let importMode = ProcessInfo.processInfo.environment["CHERRI_QA_IMPORT_IDENTITY_MODE"] ?? ""
+        guard importMode.isEmpty || importMode == "unique-current-record" else {
+            XCTFail("HOSTED_IMPORT_MODE_INVALID")
+            return
+        }
+        let uniqueImport = importMode == "unique-current-record"
+        let uniqueImportFixtures: Set<String> = ["qa-short-circuit-v2", "qa-nested-list-control-v2",
+            "qa-nested-list-candidate-v2", "qa-storage-delete-v2"]
+        guard !uniqueImportFixtures.contains(expectedShortcutName) || uniqueImport else {
+            XCTFail("HOSTED_IMPORT_IDENTITY_MODE_REQUIRED")
+            return
+        }
+        var uniqueImportReceipt: [String: Any]?
 
         let shortcuts = XCUIApplication(bundleIdentifier: "com.apple.shortcuts")
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
@@ -517,7 +600,19 @@ final class CherriSimulatorQAUITests: XCTestCase {
         // Step 1: Coordinated host -> simulator signed .shortcut import handshake (if not already opened pre-XCTest)
         var importConsentTapped = false
         var importSheetCaptured = false
-        if expectSignedImport {
+        if uniqueImport {
+            guard expectSignedImport else {
+                XCTFail("HOSTED_IMPORT_SIGNED_PACKET_REQUIRED")
+                return
+            }
+            let receipt = try observeHostedUniqueImport(shortcuts: shortcuts, outDir: outDir,
+                expectedName: expectedShortcutName, nonce: execRunNonce)
+            uniqueImportReceipt = receipt
+            let timing = receipt["importTiming"] as? [String: Any]
+            importConsentTapped = timing?["addTappedUTC"] is String
+            importSheetCaptured = receipt["sheetCaptureWritten"] as? Bool == true
+                && timing?["sheetMatchedAfterCaptureUTC"] is String
+        } else if expectSignedImport {
             var foundSheetBtn = pollImportSheetButton(timeout: 5.0)
             if foundSheetBtn == nil {
                 dismissOnboardingAndStaleAlerts(shortcuts: shortcuts, springboard: springboard)
@@ -648,8 +743,15 @@ final class CherriSimulatorQAUITests: XCTestCase {
         // Step 2: Inspect All Shortcuts library for expectedShortcutName (with bounded wait after import)
         var shortcutExistsInLibrary = false
         var libraryCells: [String] = []
+        if uniqueImport {
+            shortcutExistsInLibrary = uniqueImportReceipt?["outcome"] as? String == "IMPORTED"
+                && uniqueImportReceipt?["libraryUniqueCurrentCellVerified"] as? Bool == true
+                && uniqueImportReceipt?["requiresAbsentLibraryRecord"] as? Bool == true
+                && uniqueImportReceipt?["replaceTapped"] as? Bool == false
+            if shortcutExistsInLibrary { libraryCells = [expectedShortcutName] }
+        }
         let libDeadline = Date().addingTimeInterval(expectSignedImport ? 15.0 : 2.0)
-        while Date() < libDeadline {
+        while !uniqueImport && Date() < libDeadline {
             libraryCells.removeAll()
             let cellsQuery = shortcuts.collectionViews.cells
             guard let cellCount = QALibraryForegroundGate.inspect(
@@ -742,43 +844,89 @@ final class CherriSimulatorQAUITests: XCTestCase {
                 shortcuts.navigationBars[expectedShortcutName].exists ||
                 shortcuts.navigationBars.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", expectedShortcutName)).firstMatch.exists
             )
+            if uniqueImport {
+                let exactBars = shortcuts.navigationBars.matching(identifier: expectedShortcutName)
+                guard keepEditorForeground() else { return }
+                editorMatchesExpected = shortcuts.otherElements["editor"].exists && exactBars.count == 1
+                guard keepEditorForeground() else { return }
+            }
             if !editorMatchesExpected {
-                let editByLabel = shortcuts.buttons["Edit, \(expectedShortcutName)"].firstMatch
-                let openByLabel = shortcuts.buttons["Open, \(expectedShortcutName)"].firstMatch
-                let moreByLabel = shortcuts.buttons["More, \(expectedShortcutName)"].firstMatch
-                if editByLabel.exists && editByLabel.isHittable {
-                    editByLabel.tap()
-                    Thread.sleep(forTimeInterval: 1.5)
-                } else if moreByLabel.exists && moreByLabel.isHittable {
-                    moreByLabel.tap()
-                    Thread.sleep(forTimeInterval: 1.5)
-                } else if openByLabel.exists && openByLabel.isHittable {
-                    openByLabel.tap()
-                    Thread.sleep(forTimeInterval: 1.5)
-                } else {
-                    let cellsQuery = shortcuts.collectionViews.cells
+                if uniqueImport {
+                    // Reobserve the unique exact library cell before editor navigation.
+                    // Only its Edit/More control or context menu is used; never run a tile.
                     guard keepEditorForeground() else { return }
-                    let cellCount = min(cellsQuery.count, 30)
-                    for i in 0..<cellCount {
+                    let cells = shortcuts.cells.matching(NSPredicate(
+                        format: "label == %@ OR label BEGINSWITH %@", expectedShortcutName,
+                        expectedShortcutName + ", ")).allElementsBoundByIndex
+                    guard keepEditorForeground(), cells.count == 1 else {
+                        XCTFail("HOSTED_EDITOR_LIBRARY_CELL_AMBIGUOUS")
+                        return
+                    }
+                    let cell = cells[0]
+                    guard cell.exists, cell.isHittable, keepEditorForeground(),
+                          cell.label == expectedShortcutName || cell.staticTexts[expectedShortcutName].exists
+                            || cell.buttons[expectedShortcutName].exists else {
+                        XCTFail("HOSTED_EDITOR_LIBRARY_CELL_IDENTITY")
+                        return
+                    }
+                    let candidates = cell.buttons.matching(NSPredicate(
+                        format: "label == %@ OR label == %@ OR label == 'Edit' OR label == 'More' OR identifier CONTAINS 'ellipsis'",
+                        "Edit, \(expectedShortcutName)", "More, \(expectedShortcutName)")).allElementsBoundByIndex
+                    guard keepEditorForeground(), candidates.count <= 8 else {
+                        XCTFail("HOSTED_EDITOR_CONTROL_BOUNDS")
+                        return
+                    }
+                    let controls = candidates.filter { $0.exists && $0.isHittable }
+                    guard keepEditorForeground(), controls.count <= 1 else {
+                        XCTFail("HOSTED_EDITOR_CONTROL_AMBIGUOUS")
+                        return
+                    }
+                    if let control = controls.first {
+                        control.tap()
+                        Thread.sleep(forTimeInterval: 1.5)
+                    } else {
+                        cell.press(forDuration: 0.9)
+                        Thread.sleep(forTimeInterval: 1.2)
+                    }
+                } else {
+                    let editByLabel = shortcuts.buttons["Edit, \(expectedShortcutName)"].firstMatch
+                    let openByLabel = shortcuts.buttons["Open, \(expectedShortcutName)"].firstMatch
+                    let moreByLabel = shortcuts.buttons["More, \(expectedShortcutName)"].firstMatch
+                    if editByLabel.exists && editByLabel.isHittable {
+                        editByLabel.tap()
+                        Thread.sleep(forTimeInterval: 1.5)
+                    } else if moreByLabel.exists && moreByLabel.isHittable {
+                        moreByLabel.tap()
+                        Thread.sleep(forTimeInterval: 1.5)
+                    } else if openByLabel.exists && openByLabel.isHittable {
+                        openByLabel.tap()
+                        Thread.sleep(forTimeInterval: 1.5)
+                    } else {
+                        let cellsQuery = shortcuts.collectionViews.cells
                         guard keepEditorForeground() else { return }
-                        let cell = cellsQuery.element(boundBy: i)
-                        if cell.exists && (
-                            cell.label == expectedShortcutName ||
-                            cell.label.hasPrefix("\(expectedShortcutName),") ||
-                            cell.label.localizedCaseInsensitiveContains(expectedShortcutName) ||
-                            cell.staticTexts[expectedShortcutName].exists
-                        ) {
-                            let cellActionBtn = cell.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'More' OR label CONTAINS[c] 'Edit' OR identifier CONTAINS[c] 'ellipsis'")).firstMatch
-                            if cellActionBtn.exists && cellActionBtn.isHittable {
-                                cellActionBtn.tap()
-                                Thread.sleep(forTimeInterval: 1.5)
-                            } else {
-                                cell.press(forDuration: 0.9)
-                                Thread.sleep(forTimeInterval: 1.2)
+                        let cellCount = min(cellsQuery.count, 30)
+                        for i in 0..<cellCount {
+                            guard keepEditorForeground() else { return }
+                            let cell = cellsQuery.element(boundBy: i)
+                            if cell.exists && (
+                                cell.label == expectedShortcutName ||
+                                cell.label.hasPrefix("\(expectedShortcutName),") ||
+                                cell.label.localizedCaseInsensitiveContains(expectedShortcutName) ||
+                                cell.staticTexts[expectedShortcutName].exists
+                            ) {
+                                let cellActionBtn = cell.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'More' OR label CONTAINS[c] 'Edit' OR identifier CONTAINS[c] 'ellipsis'")).firstMatch
+                                if cellActionBtn.exists && cellActionBtn.isHittable {
+                                    cellActionBtn.tap()
+                                    Thread.sleep(forTimeInterval: 1.5)
+                                } else {
+                                    cell.press(forDuration: 0.9)
+                                    Thread.sleep(forTimeInterval: 1.2)
+                                }
+                                break
                             }
-                            break
                         }
                     }
+
                 }
 
                 // If tapping More or long-pressing opened a context menu with Edit / Edit Shortcut / Details, tap Edit

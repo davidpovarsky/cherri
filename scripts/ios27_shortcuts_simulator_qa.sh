@@ -1824,6 +1824,29 @@ PY
     export TEST_RUNNER_CHERRI_QA_RUN_URL_MINIMAL="$RUN_URL_MINIMAL"
     export TEST_RUNNER_CHERRI_QA_RUN_URL_PLAIN="$RUN_URL_PLAIN"
 
+    # These selected contracts require the exact newly imported native record.
+    # Other fixture paths retain their existing import behavior. R2's distinct
+    # no-input launch contract is not enrolled in this ordinary runtime path.
+    HOSTED_IMPORT_IDENTITY="false"
+    case "$TARGET_FIXTURE_ID" in
+      qa-short-circuit-v2|qa-nested-list-control-v2|qa-nested-list-candidate-v2|qa-storage-delete-v2)
+        HOSTED_IMPORT_IDENTITY="true"
+        ;;
+    esac
+    HOSTED_IMPORT_ROOT="$ARTIFACT_DIR/builds/hosted-import"
+    HOSTED_IMPORT_ADMITTED="false"
+    HOSTED_IMPORT_SEALED="false"
+    HOSTED_IMPORT_SEAL_ATTEMPTED="false"
+    HOSTED_IMPORT_PREPARED="false"
+    HOSTED_IMPORT_OWNER_RC=1
+    if [ "$HOSTED_IMPORT_IDENTITY" = "true" ]; then
+      export TEST_RUNNER_CHERRI_QA_IMPORT_IDENTITY_MODE="unique-current-record"
+      export TEST_RUNNER_CHERRI_QA_IMPORT_PRIVATE_DIR="$HOSTED_IMPORT_ROOT"
+      GATE_FILE_IMPORT_ATTEMPTED="NOT_RUN"
+    else
+      unset TEST_RUNNER_CHERRI_QA_IMPORT_IDENTITY_MODE TEST_RUNNER_CHERRI_QA_IMPORT_PRIVATE_DIR
+    fi
+
     stop_bg_pid() {
       local pid="${1:-}"
       if [ -n "$pid" ]; then
@@ -1974,7 +1997,24 @@ PY
     }
 
     # Stage 3.2: Pre-XCTest outside-runner signed .shortcut import so simctl openurl file:// never contends with active AX/XCTest
-    if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
+    if [ "$HOSTED_IMPORT_IDENTITY" = "true" ]; then
+      if ! ensure_phase_session_ready pre-import; then
+        echo "Pre-import selected-device session boundary was not verified."
+        exit 70
+      fi
+      # Warm only the app. The one signed-file dispatch waits for test02's
+      # request so the current consent sheet can be observed while it arrives.
+      run_cmd_timeout 20 xcrun simctl launch "$UDID" com.apple.shortcuts >/dev/null 2>&1 || true
+      sleep 4
+      if python3 -B "$ROOT_DIR/tools/shortcuts-simulator-qa/hosted_import_observation.py" prepare \
+        --repo "$ROOT_DIR" --artifacts "$ARTIFACT_DIR" --root "$HOSTED_IMPORT_ROOT" \
+        --source "$SOURCE_SHA" --run-id "$RUN_ID" --attempt "${GITHUB_RUN_ATTEMPT:-1}" \
+        --fixture "$TARGET_FIXTURE_ID" --name "$EXPECTED_SHORTCUT_NAME" --nonce "$EXEC_RUN_NONCE" \
+        --udid "$UDID" --device-data "$HOME/Library/Developer/CoreSimulator/Devices/$UDID/data" \
+        --build-exit-code "$XCODEBUILD_BUILD_RC"; then
+        HOSTED_IMPORT_PREPARED="true"
+      fi
+    elif [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ -n "${SIGNED_FILE:-}" ] && [ -s "${SIGNED_FILE:-}" ]; then
       if ! ensure_phase_session_ready pre-import; then
         echo "Pre-import selected-device session boundary was not verified."
         exit 70
@@ -2045,6 +2085,14 @@ PY
       printf 'rc=%s\nmethod=%s durationSec=%s %s\n' "$PRE_IMP_RC" "$PRE_IMP_METHOD" "$PRE_IMP_DT" "${PRE_IMP_OUT:0:180}" > "$ARTIFACT_DIR/editor/pre-import-ack.txt"
       echo "Phase 3b pre-import ($PRE_IMP_METHOD) rc=$PRE_IMP_RC durationSec=${PRE_IMP_DT}s out=$(printf '%s' "$PRE_IMP_OUT" | sed "s/$UDID/<UDID>/g" | tr '\n' ' ' | cut -c1-180)"
     fi
+    HANDSHAKE_PID=""
+    if [ "$HOSTED_IMPORT_IDENTITY" = "true" ]; then
+      if [ "$HOSTED_IMPORT_PREPARED" = "true" ]; then
+        python3 -B "$ROOT_DIR/tools/shortcuts-simulator-qa/hosted_import_observation.py" serve \
+          --root "$HOSTED_IMPORT_ROOT" &
+        HANDSHAKE_PID=$!
+      fi
+    else
     (
       import_dispatched=0
       import_retried=0
@@ -2091,10 +2139,40 @@ PY
       done
     ) &
     HANDSHAKE_PID=$!
+    fi
+    seal_hosted_import() {
+      if [ "$HOSTED_IMPORT_IDENTITY" = "true" ] && [ "$HOSTED_IMPORT_SEAL_ATTEMPTED" != "true" ] && \
+        [ -d "$HOSTED_IMPORT_ROOT" ]; then
+        HOSTED_IMPORT_SEAL_ATTEMPTED="true"
+        if python3 -B "$ROOT_DIR/tools/shortcuts-simulator-qa/hosted_import_observation.py" seal \
+          --root "$HOSTED_IMPORT_ROOT" \
+          --sealed-root "${RUNNER_TEMP:-$ARTIFACT_DIR}/cherri-qa-session-boundaries-$RUN_ID-${GITHUB_RUN_ATTEMPT:-1}/hosted-import"; then
+          HOSTED_IMPORT_SEALED="true"
+        fi
+      fi
+    }
     cleanup_handshake() {
       if [ -n "${HANDSHAKE_PID:-}" ]; then
-        touch "$ARTIFACT_DIR/editor/handshake-stop.txt" 2>/dev/null || true
-        stop_bg_pid "$HANDSHAKE_PID"
+        if [ "$HOSTED_IMPORT_IDENTITY" = "true" ]; then
+          # Signal only this shell's still-running child. Its original capture
+          # finally cleans the simctl group; allow that bounded cleanup to run.
+          touch "$HOSTED_IMPORT_ROOT/stop-request.txt" 2>/dev/null || true
+          if jobs -pr | grep -Fxq "$HANDSHAKE_PID"; then
+            kill -TERM "$HANDSHAKE_PID" 2>/dev/null || true
+            for _hosted_cleanup_tick in $(seq 1 50); do
+              jobs -pr | grep -Fxq "$HANDSHAKE_PID" || break
+              sleep 0.1
+            done
+            if jobs -pr | grep -Fxq "$HANDSHAKE_PID"; then
+              kill -KILL "$HANDSHAKE_PID" 2>/dev/null || true
+            fi
+          fi
+          wait "$HANDSHAKE_PID"
+          HOSTED_IMPORT_OWNER_RC=$?
+        else
+          touch "$ARTIFACT_DIR/editor/handshake-stop.txt" 2>/dev/null || true
+          stop_bg_pid "$HANDSHAKE_PID"
+        fi
         HANDSHAKE_PID=""
       fi
       if [ -n "${SIM_LOG_PID:-}" ]; then
@@ -2106,7 +2184,7 @@ PY
         PHASE4_LOG_PID=""
       fi
     }
-    trap 'stop_http_probe; cleanup_handshake; rm -rf "${XCRESULT_PATH:-}" "${XCRESULT_PART1_PATH:-}" "${CONFIRM_XCRESULT:-}" "${QA_SCRATCH_DIR:-}"' EXIT
+    trap 'stop_http_probe; cleanup_handshake; seal_hosted_import; rm -rf "${XCRESULT_PATH:-}" "${XCRESULT_PART1_PATH:-}" "${CONFIRM_XCRESULT:-}" "${QA_SCRATCH_DIR:-}"' EXIT
 
     # Xcode must currently advertise this same owned simulator as an eligible
     # destination. One non-reboot readiness refresh and test02 share the original
@@ -2126,6 +2204,23 @@ PY
 
     cleanup_handshake
     trap 'stop_http_probe' EXIT
+
+    if [ "$HOSTED_IMPORT_IDENTITY" = "true" ]; then
+      if [ -f "$HOSTED_IMPORT_ROOT/process-started.original.json" ]; then
+        GATE_FILE_IMPORT_ATTEMPTED="PASS"
+      fi
+      if [ "$HOSTED_IMPORT_OWNER_RC" -eq 0 ] && \
+        python3 -B "$ROOT_DIR/tools/shortcuts-simulator-qa/hosted_import_observation.py" verify \
+          --root "$HOSTED_IMPORT_ROOT"; then
+        HOSTED_IMPORT_ADMITTED="true"
+      fi
+      # Reuse the existing encrypted session artifact route, including failure
+      # originals. No private AX/native record/plaintext is added to publication.
+      seal_hosted_import
+      if [ "$HOSTED_IMPORT_SEALED" != "true" ]; then
+        HOSTED_IMPORT_ADMITTED="false"
+      fi
+    fi
 
     DID_HANDSHAKE_RUN="false"
     if [ -f "$ARTIFACT_DIR/editor/ack-shortcut-run.txt" ]; then
@@ -2241,7 +2336,8 @@ PY
       GATE_SHORTCUTS_LAUNCHED="$LAUNCHED_VAL"
       GATE_EDITOR_OPENED="$EDITOR_VAL"
 
-      if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ "$LIB_EXISTS_VAL" = "true" ]; then
+      if [ "$SIGNED_ARTIFACT_VALID_AEA1" = "true" ] && [ "$LIB_EXISTS_VAL" = "true" ] && \
+        { [ "$HOSTED_IMPORT_IDENTITY" != "true" ] || [ "$HOSTED_IMPORT_ADMITTED" = "true" ]; }; then
         GATE_COMPILER_ARTIFACT_IMPORTED="PASS"
         GATE_SHORTCUT_EXISTS_IN_LIBRARY="PASS"
       fi

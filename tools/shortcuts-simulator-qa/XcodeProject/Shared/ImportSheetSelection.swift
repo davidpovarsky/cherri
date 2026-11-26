@@ -1,6 +1,13 @@
 import Foundation
 import CoreGraphics
 
+enum QAImportConsentPolicy {
+    static func permits(buttonLabel: String?, requiresAbsentLibraryRecord: Bool) -> Bool {
+        guard requiresAbsentLibraryRecord else { return true }
+        return buttonLabel == "Add Shortcut" || buttonLabel == "+ Add Shortcut"
+    }
+}
+
 /// Source-owned model of one current accessibility snapshot. Query matches are
 /// separate observations: UIKit may return hidden matches absent from this tree.
 enum QAImportSheetSelection {
