@@ -245,14 +245,31 @@ final class CherriJoinedContractUITests: XCTestCase {
                     "Unexpected extra diagnostic rows cannot be hidden by the assertion")
     }
 
-    private func signRejected(_ editor: XCUIElement, source: String) throws {
+    private func signRejected(_ editor: XCUIElement, source: String,
+                              boundary: CherriUIReadinessTrace.Boundary) throws {
         try expectSource(editor, source)
         let diagnostic = app.staticTexts["diagnosticStatusText"]
         try require(diagnostic.exists && diagnostic.value as? String == "Build failed",
                     "The preceding actual Build rejection must be distinguishable from a Sign result")
         let sign = app.buttons["signButton"]
-        try require(wait { sign.exists && sign.isHittable && sign.isEnabled },
-                    "The actual Sign action must be available")
+        let trace = CherriUIReadinessTrace(boundary)
+        let signReady = wait { () -> Bool in
+            let exists = sign.exists
+            guard exists else {
+                trace.sign(exists: exists, hittable: nil, enabled: nil)
+                return false
+            }
+            let hittable = sign.isHittable
+            guard hittable else {
+                trace.sign(exists: exists, hittable: hittable, enabled: nil)
+                return false
+            }
+            let enabled = sign.isEnabled
+            trace.sign(exists: exists, hittable: hittable, enabled: enabled)
+            return enabled
+        }
+        trace.finish(waitCompleted: signReady)
+        try require(signReady, "The actual Sign action must be available")
         sign.tap()
         let alert = app.alerts["Sign Shortcut with HubSign?"]
         try require(alert.waitForExistence(timeout: 5), "The actual signing confirmation must appear")
@@ -306,7 +323,8 @@ final class CherriJoinedContractUITests: XCTestCase {
             try require(!app.buttons["shareSignedShortcutButton"].exists,
                         "A rejected current source must expose no signed export")
             try stage(contract, token + "-build-rejected", fixture: fixture, editor: editor)
-            try signRejected(editor, source: fixture.source)
+            try signRejected(editor, source: fixture.source,
+                             boundary: id == "rejected-type" ? .typeSign : .malformedSign)
             try exactDiagnostic(fixture)
             try stage(contract, token + "-sign-rejected", fixture: fixture, editor: editor)
         }

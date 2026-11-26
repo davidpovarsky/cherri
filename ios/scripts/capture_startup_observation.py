@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Capture fixed startup lifecycle observations; never grant acceptance credit.
 
-Only three run-nonce-owned cache files are read from the selected Simulator app.
+Only fixed run-nonce-owned cache files are read from the selected Simulator app.
 Private XCTest descriptions and container-query output remain quarantined.
 """
 import argparse
@@ -21,6 +21,7 @@ TESTS = {
     "CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI": "brg27",
     "CherriEditorUITests/testD03CurrentDocumentationSearchUI": "d03",
     "CherriEditorUITests/testE01CompletionDisplayAndInsertionUI": "e01",
+    "CherriEditorUITests/testE07VisualParameterEditingCanvasUI": "e07",
 }
 PHASES = {"before-launch", "after-launch", "readiness-start", "teardown-start", "teardown-finished"}
 APP_PHASES = {

@@ -294,6 +294,33 @@ class StartupObservationControls(unittest.TestCase):
             self.assertEqual(records, [])
 
 
+    def test_e07_uses_the_same_owned_nonce_session_and_rejects_foreign_identity(self):
+        test = "CherriEditorUITests/testE07VisualParameterEditingCanvasUI"
+        method = test.split("/")[1]
+        raw = "\n".join([
+            f"Test Case '-[CherriUITests.CherriEditorUITests {method}]' started.",
+            session(test=test), session("after-launch", test=test, uptime=2000),
+            session("readiness-start", test=test, uptime=2002),
+            f"Test Case '-[CherriUITests.CherriEditorUITests {method}]' failed (28.1 seconds).",
+        ]) + "\n"
+        parsed, private = capture.test_observations(raw)
+        self.assertIn(test, parsed)
+        self.assertTrue(parsed[test]["uniqueTestInvocation"])
+        self.assertEqual(len(parsed[test]["sessions"]), 3)
+        self.assertEqual(parsed[test]["caseConclusions"], ["failed"])
+        self.assertEqual(private, [])
+        rows = [dict(row, testId=test) for row in events()]
+        observed, health = capture.validate_app_events(event_bytes(rows), test, NONCE)
+        self.assertEqual(observed, rows)
+        self.assertFalse(health["absenceProvesMainThreadBlocked"])
+        for name, value in (("nonce", "b" * 32), ("testId", TEST)):
+            bad = [dict(row) for row in rows]
+            bad[2][name] = value
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                capture.validate_app_events(event_bytes(bad), test, NONCE)
+        self.assertNotIn("PRIVATE", collector.bounded_log(raw)[0])
+
+
 class ActualCaptureControls(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
