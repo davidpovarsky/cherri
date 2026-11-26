@@ -99,16 +99,70 @@ enum VerifyStartupLifecycleObserver {
         expect(!observedText.contains("PRIVATE_SOURCE"), "invalid identifier not emitted")
         observer.stopAndDrainForTesting()
 
-        let heartbeat = CherriStartupLifecycleObserver(context: context, output: path("heartbeat"),
+        let heartbeatOutput = path("heartbeat")
+        let heartbeat = CherriStartupLifecycleObserver(context: context, output: heartbeatOutput,
                                                         lifetime: 0.30, interval: 0.02)
         heartbeat.start()
-        // This blocks the caller; the independent writer queue must still progress.
-        Thread.sleep(forTimeInterval: 0.12)
         heartbeat.drainForTesting()
-        let heartbeats = try read(path("heartbeat")).filter { $0["phase"] as? String == "heartbeat" }
+        let openedRows = try read(heartbeatOutput)
+        let openedAt = openedRows.first?["observedUptimeMs"] as? Int
+        expect(openedRows.first?["phase"] as? String == "observer-opened" && openedAt != nil,
+               "timer observation begins at its actual open event")
+        let deadline = TimeInterval(openedAt!) / 1_000 + 0.30
+        let observedProgress = DispatchSemaphore(value: 0)
+        let stopReading = DispatchSemaphore(value: 0)
+        let reader = DispatchQueue(label: "org.cherrilang.startup-control-reader")
+        // The reader only observes this fixed control's bounded file. It cannot emit events.
+        reader.async {
+            defer { observedProgress.signal() }
+            while ProcessInfo.processInfo.systemUptime < deadline {
+                if stopReading.wait(timeout: .now()) == .success { return }
+                if let bytes = try? Data(contentsOf: heartbeatOutput),
+                   bytes.count <= CherriStartupLifecycleObserver.maximumBytes,
+                   let text = String(data: bytes, encoding: .utf8) {
+                    var count = 0
+                    for line in text.split(separator: "\n") {
+                        if let value = try? JSONSerialization.jsonObject(with: Data(line.utf8)),
+                           let row = value as? [String: Any], row["phase"] as? String == "heartbeat" {
+                            count += 1
+                        }
+                    }
+                    if count >= 2 { return }
+                }
+                let remaining = deadline - ProcessInfo.processInfo.systemUptime
+                if remaining > 0 { Thread.sleep(forTimeInterval: min(0.002, remaining)) }
+            }
+        }
+        // Keep the original caller block, then await real progress only for the
+        // remaining observer lifetime. Neither wait services the main queue.
+        let callerBlockedAt = ProcessInfo.processInfo.systemUptime
+        Thread.sleep(forTimeInterval: 0.12)
+        let remaining = max(0, deadline - ProcessInfo.processInfo.systemUptime)
+        _ = observedProgress.wait(timeout: .now() + remaining)
+        let callerResumedAt = ProcessInfo.processInfo.systemUptime
+        stopReading.signal()
+        reader.sync {}
+        heartbeat.stopAndDrainForTesting()
+        let heartbeats = try read(heartbeatOutput).filter { $0["phase"] as? String == "heartbeat" }
+        let offsets = heartbeats.compactMap { row -> Int? in
+            guard let timestamp = row["observedUptimeMs"] as? Int else { return nil }
+            return timestamp - openedAt!
+        }
+        var timerObservation: [String: Any] = [:]
+        timerObservation["schemaVersion"] = "cherri-startup-timer-control/1"
+        timerObservation["heartbeatCount"] = heartbeats.count
+        timerObservation["offMain"] = heartbeats.map { $0["mainThread"] as? Bool == false }
+        timerObservation["observedOffsetsMilliseconds"] = offsets
+        timerObservation["observerLifetimeMilliseconds"] = 300
+        timerObservation["nominalCallerBlockMilliseconds"] = 120
+        timerObservation["actualCallerBlockedMilliseconds"] = (callerResumedAt - callerBlockedAt) * 1_000
+        let timerBytes = try JSONSerialization.data(withJSONObject: timerObservation, options: [.sortedKeys])
+        try FileHandle.standardOutput.write(contentsOf:
+            Data("STARTUP_TIMER_CONTROL_OBSERVATION ".utf8) + timerBytes + Data([10]))
         expect(heartbeats.count >= 2, "real independent timer advanced")
         expect(heartbeats.allSatisfy { $0["mainThread"] as? Bool == false }, "heartbeat is not a main-thread readiness signal")
-        heartbeat.stopAndDrainForTesting()
+        expect(offsets.count == heartbeats.count && offsets.allSatisfy { $0 >= 0 && $0 < 300 },
+               "every genuine heartbeat is inside the original observer lifetime")
 
         let lateClock = LockedClock(200)
         let late = CherriStartupLifecycleObserver(context: context, output: path("late"),

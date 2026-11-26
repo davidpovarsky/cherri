@@ -1414,5 +1414,339 @@ class UIReadinessObservationTests(unittest.TestCase):
         self.assertEqual(records, [])
 
 
+
+
+class WorkspacePresentationRetentionTests(unittest.TestCase):
+    collect = IOSTestEvidenceTests.collect
+    transaction = PreviewTransactionRetentionTests.transaction
+    suite = "CherriWorkspacePresentationTests"
+    methods = (
+        "testCompactPaneTransitionsKeepNativeViewsAndDocumentState",
+        "testCompactUncompiledDocumentsDoNotInstantiateWebKit",
+        "testDocumentationSearchUsesLiteralNativeInputTraits",
+    )
+
+    def test_all_three_source_methods_keep_exact_outcomes_without_credit(self):
+        import re
+        source = (SCRIPT.parents[1] / "CherriTests" / (self.suite + ".swift")).read_text()
+        self.assertEqual(re.findall(r"func (test[A-Za-z0-9_]+)\(", source), list(self.methods))
+        for status, exit_code in (("passed", 0), ("failed", 65)):
+            with self.subTest(status=status):
+                diagnostic, records, _ = self.collect(
+                    "".join(self.transaction(name, status=status) for name in self.methods), exit_code)
+                self.assertEqual(diagnostic["runStatus"], status.upper())
+                self.assertEqual(diagnostic["testResults"], [
+                    {"testId": self.suite + "/" + name, "observedStatus": status}
+                    for name in sorted(self.methods)])
+                self.assertEqual(records, [])
+
+    def test_component_failure_keeps_location_without_private_payload(self):
+        method = self.methods[0]
+        failure = (f"/Users/runner/{self.suite}.swift:89: error: "
+                   f"-[CherriTests.{self.suite} {method}] : XCTAssertTrue failed - PRIVATE_CANARY")
+        diagnostic, records, outputs = self.collect(
+            self.transaction(status="failed", body=failure), 65)
+        self.assertEqual(diagnostic["testResults"], [
+            {"testId": self.suite + "/" + method, "observedStatus": "failed"}])
+        self.assertEqual(diagnostic["uiFailures"], [{
+            "testId": self.suite + "/" + method, "sourceLine": 89,
+            "failureCategory": "ASSERTION_FAILURE"}])
+        self.assertEqual(records, [])
+        self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+        self.assertNotIn("/Users/runner", "".join(outputs.values()))
+
+    def test_component_failure_requires_exact_bundle_class_and_active_case(self):
+        method = self.methods[0]
+        failure = (f"/Users/runner/{self.suite}.swift:89: error: "
+                   f"-[CherriTests.{self.suite} {method}] : PRIVATE_CANARY")
+        variants = [
+            ("wrong-bundle", self.transaction(target="CherriUITests." + self.suite,
+                                              body=failure.replace("CherriTests.", "CherriUITests."))),
+            ("class-suffix", self.transaction(target="CherriTests." + self.suite + "Other",
+                                              body=failure.replace(self.suite, self.suite + "Other"))),
+            ("outside-case", failure),
+            ("other-active-case", self.transaction(self.methods[1], body=failure)),
+        ]
+        for label, log in variants:
+            with self.subTest(label=label):
+                diagnostic, records, outputs = self.collect(log, 65)
+                self.assertEqual(diagnostic["uiFailures"], [])
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+                if label in {"wrong-bundle", "class-suffix", "outside-case"}:
+                    self.assertEqual(diagnostic["testResults"], [])
+
+class WorkspaceObservationTests(unittest.TestCase):
+    collect = IOSTestEvidenceTests.collect
+    transaction = PreviewTransactionRetentionTests.transaction
+    suite = WorkspacePresentationRetentionTests.suite
+    methods = WorkspacePresentationRetentionTests.methods
+    prefix = "[CHERRI_WORKSPACE_PRESENTATION] "
+    rejected = "[CHERRI_WORKSPACE_PRESENTATION_REJECTED] "
+    terms = {"preview": 7, "code": 6, "other-preview": 3, "other-code": 3}
+
+    def row(self, stage="preview", phase="before-event", failed_term=None):
+        size = self.terms[stage]
+        before = phase == "before-event"
+        other = stage.startswith("other-")
+        last = [-1] * size if before else (
+            [1] * size if failed_term is None
+            else [1] * failed_term + [0] + [-1] * (size - failed_term - 1))
+        responder = {"role": "NONE_OBSERVED", "visited": 12, "matches": 0}
+        return {
+            "schema": "cherri-workspace-presentation-observation/1",
+            "testId": self.suite + "/" + self.methods[0],
+            "diagnosticOnly": True, "stage": stage, "phase": phase,
+            "budgetMilliseconds": 3000, "elapsedMilliseconds": 0 if before else 3001,
+            "waitCompleted": None if before else failed_term is None,
+            "polls": 0 if before else 2, "lastTerms": last,
+            "seenTrueMask": sum(1 << i for i, v in enumerate(last) if v == 1),
+            "seenFalseMask": sum(1 << i for i, v in enumerate(last) if v == 0),
+            "state": {
+                "selectedSegment": "CODE" if stage.endswith("code") else "PREVIEW",
+                "mountedKey": not other, "otherPresent": other, "otherKey": other,
+                "selectorWindow": "MOUNTED", "editorWindow": "MOUNTED", "webWindow": "MOUNTED",
+                "otherInputWindow": "OTHER" if other else "NONE",
+                "editorFirstResponder": False, "otherInputFirstResponder": other,
+                "webFirstResponder": False, "editorInteractionEnabled": True,
+                "webInteractionEnabled": True, "webAccessibilityHidden": stage.endswith("code"),
+                "webLoading": True, "webProgressPermille": 100, "webHasURL": True,
+                "mountedResponderViews": dict(responder),
+                "otherResponderViews": ({"role": "OTHER_INPUT", "visited": 3, "matches": 1}
+                                        if other else {"role": "NO_WINDOW", "visited": 0, "matches": 0}),
+            },
+        }
+
+    def line(self, row):
+        return self.prefix + json.dumps(row, sort_keys=True)
+
+    def admitted(self, text):
+        return [line for line in text.splitlines() if line.strip().startswith(self.prefix)]
+
+    def test_complete_bounded_stream_retains_native_outcomes_without_credit(self):
+        rows = [self.row(stage, phase) for stage in self.terms
+                for phase in ("before-event", "after-wait")]
+        body = "\n".join(self.line(row) for row in rows)
+        for status, code in (("passed", 0), ("failed", 65)):
+            with self.subTest(status=status):
+                log = self.transaction(status=status, body=body) + "".join(
+                    self.transaction(method) for method in self.methods[1:])
+                diagnostic, records, outputs = self.collect(log, code)
+                self.assertEqual(diagnostic["workspacePresentationObservations"], rows)
+                self.assertEqual(self.admitted(outputs["xcodetest.log"]),
+                                 [self.line(row) for row in rows])
+                self.assertEqual(len(diagnostic["testResults"]), 3)
+                self.assertEqual(next(v for v in diagnostic["testResults"]
+                                      if v["testId"].endswith(self.methods[0]))["observedStatus"], status)
+                self.assertEqual(records, [])
+
+    def test_short_circuit_and_deadline_edge_states_remain_distinct(self):
+        before = self.line(self.row())
+        for failed_term in range(7):
+            with self.subTest(failed_term=failed_term):
+                row = self.row(phase="after-wait", failed_term=failed_term)
+                diagnostic, records, _ = self.collect(
+                    self.transaction(status="failed", body=before + "\n" + self.line(row)), 65)
+                self.assertEqual(diagnostic["workspacePresentationObservations"][-1], row)
+                self.assertEqual(records, [])
+        row = self.row(phase="after-wait")
+        row["waitCompleted"] = False  # True predicate may have returned after the deadline.
+        diagnostic, _, _ = self.collect(
+            self.transaction(status="failed", body=before + "\n" + self.line(row)), 65)
+        self.assertEqual(diagnostic["workspacePresentationObservations"][-1], row)
+
+    def test_schema_term_and_native_state_faults_are_rejected_without_payload(self):
+        import copy
+        mutations = [
+            ("schema", lambda r: r.update(schema="PRIVATE_CANARY")),
+            ("test-id", lambda r: r.update(testId=self.suite + "/" + self.methods[1])),
+            ("credit", lambda r: r.update(diagnosticOnly=False)),
+            ("source", lambda r: r.update(source="PRIVATE_CANARY")),
+            ("budget-bool", lambda r: r.update(budgetMilliseconds=True)),
+            ("budget", lambda r: r.update(budgetMilliseconds=3001)),
+            ("elapsed", lambda r: r.update(elapsedMilliseconds=120001)),
+            ("polls", lambda r: r.update(polls=4097)),
+            ("phase", lambda r: r.update(phase="PRIVATE_CANARY")),
+            ("stage", lambda r: r.update(stage=["preview"])),
+            ("term-count", lambda r: r.update(lastTerms=[-1])),
+            ("term-bool", lambda r: r.update(lastTerms=[True] + [-1] * 6)),
+            ("mask-range", lambda r: r.update(seenTrueMask=128)),
+            ("initial-mask", lambda r: r.update(seenFalseMask=1)),
+            ("state-extra", lambda r: r["state"].update(ax="PRIVATE_CANARY")),
+            ("state-bool", lambda r: r["state"].update(mountedKey=1)),
+            ("window-private", lambda r: r["state"].update(webWindow="PRIVATE_CANARY")),
+            ("progress-range", lambda r: r["state"].update(webProgressPermille=1001)),
+            ("responder-bound", lambda r: r["state"]["mountedResponderViews"].update(visited=513)),
+            ("responder-match", lambda r: r["state"]["mountedResponderViews"].update(matches=1)),
+            ("responder-missing", lambda r: r["state"]["mountedResponderViews"].update(
+                role="NO_WINDOW", visited=0, matches=0)),
+            ("other-window", lambda r: r["state"].update(otherPresent=True)),
+        ]
+        for name, mutate in mutations:
+            with self.subTest(name=name):
+                row = copy.deepcopy(self.row()); mutate(row)
+                diagnostic, records, outputs = self.collect(
+                    self.transaction(status="failed", body=self.line(row)), 65)
+                self.assertEqual(diagnostic["workspacePresentationObservations"], [])
+                self.assertIn(self.rejected, outputs["xcodetest.log"])
+                self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+                self.assertEqual(records, [])
+        for last, completed, true_mask, false_mask in [
+            ([1, 0, 1, -1, -1, -1, -1], False, 5, 2),
+            ([1, 0, -1, -1, -1, -1, -1], True, 1, 2),
+            ([1] * 7, True, 63, 0),
+            ([-1] * 7, False, 0, 0),
+        ]:
+            row = self.row(phase="after-wait")
+            row.update(lastTerms=last, waitCompleted=completed,
+                       seenTrueMask=true_mask, seenFalseMask=false_mask)
+            _, _, outputs = self.collect(self.transaction(status="failed", body=(
+                self.line(self.row()) + "\n" + self.line(row))), 65)
+            self.assertEqual(len(self.admitted(outputs["xcodetest.log"])), 1)
+            self.assertIn(self.rejected, outputs["xcodetest.log"])
+
+    def test_exact_active_case_and_sequence_are_required(self):
+        row = self.line(self.row())
+        for raw in [
+            row, self.transaction(self.methods[1], body=row),
+            self.transaction(target="CherriUITests." + self.suite, body=row),
+            self.transaction() + row,
+            self.transaction(body=self.line(self.row("code"))),
+            self.transaction(body=self.line(self.row(phase="after-wait"))),
+        ]:
+            with self.subTest(raw=raw[:90]):
+                diagnostic, records, outputs = self.collect(raw, 65)
+                self.assertEqual(self.admitted(outputs["xcodetest.log"]), [])
+                self.assertEqual(diagnostic["workspacePresentationObservations"], [])
+                self.assertEqual(records, [])
+        diagnostic, records, outputs = self.collect(
+            self.transaction(status="failed", body="\n".join([row] * 20)), 65)
+        self.assertEqual(self.admitted(outputs["xcodetest.log"]), [row])
+        self.assertEqual(outputs["xcodetest.log"].count(self.rejected), 8)
+        self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "failed")
+        self.assertEqual(records, [])
+
+    def test_raw_utf8_bound_duplicate_keys_and_bounded_original_bytes(self):
+        row = self.line(self.row())
+        for raw in [
+            " " * 4096 + row, row + " " * 4096,
+            row.replace('"polls": 0', '"polls": 0, "polls": 1'),
+            row.replace('"webLoading": true', '"webLoading": true, "webLoading": false'),
+        ]:
+            _, _, outputs = self.collect(self.transaction(body=raw), 65)
+            self.assertEqual(self.admitted(outputs["xcodetest.log"]), [])
+            self.assertIn(self.rejected, outputs["xcodetest.log"])
+        padded = "  " + row + "\t"
+        diagnostic, _, outputs = self.collect(self.transaction(body=padded), 65)
+        self.assertEqual(self.admitted(outputs["xcodetest.log"]), [padded])
+        self.assertEqual(diagnostic["workspacePresentationObservations"], [self.row()])
+
+    def test_truncated_view_scan_and_nonfinite_progress_are_explicit(self):
+        row = self.row()
+        row["state"]["mountedResponderViews"] = {"role": "TRUNCATED", "visited": 512, "matches": 0}
+        row["state"]["webProgressPermille"] = -1
+        diagnostic, records, _ = self.collect(self.transaction(status="failed", body=self.line(row)), 65)
+        self.assertEqual(diagnostic["workspacePresentationObservations"], [row])
+        self.assertEqual(records, [])
+
+    def test_parser_recursion_failure_preserves_original_terminal(self):
+        from unittest import mock
+        nested = "[" * 1100 + "0" + "]" * 1100
+        raw = self.prefix + nested
+        self.assertLess(len(raw.encode("utf-8")), 4096)
+        log = self.transaction(status="failed", body=raw) + "".join(
+            self.transaction(method) for method in self.methods[1:])
+        original_loads = collector.json.loads
+        faults = []
+
+        def parser(value, *args, **kwargs):
+            # Decoder recursion limits differ by Python version. Inject exactly
+            # this parser failure; do not claim this host rejected literal depth.
+            if value == nested:
+                faults.append("INJECTED_PARSER_DEPTH_FAILURE")
+                raise RecursionError("INJECTED_PARSER_DEPTH_FAILURE")
+            return original_loads(value, *args, **kwargs)
+
+        with mock.patch.object(collector.json, "loads", side_effect=parser):
+            diagnostic, records, outputs = self.collect(log, 65)
+        self.assertEqual(faults, ["INJECTED_PARSER_DEPTH_FAILURE"])
+        self.assertEqual(diagnostic["workspacePresentationObservations"], [])
+        self.assertIn(self.rejected, outputs["xcodetest.log"])
+        self.assertEqual(len(diagnostic["testResults"]), 3)
+        self.assertEqual(next(v for v in diagnostic["testResults"]
+                              if v["testId"].endswith(self.methods[0]))["observedStatus"], "failed")
+        self.assertEqual(records, [])
+
+    def test_first_rejection_reason_is_retained_before_followup_block(self):
+        row = self.row()
+        row["state"]["mountedKey"] = 1
+        body = self.line(row) + "\n" + self.line(self.row())
+        log = self.transaction(status="failed", body=body) + "".join(
+            self.transaction(method) for method in self.methods[1:])
+        diagnostic, records, outputs = self.collect(log, 65)
+        rejected = [line for line in outputs["xcodetest.log"].splitlines()
+                    if line.startswith(self.rejected)]
+        self.assertEqual(rejected, [
+            self.rejected + "INVALID_OBSERVATION:STATE_BOOLEANS",
+            self.rejected + "INVALID_OBSERVATION:BLOCKED_AFTER_REJECTION",
+        ])
+        self.assertEqual(diagnostic["workspacePresentationObservations"], [])
+        self.assertEqual({entry["testId"]: entry["observedStatus"]
+                          for entry in diagnostic["testResults"]}, {
+            self.suite + "/" + self.methods[0]: "failed",
+            self.suite + "/" + self.methods[1]: "passed",
+            self.suite + "/" + self.methods[2]: "passed",
+        })
+        self.assertEqual(records, [])
+
+    def test_closed_rejection_reasons_never_publish_payload_or_exception(self):
+        from unittest import mock
+        row = self.row()
+        extra = self.row(); extra["PRIVATE_CANARY"] = "PRIVATE_CANARY"
+        phase = self.row(); phase["phase"] = "PRIVATE_CANARY"
+        malformed = self.prefix + '{"PRIVATE_CANARY":'
+        duplicate = self.line(row).replace('"polls": 0', '"polls": 0, "polls": 1')
+        cases = [
+            (self.line(extra), "ROOT_SHAPE"),
+            (self.line(phase), "PHASE"),
+            (malformed, "JSON_SYNTAX"),
+            (duplicate, "JSON_DUPLICATE_KEY"),
+            (self.line(self.row("code")), "SEQUENCE"),
+        ]
+        for raw, reason in cases:
+            with self.subTest(reason=reason):
+                diagnostic, records, outputs = self.collect(
+                    self.transaction(status="failed", body=raw), 65)
+                rejected = [line for line in outputs["xcodetest.log"].splitlines()
+                            if line.startswith(self.rejected)]
+                self.assertEqual(rejected, [self.rejected + "INVALID_OBSERVATION:" + reason])
+                self.assertEqual(diagnostic["workspacePresentationObservations"], [])
+                self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "failed")
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+                self.assertIn(reason, collector.WORKSPACE_OBSERVATION_REASONS)
+
+        payload = self.line(row)[len(self.prefix):]
+        original = collector.json.loads
+        injections = []
+
+        def unknown_error(value, *args, **kwargs):
+            if value == payload:
+                injections.append(True)
+                raise ValueError("PRIVATE_CANARY")
+            return original(value, *args, **kwargs)
+
+        with mock.patch.object(collector.json, "loads", side_effect=unknown_error):
+            diagnostic, records, outputs = self.collect(
+                self.transaction(status="failed", body=self.line(row)), 65)
+        self.assertEqual(injections, [True])
+        self.assertIn(self.rejected + "INVALID_OBSERVATION:UNKNOWN_VALIDATION",
+                      outputs["xcodetest.log"])
+        self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+        self.assertEqual(diagnostic["workspacePresentationObservations"], [])
+        self.assertEqual(records, [])
+
+
+
 if __name__ == "__main__":
     unittest.main()
