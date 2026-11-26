@@ -178,6 +178,16 @@ import CoreGraphics
             }, capture: {})
         } catch BoundaryFailure.expected { observeThrew = true }
         check("fresh_observation_error_never_authorizes_confirmation", observeThrew)
+        let composed = cell(id: "é")
+        let decomposed = cell(id: "e\u{301}")
+        var unicodeObservations = 0
+        let unicodeTransition = Model.inspectForConfirmation(observe: {
+            unicodeObservations += 1
+            let value = unicodeObservations == 1 ? composed : decomposed
+            return decide(app([value]), [candidate(value)])
+        }, capture: {})
+        check("capture_unicode_identifier_bytes_change_rejected",
+              !unicodeTransition.canConfirm && unicodeObservations == 2)
         let failures = events.filter { $0["outcome"] as? String == "FAIL" }
         let output: [String: Any] = ["schema": "cherri-imported-library-identity-controls/1",
             "checks": events.count, "failures": failures.count, "results": events,
