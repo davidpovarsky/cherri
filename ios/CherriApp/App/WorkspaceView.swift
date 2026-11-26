@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import UniformTypeIdentifiers
 
 enum CherriLanguageMode: String, CaseIterable, Identifiable {
@@ -14,6 +15,31 @@ private enum WorkspacePane: String, CaseIterable, Identifiable {
     case preview = "Preview"
 
     var id: Self { self }
+}
+
+/// Ends input only in the window containing the departing compact pane.
+private struct WorkspacePaneInputBoundary: UIViewRepresentable {
+    let pane: WorkspacePane
+
+    final class Coordinator {
+        var previousPane: WorkspacePane
+        init(pane: WorkspacePane) { previousPane = pane }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(pane: pane) }
+
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.isUserInteractionEnabled = false
+        view.accessibilityElementsHidden = true
+        return view
+    }
+
+    func updateUIView(_ view: UIView, context: Context) {
+        defer { context.coordinator.previousPane = pane }
+        guard context.coordinator.previousPane != pane else { return }
+        _ = view.window?.endEditing(true)
+    }
 }
 
 struct WorkspaceView: View {
@@ -67,11 +93,27 @@ struct WorkspaceView: View {
                 .padding(.horizontal)
                 .padding(.vertical, 8)
 
-                switch selectedPane {
-                case .code:
+                // Keep the native editor and any compiled preview alive across
+                // compact pane changes, including their selection and render state.
+                ZStack {
                     editorPane
-                case .preview:
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .opacity(selectedPane == .code ? 1 : 0)
+                        .allowsHitTesting(selectedPane == .code)
+                        .accessibilityHidden(selectedPane != .code)
+
                     previewPane
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .opacity(selectedPane == .preview ? 1 : 0)
+                        .allowsHitTesting(selectedPane == .preview)
+                        .accessibilityHidden(selectedPane != .preview)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background {
+                    WorkspacePaneInputBoundary(pane: selectedPane)
+                        .frame(width: 0, height: 0)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
                 }
             }
 
@@ -236,6 +278,7 @@ struct WorkspaceView: View {
                     name: compiled.name,
                     compilationID: compiled.id,
                     actionMetadataJSON: previewActionMetadataJSON,
+                    isPresented: horizontalSizeClass == .regular || selectedPane == .preview,
                     onEdit: { edit in
                         Task { @MainActor in
                             handlePreviewEdit(edit, rendered: compiled)

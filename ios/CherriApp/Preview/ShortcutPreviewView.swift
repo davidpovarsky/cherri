@@ -7,6 +7,7 @@ struct ShortcutPreviewView: UIViewRepresentable {
     let name: String
     let compilationID: UUID
     var actionMetadataJSON: String?
+    var isPresented = true
     let onEdit: (ShortcutPreviewEdit) -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -19,6 +20,7 @@ struct ShortcutPreviewView: UIViewRepresentable {
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
+        webView.accessibilityElementsHidden = !isPresented
         webView.isOpaque = false
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
@@ -40,6 +42,7 @@ struct ShortcutPreviewView: UIViewRepresentable {
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
+        webView.accessibilityElementsHidden = !isPresented
         context.coordinator.parent = self
         context.coordinator.registerActionMetadataIfNeeded(in: webView)
         context.coordinator.renderIfReady(in: webView)
