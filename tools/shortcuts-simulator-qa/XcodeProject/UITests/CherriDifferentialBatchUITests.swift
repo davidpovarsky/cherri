@@ -166,6 +166,7 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         case .other: kind = .other
         case .sheet: kind = .sheet
         case .scrollView: kind = .scrollView
+        case .navigationBar: kind = .navigationBar
         case .button: kind = .button
         case .staticText: kind = .staticText
         default: kind = .unsupported
@@ -340,6 +341,73 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             timingReceipt["libraryCanConfirm"] = decision.canConfirm
             return decision
         }
+        var editorBackTapped = false
+        var selectedEditorBack: XCUIElement?
+        func editorNavigationBoundary() -> String? {
+            let decision = checkLibrary()
+            if let failure = decision.failure { return failure }
+            guard let deadline = decision.deadline, Date() < deadline else {
+                return "IMPORT_LIBRARY_DEADLINE"
+            }
+            return nil
+        }
+        func observeEditorBack() throws -> QAImportedEditorNavigation.Decision {
+            selectedEditorBack = nil
+            if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+            let foreground = shortcuts.state == .runningForeground
+            if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+            guard foreground else { return QAImportedEditorNavigation.rejected("EDITOR_NOT_FOREGROUND") }
+            let namedBars = shortcuts.navigationBars.matching(identifier: name).allElementsBoundByIndex
+            if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+            guard namedBars.count == 1 else { return QAImportedEditorNavigation.rejected("NO_UNIQUE_CURRENT_REQUESTED_EDITOR") }
+            let buttons = namedBars[0].buttons.matching(identifier: "BackButton").allElementsBoundByIndex
+            if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+            guard buttons.count <= 32 else { return QAImportedEditorNavigation.rejected("INVALID_EDITOR_OBSERVATION") }
+            var candidates: [QAImportSheetSelection.Candidate] = []
+            for (index, button) in buttons.enumerated() {
+                let exists = button.exists
+                if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+                var hittable = false
+                var observed: QAImportSheetSelection.Node?
+                if exists {
+                    hittable = button.isHittable
+                    if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+                    let snapshot = try button.snapshot()
+                    if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+                    var count = 0
+                    observed = try importSelectionNode(snapshot, count: &count)
+                }
+                candidates.append(QAImportSheetSelection.Candidate(queryIndex: index, exists: exists,
+                                                                   hittable: hittable, snapshot: observed))
+            }
+            let snapshot = try shortcuts.snapshot()
+            if let failure = editorNavigationBoundary() { return QAImportedEditorNavigation.rejected(failure) }
+            var count = 0
+            let current = try importSelectionNode(snapshot, count: &count)
+            let stillForeground = shortcuts.state == .runningForeground
+            let decision = checkLibrary()
+            if let failure = decision.failure { return QAImportedEditorNavigation.rejected(failure) }
+            guard let deadline = decision.deadline else { return QAImportedEditorNavigation.rejected("IMPORT_LIBRARY_DEADLINE") }
+            let selected = QAImportedEditorNavigation.select(current: current, candidates: candidates,
+                context: .init(expectedName: name, foreground: stillForeground,
+                               dispatchConfirmed: decision.canConfirm, alreadyNavigated: editorBackTapped,
+                               now: Date(), deadline: deadline))
+            timingReceipt["editorNavigationContract"] = "requested-editor-back-within-library-clock-v1"
+            timingReceipt["editorNavigationReason"] = selected.reason
+            timingReceipt["editorNavigationQueryCount"] = candidates.count
+            timingReceipt["editorNavigationBarCount"] = selected.currentNavigationBarCount
+            timingReceipt["editorNavigationMatchCount"] = selected.matchedCandidateCount
+            for key in ["editorBackQueryIndex", "editorBackBarPath", "editorBackButtonPath"] {
+                timingReceipt.removeValue(forKey: key)
+            }
+            if let binding = selected.binding {
+                selectedEditorBack = buttons[binding.queryIndex]
+                timingReceipt["editorBackQueryIndex"] = binding.queryIndex
+                timingReceipt["editorBackBarPath"] = binding.navigationBarPath
+                timingReceipt["editorBackButtonPath"] = binding.buttonPath
+            }
+            return selected
+        }
         var replaceTapped = false
         while true {
             var decision = checkLibrary()
@@ -363,6 +431,27 @@ final class CherriDifferentialBatchUITests: XCTestCase {
                         return receipt(["outcome": "IMPORTED", "name": name, "identityVerified": identity,
                                         "libraryIdentityVerified": true, "replaceTapped": replaceTapped])
                     }
+                }
+            }
+            if !editorBackTapped {
+                let navigation = try QAImportedEditorNavigation.inspectForNavigation(
+                    observe: observeEditorBack,
+                    capture: { self.capture(command.id + "-imported-editor") })
+                decision = checkLibrary()
+                if let failure = decision.failure { return stop(failure) }
+                if Date() >= decision.deadline! { break }
+                if navigation.canNavigate, let back = selectedEditorBack, decision.canConfirm {
+                    // Claim before the native tap; never retry Back. The editor
+                    // title grants navigation only, never library confirmation.
+                    editorBackTapped = true
+                    timingReceipt["editorBackAttemptCount"] = 1
+                    timingReceipt["editorBackIntentUTC"] = formatter.string(from: Date())
+                    back.tap()
+                    timingReceipt["editorBackReturnedUTC"] = formatter.string(from: Date())
+                    decision = checkLibrary()
+                    if let failure = decision.failure { return stop(failure) }
+                    if Date() >= decision.deadline! { break }
+                    continue
                 }
             }
             let replacement = shortcuts.buttons["Replace"].firstMatch

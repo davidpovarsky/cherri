@@ -44,6 +44,12 @@ def import_receipts():
                                 "dispatchReceipt": "dispatch-import-unique.json",
                                 "sheetContract": "requested-identity-and-add-v1", "sheetButtonExists": True,
                                 "sheetButtonHittable": True, "sheetIdentityMatched": True, "sheetCanTap": True,
+                                "sheetSelectionContract": "current-container-bound-add-v1",
+                                "sheetSelectionReason": "UNIQUE_CURRENT_NAMED_CONTAINER",
+                                "sheetQueryCandidateCount": 3, "sheetCurrentContainerCount": 1,
+                                "sheetMatchedCandidateCount": 1, "sheetSelectedQueryIndex": 2,
+                                "sheetSelectedContainerPath": [0, 0], "sheetSelectedTitlePath": [0, 0, 0],
+                                "sheetSelectedButtonPath": [0, 0, 2],
                                 "addObservedUTC": "2026-11-25T00:00:01.000Z",
                                 "lastSheetCheckUTC": "2026-11-25T00:00:02.000Z",
                                 "sheetMatchedAfterCaptureUTC": "2026-11-25T00:00:02.001Z"}}
@@ -218,20 +224,175 @@ class StorageObserverControls(unittest.TestCase):
                 qualification[key] = value
                 self.reject(subject.validate_clean_build_metadata, build, qualification)
 
+    def test_current_container_selection_positive_and_paths(self):
+        argv, dispatch, receipt = import_receipts()
+        subject.validate_import(dispatch, receipt, argv, "import-unique")
+        timing = receipt["importTiming"]
+        timing["sheetSelectedContainerPath"] = [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0]
+        timing["sheetSelectedTitlePath"] = timing["sheetSelectedContainerPath"] + [0]
+        timing["sheetSelectedButtonPath"] = timing["sheetSelectedContainerPath"] + [6]
+        subject.validate_import(dispatch, receipt, argv, "import-unique")
+
+    def test_current_container_selection_contract_required(self):
+        for field, value in (("sheetSelectionContract", "old"),
+                             ("sheetSelectionContract", None),
+                             ("sheetSelectionReason", "NO_CURRENT_HITTABLE_MATCH"),
+                             ("sheetSelectionReason", "AMBIGUOUS_CURRENT_MATCH"),
+                             ("sheetSelectionReason", True)):
+            with self.subTest(field=field, value=value):
+                argv, dispatch, receipt = import_receipts()
+                receipt["importTiming"][field] = value
+                self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_current_container_selection_integer_bounds(self):
+        values = {
+            "sheetQueryCandidateCount": (0, 33, True, 3.0, "3"),
+            "sheetCurrentContainerCount": (0, 8193, True, 1.0),
+            "sheetMatchedCandidateCount": (0, 2, True, 1.0),
+            "sheetSelectedQueryIndex": (-1, 3, True, 2.0),
+        }
+        for field, bad in values.items():
+            for value in bad:
+                with self.subTest(field=field, value=value):
+                    argv, dispatch, receipt = import_receipts()
+                    receipt["importTiming"][field] = value
+                    self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_current_container_selection_path_shape(self):
+        for field in ("sheetSelectedContainerPath", "sheetSelectedTitlePath", "sheetSelectedButtonPath"):
+            for value in (None, "", [], [True], [-1], [8192], [0] * 65, [0.0], [0, "1"]):
+                with self.subTest(field=field, value=value):
+                    argv, dispatch, receipt = import_receipts()
+                    receipt["importTiming"][field] = value
+                    self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_current_container_selection_cross_sheet_rejected(self):
+        for field, value in (("sheetSelectedContainerPath", [1, 0]),
+                             ("sheetSelectedTitlePath", [0, 1, 0]),
+                             ("sheetSelectedButtonPath", [0, 1, 2]),
+                             ("sheetSelectedTitlePath", [0, 0]),
+                             ("sheetSelectedButtonPath", [0, 0]),
+                             ("sheetSelectedButtonPath", [0, 0, 0]),
+                             ("sheetSelectedTitlePath", [0, 0, 2, 1])):
+            with self.subTest(field=field, value=value):
+                argv, dispatch, receipt = import_receipts()
+                receipt["importTiming"][field] = value
+                self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_current_container_selection_evidence_complete(self):
+        for field in ("sheetSelectionContract", "sheetSelectionReason", "sheetQueryCandidateCount",
+                      "sheetCurrentContainerCount", "sheetMatchedCandidateCount", "sheetSelectedQueryIndex",
+                      "sheetSelectedContainerPath", "sheetSelectedTitlePath", "sheetSelectedButtonPath"):
+            with self.subTest(field=field):
+                argv, dispatch, receipt = import_receipts()
+                del receipt["importTiming"][field]
+                self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_previous_hidden_first_match_build_rejected(self):
+        build, qualification = clean_build_metadata()
+        for document in (build, qualification):
+            document["builtHarnessCommit"] = "43b962d4dc07e9f8e94c8d4394af95abdf12ebe7"
+            document["builtHarnessTree"] = "029ff3f51ce6cbaadb5fe41a29e12ccfee13b4b8"
+        self.reject(subject.validate_clean_build_metadata, build, qualification)
+
+
+
+    def test_scoped_build_truthful_metadata(self):
+        for document in ("build", "qualification"):
+            for field, value in (("completeRepositoryInventory", True), ("sourceScope", "full-repository"),
+                                 ("sourceFiles", 21), ("sourceFiles", 22.0), ("projectInputCount", 13),
+                                 ("projectInputCount", True)):
+                with self.subTest(document=document, field=field, value=value):
+                    build, qualification = clean_build_metadata()
+                    (build if document == "build" else qualification)[field] = value
+                    self.reject(subject.validate_clean_build_metadata, build, qualification)
+        for field, value in (("completeTrackedProject", False), ("scopePaths", [subject.PROJECT]),
+                             ("scopePaths", list(reversed(subject.BUILD_SCOPE_PATHS)))):
+            with self.subTest(field=field):
+                build, qualification = clean_build_metadata(); qualification[field] = value
+                self.reject(subject.validate_clean_build_metadata, build, qualification)
+
+    def test_scoped_source_exact_closure_positive(self):
+        source = scoped_source()
+        self.assertEqual(subject.validate_build_source(source), source["files"])
+        self.assertEqual(len(source["files"]), 22)
+        self.assertEqual(sum(path.startswith(subject.PROJECT) for path in source["files"]), 14)
+
+    def test_scoped_source_missing_or_added_dependency(self):
+        for path in subject.BUILD_INPUT_FILES:
+            with self.subTest(path=path):
+                source = scoped_source(); del source["files"][path]
+                self.reject(subject.validate_build_source, source)
+        source = scoped_source()
+        source["files"][subject.PROJECT + "unreviewed.swift"] = next(iter(source["files"].values()))
+        self.reject(subject.validate_build_source, source)
+
+    def test_scoped_source_identity_and_whole_repo_relabel_rejected(self):
+        for field, value in (("commit", "0" * 40), ("tree", "0" * 40),
+                             ("completeTrackedSource", True), ("completeTrackedProject", False),
+                             ("sourceScope", "full-repository"), ("scopePaths", [subject.PROJECT])):
+            with self.subTest(field=field):
+                source = scoped_source(); source[field] = value
+                self.reject(subject.validate_build_source, source)
+
+    def test_scoped_source_pin_corruption_rejected(self):
+        for field, value in (("bytes", -1), ("bytes", True), ("gitBlob", "0" * 39),
+                             ("sha256", "A" * 64), ("mode", "120000"), ("extra", "unbound")):
+            with self.subTest(field=field):
+                source = scoped_source()
+                source["files"][subject.BUILD_PROJECT_FILES[0]][field] = value
+                self.reject(subject.validate_build_source, source)
+
+
+    def test_pre_navigation_and_failed_harness_are_rejected(self):
+        previous = (
+            ("bb9dada0a80c0ef7e83c4097ac2bef5f743541a0", "145b85d8063be775bc44e64fe50fc71e4fd4b352"),
+            ("cfd43b3626823dd78d507c8972541bf7000e1786", "f343466ed12c70c2d87f137427dfa963743f23fb"),
+        )
+        for commit, tree in previous:
+            for surface in ("plan", "metadata", "source"):
+                with self.subTest(commit=commit, surface=surface):
+                    if surface == "plan":
+                        value = plan()
+                        value["builtHarnessCommitSha"] = commit
+                        self.reject(subject.validate_plan, value)
+                    elif surface == "metadata":
+                        build, qualification = clean_build_metadata()
+                        for document in (build, qualification):
+                            document["builtHarnessCommit"] = commit
+                            document["builtHarnessTree"] = tree
+                        self.reject(subject.validate_clean_build_metadata, build, qualification)
+                    else:
+                        value = scoped_source()
+                        value.update(commit=commit, tree=tree)
+                        self.reject(subject.validate_build_source, value)
+
 
 def clean_build_metadata():
     # Synthetic metadata controls; full raw source/process/product joins are
     # additionally required by verify_build before any native installation.
-    build = {"schema": "cherri-standalone-storage-harness-build/1", "status": "BUILD_VALIDATED",
+    build = {"schema": "cherri-standalone-storage-harness-build/2", "status": "BUILD_VALIDATED",
              "builtHarnessCommit": subject.BUILD, "builtHarnessTree": subject.BUILD_TREE,
              "sourceUnchanged": True, "generatedProjectRetained": True,
-             "compilerBuilt": False, "shortcutExecuted": False, "testsExecuted": False}
-    qualification = {"schema": "cherri-standalone-storage-harness-build-qualification/2",
+             "compilerBuilt": False, "shortcutExecuted": False, "testsExecuted": False,
+             "completeRepositoryInventory": False, "sourceScope": subject.BUILD_SCOPE,
+             "sourceFiles": 22, "projectInputCount": 14}
+    qualification = {"schema": "cherri-standalone-storage-harness-build-qualification/3",
                      "status": "BUILD_VALIDATED", "builtHarnessCommit": subject.BUILD,
                      "builtHarnessTree": subject.BUILD_TREE, "sourceTrackedBytesUnchanged": True,
                      "sourceCleanAfterRetainedProjectRelocation": True, "xcodeBuildReexecuted": False,
-                     "compilerRebuilt": False, "nativeInvocation": False}
+                     "compilerRebuilt": False, "nativeInvocation": False,
+                     "completeRepositoryInventory": False, "completeTrackedProject": True,
+                     "sourceScope": subject.BUILD_SCOPE, "scopePaths": subject.BUILD_SCOPE_PATHS,
+                     "sourceFiles": 22, "projectInputCount": 14}
     return build, qualification
+
+def scoped_source():
+    return {"commit": subject.BUILD, "tree": subject.BUILD_TREE,
+            "completeTrackedSource": False, "completeTrackedProject": True,
+            "sourceScope": subject.BUILD_SCOPE, "scopePaths": list(subject.BUILD_SCOPE_PATHS),
+            "files": {path: {"bytes": 1, "gitBlob": "1" * 40, "mode": "100644", "sha256": "2" * 64}
+                      for path in subject.BUILD_INPUT_FILES}}
 
 
 if __name__ == "__main__":

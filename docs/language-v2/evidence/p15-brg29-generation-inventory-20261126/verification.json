@@ -1,0 +1,50 @@
+{
+  "executionEnvironment": "ChatGPT Linux scratch Python; exact copied production modules, no Go or producer invocation",
+  "fingerprintScope": "Both production paths and added tools/p10r15 test fixtures are outside C1/C2/CM input closures.",
+  "formalAcceptance": false,
+  "goRerun": false,
+  "green": {
+    "adverseMutations": 14,
+    "parentsPassed": 4,
+    "resultSHA256": "4229a00a2213b8178a2ac341e7261dfa4ba9ea662e53c8d172e4eda870bbf9e5"
+  },
+  "historicalFixture": {
+    "children": 10,
+    "compiler": "708ed78eda1cad0f1f453559afce100edc59b8a9",
+    "freshBRG29Execution": false,
+    "parents": 4,
+    "total": 14,
+    "unfiltered": true
+  },
+  "nativeAcceptance": false,
+  "originalArchive": {
+    "bytes": 43851,
+    "members": 18,
+    "path": "originals.zip",
+    "sha256": "630dbb1c4e6c2d83b3a0be84b5ba5442aa2e5bf176479184335cd1bcf16b696d"
+  },
+  "originalSelection": {
+    "children": 10,
+    "parents": 3,
+    "total": 13,
+    "unchangedPipelineSHA256": "d3aea97537ed49a6f8e7246aee8831667ef6f60a93965c7b2311ef35d8cc313d"
+  },
+  "production": {
+    "tools/language-acceptance/documentation_recovery_execution.go": {
+      "afterSHA256": "93915dd718043f87ada577ece6478b60945f4b9d80e7aed83f456d796c4eac6e",
+      "beforeSHA256": "6b3b4734389ea71c0e1d4090820d93b51f5ae57af0697aca9b43eaca6de03d93"
+    },
+    "tools/p10r15/documentation_recovery_intake.py": {
+      "afterSHA256": "079fb046692709423433670afc4317403648a7acf4d9dc4556ae24ae671c4af4",
+      "beforeSHA256": "f66cb499162d060af78ab97c0b05e0581fb132c33a421a01f55146d5988c6cec"
+    }
+  },
+  "red": {
+    "errors": 1,
+    "failures": 1,
+    "resultSHA256": "b75131ba1a662339f87d93da96f086848900a2dd4636c5af3924ebe5713f18aa",
+    "selectedParents": 2
+  },
+  "schema": "cherri-brg29-generation-inventory-proof/1",
+  "sourceBase": "6b54e8eeaee5745f9cefd9d5f84fa627c05e1ed9"
+}

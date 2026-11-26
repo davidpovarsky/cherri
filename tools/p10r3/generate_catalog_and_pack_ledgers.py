@@ -229,7 +229,58 @@ def locate_real_unit_test_refs(action_names):
     return refs
 
 
-def build_pack_15_audit():
+def preserved_declarations_audit(execution, execution_sha256, source_sha):
+    """Retain actual source excerpts and bounded current samples, not parity prose."""
+    specs = (("statistic", "is.workflow.actions.statistics", "actions/math.cherri", "action"),
+             ("calculate", "is.workflow.actions.math", "actions/math.cherri", "action"),
+             ("getFileDetail", "is.workflow.actions.properties.files", "actions/documents.cherri", "action"),
+             ("calculationOperation", "enum calculationOperation", "actions/math.cherri", "enum"))
+    sources = {}
+    for rel in sorted({item[2] for item in specs}):
+        original = subprocess.run(["git", "show", UPSTREAM_SHA + ":" + rel], cwd=REPO_ROOT,
+                                  capture_output=True, check=True).stdout
+        sources[rel] = ((UPSTREAM_SHA, original), (source_sha, (REPO_ROOT / rel).read_bytes()))
+    rows = []
+    for name, identifier, rel, kind in specs:
+        pattern = (r"^enum\s+" + re.escape(name) + r"\s*\{[^}]*^\}" if kind == "enum" else
+                   r"^action\s+[^\n]*\b" + re.escape(name) + r"\([^)]*\)")
+        witnesses = []
+        for commit, raw in sources[rel]:
+            text = raw.decode("utf-8")
+            matches = list(re.finditer(pattern, text, re.MULTILINE))
+            if len(matches) != 1:
+                raise ValueError("PRESERVED_DECLARATION_SOURCE:" + name)
+            match = matches[0]
+            witnesses.append({"sourceCommit": commit, "path": rel,
+                              "sha256": hashlib.sha256(raw).hexdigest(),
+                              "line": text.count("\n", 0, match.start()) + 1,
+                              "declaration": match.group(0)})
+        row = {"declaration": name, "appleIdentifier": identifier,
+               "upstreamBehavior": "Historical declaration at " + UPSTREAM_SHA + "; see upstreamSource.",
+               "upstreamSource": witnesses[0], "currentSource": witnesses[1]}
+        if kind == "enum":
+            row["p10Status"] = "Current enum declaration is recorded from source. No Apple variant execution or complete upstream equivalence is inferred."
+        else:
+            samples = [item for item in execution["entries"] if item.get("name") == name]
+            if len(samples) != 1:
+                raise ValueError("PRESERVED_DECLARATION_SAMPLE:" + name)
+            sample = samples[0]
+            keys = sample.get("emittedKeysSample")
+            if (sample.get("shortcutIdentifier") != identifier or type(keys) is not list or not keys or
+                any(type(key) is not str or not key for key in keys) or len(keys) != len(set(keys)) or
+                any(sample.get(key) is not True for key in ("legacySupported", "v2Supported", "plistIdentifierVerified",
+                                                           "parameterContractVerified", "decompileSupported", "structuralRoundTripPass"))):
+                raise ValueError("PRESERVED_DECLARATION_SAMPLE_IDENTITY:" + name)
+            row["p10Status"] = ("Current synthetic compiler sample emits " + json.dumps(keys, ensure_ascii=False) +
+                                "; this does not establish every optional variant, fresh Apple execution or complete upstream equivalence.")
+            row["currentSample"] = {"path": "docs/apple-runtime/p10/p10-505-execution-evidence.json",
+                                    "sha256": execution_sha256, "entry": name, "emittedKeysSample": keys,
+                                    "scope": "SYNTHETIC_COMPILER_SAMPLE"}
+        rows.append(row)
+    return rows
+
+
+def build_pack_15_audit(execution, execution_sha256, source_sha):
     """Builds the 8-dimension audit for the 15 Go-only complex actions with explicit classification."""
     actions_15 = [
         {
@@ -429,32 +480,7 @@ def build_pack_15_audit():
         },
     ]
 
-    preserved_4 = [
-        {
-            "declaration": "statistic",
-            "appleIdentifier": "is.workflow.actions.statistics",
-            "upstreamBehavior": "Uses WFInput parameter key and calculationOperation enum",
-            "p10Status": "Verified in P10 actions/math.cherri: uses 'WFInput' (not 'Input') and calculationOperation enum; 100% compatible with upstream",
-        },
-        {
-            "declaration": "calculate",
-            "appleIdentifier": "is.workflow.actions.math",
-            "upstreamBehavior": "Built-in arithmetic expression / action handling",
-            "p10Status": "Handled natively by operator expression lowering and actions/math.cherri",
-        },
-        {
-            "declaration": "getFileDetail",
-            "appleIdentifier": "is.workflow.actions.properties.files",
-            "upstreamBehavior": "Uses fileDetail enum and WFContentItemPropertyName",
-            "p10Status": "Preserved in actions/documents.cherri with extended macOS 27 file properties",
-        },
-        {
-            "declaration": "calculationOperation",
-            "appleIdentifier": "enum calculationOperation",
-            "upstreamBehavior": "Average, Minimum, Maximum, Sum, Standard Deviation, Median, Mode, Range",
-            "p10Status": "Preserved with exact Apple strings in actions/math.cherri",
-        },
-    ]
+    preserved_4 = preserved_declarations_audit(execution, execution_sha256, source_sha)
 
     return {
         "schemaVersion": "1.0",
@@ -561,7 +587,8 @@ def build_all_artifacts():
     exec_ev_path = REPO_ROOT / "docs" / "apple-runtime" / "p10" / "p10-505-execution-evidence.json"
     if not exec_ev_path.exists():
         raise RuntimeError(f"Missing real execution evidence file: {exec_ev_path}")
-    exec_ev_data = json.loads(exec_ev_path.read_text(encoding="utf-8"))
+    exec_ev_bytes = exec_ev_path.read_bytes()
+    exec_ev_data = json.loads(exec_ev_bytes)
     exec_by_name = {e["name"]: e for e in exec_ev_data.get("entries", [])}
     param_dim_summaries = exec_ev_data.get("parameterDimensionSummaries", [])
     if len(exec_by_name) != 505:
@@ -576,7 +603,7 @@ def build_all_artifacts():
     source_map = locate_exact_action_sources()
     pure_names = extract_upstream_pure_actions()
     pack_added, pack_aliases, pack_manifest = extract_pack_manifest_actions()
-    pack_15 = build_pack_15_audit()
+    pack_15 = build_pack_15_audit(exec_ev_data, hashlib.sha256(exec_ev_bytes).hexdigest(), head_sha)
     go_only_by_name = {item["actionName"]: item for item in pack_15["goOnlyActionsAudit"]}
     test_refs = locate_real_unit_test_refs([a["name"] for a in actions_list])
 
