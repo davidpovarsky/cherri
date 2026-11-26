@@ -1,0 +1,77 @@
+{
+  "format": 1,
+  "scope": "Inputs for the exact emitted private-marker predicate; local structure observations do not execute Apple or validate every malformed private envelope.",
+  "cases": [
+    {
+      "name": "empty_dictionary",
+      "input": {},
+      "dispatch": false
+    },
+    {
+      "name": "marker_only",
+      "input": {
+        "cherri_functions": "1",
+        "function": "inspect",
+        "arguments": [
+          "USER"
+        ],
+        "arg_0": "USER"
+      },
+      "dispatch": false
+    },
+    {
+      "name": "magic_only",
+      "input": {
+        "_cherri_magic": "__cherri_fn_envelope_v2__",
+        "function": "inspect",
+        "arguments": [
+          "USER"
+        ],
+        "arg_0": "USER"
+      },
+      "dispatch": false
+    },
+    {
+      "name": "wrong_magic",
+      "input": {
+        "cherri_functions": "1",
+        "_cherri_magic": "USER",
+        "function": "inspect"
+      },
+      "dispatch": false
+    },
+    {
+      "name": "wrong_marker",
+      "input": {
+        "cherri_functions": "0",
+        "_cherri_magic": "__cherri_fn_envelope_v2__",
+        "function": "inspect"
+      },
+      "dispatch": false
+    },
+    {
+      "name": "present_empty_magic",
+      "input": {
+        "cherri_functions": "1",
+        "_cherri_magic": "",
+        "function": "inspect"
+      },
+      "dispatch": false
+    },
+    {
+      "name": "valid_private_markers",
+      "input": {
+        "cherri_functions": "1",
+        "_cherri_magic": "__cherri_fn_envelope_v2__",
+        "function": "inspect",
+        "arguments": [
+          "VALUE"
+        ],
+        "arg_0": "VALUE",
+        "has_arg_0": "1",
+        "_cherri_caller_input": "USER"
+      },
+      "dispatch": true
+    }
+  ]
+}

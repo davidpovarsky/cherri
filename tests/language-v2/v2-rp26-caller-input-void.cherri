@@ -1,0 +1,21 @@
+function inspect(value: Map<Text,AnyContent>) -> Map<Text,AnyContent> {
+    return {"payload":value,"caller":system.input,"shortcut":ShortcutInput}
+}
+function outer(value: Map<Text,AnyContent>) -> Map<Text,AnyContent> {
+    let inner = inspect(value)
+    return {"inner":inner,"caller":system.input,"shortcut":ShortcutInput}
+}
+function bare() -> Void {
+    text("RP26_BARE_INCIDENTAL")
+    return
+}
+function falling() -> Void {
+    text("RP26_FALLTHROUGH_INCIDENTAL")
+}
+let before = f"{system.input}|{ShortcutInput}"
+let returned = outer({"cherri_functions":"1","function":"inspect","arguments":["USER"],"arg_0":"USER"})
+bare()
+let between = f"{system.input}|{ShortcutInput}"
+falling()
+let after = f"{system.input}|{ShortcutInput}"
+return {"before":before,"returned":returned,"between":between,"after":after}

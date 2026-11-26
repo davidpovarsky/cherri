@@ -1011,6 +1011,9 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateFunctionCombinedDefaultRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
+			if err := validateDistinctFunctionRecord(reqID, rec); err != nil {
+				validationErrors = append(validationErrors, err.Error())
+			}
 			if err := validateParameterFormsRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
@@ -1978,6 +1981,9 @@ func (r *Runner) runRepairCases(repair *RepairContractFile) {
 		if r.runFunctionCombinedDefaultRequirement(c) {
 			continue
 		}
+		if r.runCallerInputVoidRequirement(c) {
+			continue
+		}
 		if r.runDocumentationRecoveryRequirement(c.ID, c.Title, c.RequiredTestLevels) {
 			continue
 		}
@@ -2056,6 +2062,9 @@ func (r *Runner) runRecoveryGates(gates *GatesContractFile) {
 			continue
 		}
 		if r.runParameterFormsRequirement(g) {
+			continue
+		}
+		if r.runJoinedFunctionTransportRequirement(g) {
 			continue
 		}
 		if r.runExplicitSigningRequirement(g) {

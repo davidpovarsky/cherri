@@ -53,7 +53,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	if id == "RP41" {
 		return
 	}
-	if id == "RP24" || id == "RP25" || id == "BRG11" {
+	if id == "RP24" || id == "RP25" || id == "RP26" || id == "BRG11" || id == "BRG15" {
 		// The historical function trace does not execute this complete joined source.
 		return
 	}
@@ -121,7 +121,7 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	case "F02", "F04", "RP22", "BRG12", "BRG14":
 		reqAssertions["loop_trace"] = "0:A:0:1|0:A:1:2|1:B:0:1|1:B:1:2|"
 		*testIDs = append(*testIDs, "ios27-runtime-poc:nested-loops")
-	case "FN01", "FN02", "FN03", "RP26", "BRG15":
+	case "FN01", "FN02", "FN03":
 		reqAssertions["function_result"] = "21"
 		reqAssertions["caller_continuation"] = "22"
 		reqAssertions["defaults_explicit"] = "0:0::"
@@ -665,6 +665,9 @@ func deriveRepairTestIDs(id, title string) []string {
 	if id == "RP25" {
 		return functionCombinedDefaultTestIDs()
 	}
+	if id == "RP26" {
+		return distinctFunctionScenarios[id].testIDs()
+	}
 	if scenario, found := combinedValueBlockScenarios[id]; found {
 		return scenario.testIDs()
 	}
@@ -780,6 +783,9 @@ func deriveRepairFixtures(id string) []string {
 	if id == "RP25" {
 		return append([]string{}, functionCombinedDefaultProductionPaths...)
 	}
+	if id == "RP26" {
+		return distinctFunctionSourcePaths(id)
+	}
 	if _, found := combinedValueBlockScenarios[id]; found {
 		return append([]string{}, combinedValueBlockSourcePaths(id)...)
 	}
@@ -841,6 +847,9 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 
 	if id == "BRG11" {
 		return parameterFormsTestIDs()
+	}
+	if id == "BRG15" {
+		return distinctFunctionScenarios[id].testIDs()
 	}
 	if id == "BRG26" {
 		return explicitSigningTestIDs()
@@ -933,7 +942,7 @@ func deriveGateTestIDs(id, proposedPrefix string) []string {
 			"github.com/electrikmilk/cherri:TestDecompileStateIsolation",
 			"github.com/electrikmilk/cherri:TestDecompIncludeStateIsolation",
 		)
-	case "BRG14", "BRG15":
+	case "BRG14":
 		return append(base,
 			"github.com/electrikmilk/cherri:TestDecomp",
 			"github.com/electrikmilk/cherri:TestDecompileTextPartsKeepsEmptyCustomSeparator",
@@ -973,6 +982,9 @@ func deriveGateFixtures(id string) []string {
 	}
 	if id == "BRG11" {
 		return append([]string{}, parameterFormsProductionPaths...)
+	}
+	if id == "BRG15" {
+		return distinctFunctionSourcePaths(id)
 	}
 	if id == "BRG26" {
 		return append([]string{}, explicitSigningProductionPaths...)

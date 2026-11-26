@@ -1,0 +1,15 @@
+function recurse(depth: Number, value: Map<Text,AnyContent>) -> Map<Text,AnyContent> {
+    if depth <= 0 { return value }
+    let nested = recurse(depth - 1, value)
+    return nested
+}
+function route(value: Map<Text,AnyContent> = {"kind":"DEFAULT","rows":[false,0,"",[],{}]}) -> Map<Text,AnyContent> {
+    let result = recurse(2, value)
+    return {"value":result,"caller":system.input,"shortcut":ShortcutInput}
+}
+let before = f"{system.input}|{ShortcutInput}"
+let omitted = route()
+let empty = route({})
+let supplied = route({"cherri_functions":"1","function":"recurse","arguments":[],"rows":[false,0,"",[],{}],"WFSerializationType":"WFTextTokenAttachment","Value":false})
+let after = f"{system.input}|{ShortcutInput}"
+return {"omitted":omitted,"empty":empty,"supplied":supplied,"before":before,"after":after}
