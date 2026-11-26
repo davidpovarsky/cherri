@@ -134,7 +134,7 @@ import CoreGraphics
             children: [copy(base.children[0], label: "different"), base.children[1]]))], index: nil)
         select("query_must_be_button", candidates: [candidate(0, copy(base, kind: .staticText))], index: nil, reason: "INVALID_OBSERVATION")
         select("unknown_consent_label_rejected", candidates: [candidate(0, button("Open"))], index: nil, reason: "INVALID_OBSERVATION")
-        select("nan_geometry_rejected", candidates: [candidate(0, copy(base, frame: CGRect(x: .nan, y: 1, width: 2, height: 3)))], index: nil, reason: "INVALID_OBSERVATION")
+        select("nan_geometry_rejected", candidates: [candidate(0, copy(base, frame: CGRect(x: CGFloat.nan, y: 1, width: 2, height: 3)))], index: nil, reason: "INVALID_OBSERVATION")
         select("zero_area_current_button_rejected", tree: app([sheet(add: copy(base, frame: .zero))]),
                candidates: [candidate(0, copy(base, frame: .zero))], index: nil)
         select("button_outside_container_rejected", tree: app([copy(sheet(), frame: CGRect(x: 0, y: 72, width: 402, height: 600))]), index: nil)
