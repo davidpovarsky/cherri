@@ -1,0 +1,47 @@
+{
+  "exactUnifiedPatchReconstruction": true,
+  "filePins": [
+    {
+      "bytes": 14337,
+      "path": "control.before.swift",
+      "sha256": "1f8534bcf83ae6da2b31c804215f94657d1922d5d5c040006a4d4e51a5d7fd6e"
+    },
+    {
+      "bytes": 17703,
+      "path": "control.after.swift",
+      "sha256": "8d5b9fe6aef52d95abc121943c1f77fa16f818a03380691b35a96cabdb176131"
+    },
+    {
+      "bytes": 12463,
+      "path": "StartupLifecycleObserver.original.swift",
+      "sha256": "f25ac92a076db857e130abb39e391981949a285bd95cd781cdd92db6a843c09b"
+    },
+    {
+      "bytes": 12971,
+      "path": "StartupLifecycleObserver.injected-faults.swift",
+      "sha256": "432084aade5105c66130679250eed61e18d289a5dc79708de631cddbef7e21a7"
+    }
+  ],
+  "formalAcceptanceGranted": false,
+  "manifestSha256": "7ee82edb87ad39c67d17aeb6e8c8ccc46e66ec89319a718506338133f3828c38",
+  "nativeInvoked": false,
+  "originalExpectCallsPreservedInOrder": 44,
+  "productionChanged": false,
+  "reviewFindings": [
+    "Opening timestamp uses the exact production millisecond-rounded startedAt origin; the deadline is immutable and does not reset during polling.",
+    "The private test reader only reads the bounded already-created JSONL and cannot emit producer records. Partial rows are ignored until a subsequent complete read.",
+    "Main thread uses blocking sleep/semaphore rather than pumping a run loop; queued main-thread timer counterfactual cannot satisfy progress during that interval.",
+    "Cancellation is signaled and reader queue drained before producer stop/drain and immutable final read.",
+    "Final original count and off-main assertions remain exact; added timestamp assertion requires all genuine heartbeat offsets in [0,300).",
+    "None/one/main-queue/main-thread-record are explicitly isolated counterfactuals; the reported-main flag fault is not claimed to have physically run on the main thread.",
+    "Polling/file IO/queue drain are not hard-preempted by the 300ms wall target; the unchanged outer 10s owned runtime cap remains necessary. Event timestamps, not caller wake latency, govern the progress assertion.",
+    "Application production f25ac92a is unchanged; no app/native/acceptance observation was produced by this review."
+  ],
+  "reviewedAt": "2026-11-26T20:35:51.514414+00:00",
+  "schema": "cherri-startup-timer-event-control-independent-review/1",
+  "semanticChangeExplicit": "Nominal 120ms sampling becomes observation bounded by the original 300ms lifetime; 120ms caller block remains. No two-events-by120ms claim.",
+  "sourcePatchSha256": "9d11e082669766e9061797f7942597afb88e8869c6f851e7cf02177053156273",
+  "status": "PASS_SOURCE_REVIEW_PENDING_ACTUAL_QUALIFICATION",
+  "successorExpectCalls": 46,
+  "testsRerun": false
+}

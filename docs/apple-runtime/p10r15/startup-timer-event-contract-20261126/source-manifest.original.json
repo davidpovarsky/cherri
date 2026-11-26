@@ -1,0 +1,63 @@
+{
+  "allOriginalAssertionsRetainedInOrder": true,
+  "counterfactualScope": "Isolated fixture only; never application source. main-queue uses the actual main queue; main-thread-record is an explicitly injected reported-thread field, not claimed actual thread execution.",
+  "createdUTC": "2026-11-26T20:29:10.855177+00:00",
+  "exactReverseRestoresOriginalControl": true,
+  "faultPatchSHA256": "fb1a0d51e050ff609f93cbd173d5d80967d8d210360af06bebdda1c67d43857b",
+  "files": [
+    {
+      "bytes": 14337,
+      "path": "control.before.swift",
+      "sha256": "1f8534bcf83ae6da2b31c804215f94657d1922d5d5c040006a4d4e51a5d7fd6e"
+    },
+    {
+      "bytes": 17703,
+      "path": "control.after.swift",
+      "sha256": "8d5b9fe6aef52d95abc121943c1f77fa16f818a03380691b35a96cabdb176131"
+    },
+    {
+      "bytes": 12463,
+      "path": "StartupLifecycleObserver.original.swift",
+      "sha256": "f25ac92a076db857e130abb39e391981949a285bd95cd781cdd92db6a843c09b"
+    },
+    {
+      "bytes": 12971,
+      "path": "StartupLifecycleObserver.injected-faults.swift",
+      "sha256": "432084aade5105c66130679250eed61e18d289a5dc79708de631cddbef7e21a7"
+    }
+  ],
+  "fixedQualification": {
+    "compileSeconds": 45,
+    "counterfactuals": [
+      "none",
+      "one",
+      "main-queue",
+      "main-thread-record"
+    ],
+    "positive": "exact unchanged production plus proposed complete original standalone control",
+    "runtimeSeconds": 10,
+    "wholeSeconds": 240
+  },
+  "formalAcceptanceGranted": false,
+  "nativeAppExecution": false,
+  "originalFailedIntakes": [
+    {
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/startup-timer-barrier-failed-intake-01/result.original.json",
+      "sha256": "175930ace34ecfedc5b50d372a2bbcddd203f0df33a70ecf4992afb8b9f35d7d"
+    },
+    {
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/startup-timer-precision-failed-intake-02/result.original.json",
+      "sha256": "7e1a29e18ce7436f076917dcba00db9c29b3ad707f8da6bfb17f7167a088fb2e"
+    },
+    {
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/startup-timer-precision-failed-intake-03/result.original.json",
+      "sha256": "2d2115d74095952ecfccbc6849b46f254c2ab7d87c6ccb45d45756d740832913"
+    }
+  ],
+  "productionChanged": false,
+  "schemaVersion": "cherri-startup-event-control-proposal/1",
+  "semanticCorrection": "Replace the nominal120ms sample with event-observation progress bounded by the existing300ms observer lifetime. The original120ms blocking call stays; actual event timestamps must be strictly inside the lifetime. This is not a two-callbacks-by120ms claim.",
+  "source": "bfe65e903c3b17361979a933880e26c4be65d69e",
+  "sourcePatchSHA256": "9d11e082669766e9061797f7942597afb88e8869c6f851e7cf02177053156273",
+  "status": "SOURCE_PROPOSAL_NOT_QUALIFIED"
+}
