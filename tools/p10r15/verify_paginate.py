@@ -194,6 +194,10 @@ class PaginateGraphModel(GraphModel):
         return super().value(raw)
 
     def http_headers(self, raw):
+        # The canonical HTTP Dictionary codec omits an empty Items slice.
+        # This is the same exact shape admitted by the callback model.
+        if raw == {"WFSerializationType": "WFDictionaryFieldValue", "Value": {}}:
+            return {}
         # Only the native Text-valued HTTP dictionary used by these fixtures is
         # modeled. Unknown wrappers/fields and unbound references fail closed.
         assert isinstance(raw, dict) and set(raw) == {"WFSerializationType", "Value"}

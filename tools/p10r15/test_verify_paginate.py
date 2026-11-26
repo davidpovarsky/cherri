@@ -195,5 +195,43 @@ class PaginateHeaderWireTests(unittest.TestCase):
             self.authored_model(number=True).http_headers(self.native_headers(True))
 
 
+
+class PaginateEmptyHeaderWireTests(unittest.TestCase):
+    def test_canonical_empty_headers_are_read_without_rewriting_originals(self):
+        forms = {
+            "native_omitted_items": {"WFSerializationType": "WFDictionaryFieldValue", "Value": {}},
+            "explicit_empty_items": {"WFSerializationType": "WFDictionaryFieldValue",
+                                     "Value": {"WFDictionaryFieldValueItems": []}},
+        }
+        for name, headers in forms.items():
+            with self.subTest(form=name):
+                original = copy.deepcopy(headers)
+                server = types.SimpleNamespace(requests=[])
+                self.assertEqual(PaginateGraphModel(server).http_headers(headers), {})
+                self.assertEqual(headers, original)
+                self.assertEqual(server.requests, [])
+
+    def test_empty_header_admission_does_not_hide_malformed_native_shapes(self):
+        empty = {"WFSerializationType": "WFDictionaryFieldValue", "Value": {}}
+        malformed = {
+            "missing_wrapper": {},
+            "missing_value": {"WFSerializationType": "WFDictionaryFieldValue"},
+            "wrong_wrapper": {**empty, "WFSerializationType": "WFTextTokenAttachment"},
+            "extra_outer_field": {**empty, "unexpected": True},
+            "extra_inner_field": {**empty, "Value": {"unexpected": True}},
+            "null_value": {**empty, "Value": None},
+            "list_value": {**empty, "Value": []},
+            "text_value": {**empty, "Value": ""},
+            "bool_value": {**empty, "Value": False},
+            "null_items": {**empty, "Value": {"WFDictionaryFieldValueItems": None}},
+            "dictionary_items": {**empty, "Value": {"WFDictionaryFieldValueItems": {}}},
+            "extra_items_field": {**empty, "Value": {"WFDictionaryFieldValueItems": [],
+                                                    "unexpected": True}},
+            "nested_wrapper": {**empty, "Value": copy.deepcopy(empty)},
+        }
+        for name, headers in malformed.items():
+            with self.subTest(fault=name), self.assertRaises(AssertionError):
+                PaginateGraphModel(types.SimpleNamespace(requests=[])).http_headers(headers)
+
 if __name__ == "__main__":
     unittest.main()
