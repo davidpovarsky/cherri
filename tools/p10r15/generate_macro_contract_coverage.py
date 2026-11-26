@@ -76,7 +76,7 @@ REQUIREMENTS = (
     ("cache", "1220544665232085", "Persistent TTL cache", ("cache",),
      "Explicit namespace/scope/TTL and honest serialization, invalidation, clock and permission behavior.",
      "IMPLEMENTATION_GAP_AND_NATIVE_PREREQUISITE", ("Stored Content cross-run/restart/global-local readback", "Physical iPad persistence/background proof"),
-     ("Existing storage definitions are prerequisites, not a cache implementation; current storeValue exposes text.",)),
+     ("These ledger cases do not exercise cache persistence, payload round trips, expiry, invalidation or native error behavior.",)),
     ("retry", "1220544651247273", "Bounded retry", ("retry",),
      "Bounded attempts/backoff with actual transport/status/permission/cancel classification and idempotence safeguards.",
      "IMPLEMENTATION_GAP_AND_NATIVE_PREREQUISITE", ("Recoverable native error/status contract and signed synthetic endpoint probes",),
@@ -696,7 +696,7 @@ def markdown(report):
     for row in report["requirements"]:
         lines.append("- " + row["name"] + ": " + " ".join(row["limitations"]) +
                      (" External prerequisites: " + "; ".join(row["externalPrerequisites"]) + "." if row["externalPrerequisites"] else ""))
-    lines.extend(["", "Standalone collect is deliberately not added. Existing for/yield evidence belongs to the typed collection requirement; it is not counted as a new canonical macro. Numeric input construction precedes the constant-size native loop and is counted separately. Cache and retry have both missing source implementation and native prerequisites. Label and bounded GET pagination have implementations with open native acceptance. Local export has a bounded Text-only/default-redacted source subset; its native acceptance and remaining typed serialization contract stay open.", "",
+    lines.extend(["", "Standalone collect is deliberately not added. Existing for/yield evidence belongs to the typed collection requirement; it is not counted as a new canonical macro. Numeric input construction precedes the constant-size native loop and is counted separately. Cache and retry are outside this ledger's executed fixtures; their source and native acceptance require separately scoped evidence. Label and bounded GET pagination have implementations with open native acceptance. Local export has a bounded Text-only/default-redacted source subset; its native acceptance and remaining typed serialization contract stay open.", "",
                   "Reproduce with python3 tools/p10r15/generate_macro_contract_coverage.py --refresh, then --verify. Every refresh builds the source and runs the actual CLI. Verification rejects source/producer drift and edited or incomplete evidence. The source SHA is the compiled revision before committing evidence, avoiding a self-referential commit pin.", ""])
     return "\n".join(lines)
 
