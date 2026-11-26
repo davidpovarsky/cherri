@@ -297,19 +297,78 @@ class StorageObserverControls(unittest.TestCase):
 
 
 
+    def test_scoped_build_truthful_metadata(self):
+        for document in ("build", "qualification"):
+            for field, value in (("completeRepositoryInventory", True), ("sourceScope", "full-repository"),
+                                 ("sourceFiles", 21), ("sourceFiles", 22.0), ("projectInputCount", 13),
+                                 ("projectInputCount", True)):
+                with self.subTest(document=document, field=field, value=value):
+                    build, qualification = clean_build_metadata()
+                    (build if document == "build" else qualification)[field] = value
+                    self.reject(subject.validate_clean_build_metadata, build, qualification)
+        for field, value in (("completeTrackedProject", False), ("scopePaths", [subject.PROJECT]),
+                             ("scopePaths", list(reversed(subject.BUILD_SCOPE_PATHS)))):
+            with self.subTest(field=field):
+                build, qualification = clean_build_metadata(); qualification[field] = value
+                self.reject(subject.validate_clean_build_metadata, build, qualification)
+
+    def test_scoped_source_exact_closure_positive(self):
+        source = scoped_source()
+        self.assertEqual(subject.validate_build_source(source), source["files"])
+        self.assertEqual(len(source["files"]), 22)
+        self.assertEqual(sum(path.startswith(subject.PROJECT) for path in source["files"]), 14)
+
+    def test_scoped_source_missing_or_added_dependency(self):
+        for path in subject.BUILD_INPUT_FILES:
+            with self.subTest(path=path):
+                source = scoped_source(); del source["files"][path]
+                self.reject(subject.validate_build_source, source)
+        source = scoped_source()
+        source["files"][subject.PROJECT + "unreviewed.swift"] = next(iter(source["files"].values()))
+        self.reject(subject.validate_build_source, source)
+
+    def test_scoped_source_identity_and_whole_repo_relabel_rejected(self):
+        for field, value in (("commit", "0" * 40), ("tree", "0" * 40),
+                             ("completeTrackedSource", True), ("completeTrackedProject", False),
+                             ("sourceScope", "full-repository"), ("scopePaths", [subject.PROJECT])):
+            with self.subTest(field=field):
+                source = scoped_source(); source[field] = value
+                self.reject(subject.validate_build_source, source)
+
+    def test_scoped_source_pin_corruption_rejected(self):
+        for field, value in (("bytes", -1), ("bytes", True), ("gitBlob", "0" * 39),
+                             ("sha256", "A" * 64), ("mode", "120000"), ("extra", "unbound")):
+            with self.subTest(field=field):
+                source = scoped_source()
+                source["files"][subject.BUILD_PROJECT_FILES[0]][field] = value
+                self.reject(subject.validate_build_source, source)
+
+
 def clean_build_metadata():
     # Synthetic metadata controls; full raw source/process/product joins are
     # additionally required by verify_build before any native installation.
-    build = {"schema": "cherri-standalone-storage-harness-build/1", "status": "BUILD_VALIDATED",
+    build = {"schema": "cherri-standalone-storage-harness-build/2", "status": "BUILD_VALIDATED",
              "builtHarnessCommit": subject.BUILD, "builtHarnessTree": subject.BUILD_TREE,
              "sourceUnchanged": True, "generatedProjectRetained": True,
-             "compilerBuilt": False, "shortcutExecuted": False, "testsExecuted": False}
-    qualification = {"schema": "cherri-standalone-storage-harness-build-qualification/2",
+             "compilerBuilt": False, "shortcutExecuted": False, "testsExecuted": False,
+             "completeRepositoryInventory": False, "sourceScope": subject.BUILD_SCOPE,
+             "sourceFiles": 22, "projectInputCount": 14}
+    qualification = {"schema": "cherri-standalone-storage-harness-build-qualification/3",
                      "status": "BUILD_VALIDATED", "builtHarnessCommit": subject.BUILD,
                      "builtHarnessTree": subject.BUILD_TREE, "sourceTrackedBytesUnchanged": True,
                      "sourceCleanAfterRetainedProjectRelocation": True, "xcodeBuildReexecuted": False,
-                     "compilerRebuilt": False, "nativeInvocation": False}
+                     "compilerRebuilt": False, "nativeInvocation": False,
+                     "completeRepositoryInventory": False, "completeTrackedProject": True,
+                     "sourceScope": subject.BUILD_SCOPE, "scopePaths": subject.BUILD_SCOPE_PATHS,
+                     "sourceFiles": 22, "projectInputCount": 14}
     return build, qualification
+
+def scoped_source():
+    return {"commit": subject.BUILD, "tree": subject.BUILD_TREE,
+            "completeTrackedSource": False, "completeTrackedProject": True,
+            "sourceScope": subject.BUILD_SCOPE, "scopePaths": list(subject.BUILD_SCOPE_PATHS),
+            "files": {path: {"bytes": 1, "gitBlob": "1" * 40, "mode": "100644", "sha256": "2" * 64}
+                      for path in subject.BUILD_INPUT_FILES}}
 
 
 if __name__ == "__main__":

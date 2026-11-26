@@ -22,8 +22,8 @@ import uuid
 import function_envelope_observer as native
 
 COMPILER = "899b8513f08e02ba38420b522806c58977049f57"
-BUILD = "43b962d4dc07e9f8e94c8d4394af95abdf12ebe7"
-BUILD_TREE = "029ff3f51ce6cbaadb5fe41a29e12ccfee13b4b8"
+BUILD = "bb9dada0a80c0ef7e83c4097ac2bef5f743541a0"
+BUILD_TREE = "145b85d8063be775bc44e64fe50fc71e4fd4b352"
 FIXTURE = "qa-storage-delete-v2"
 EXPECTED = "CHERRI_QA_STORAGE_DELETE_RESULT:BEFORE_OK:NO_VALUE_OK"
 INPUT = "CHERRI_QA_INPUT"
@@ -39,6 +39,37 @@ PACKET_PINS = {
 }
 RUNTIME_EVALUATOR_SHA256 = "6d17a2084e2dbb8df055ba3b36d3fe3f457165d7ed4d8e732e6fe07ebe0b101c"
 PROJECT = "tools/shortcuts-simulator-qa/XcodeProject/"
+BUILD_SCOPE = "standalone-project-and-python-helper-closure"
+BUILD_PROJECT_FILES = [
+    "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/Info.plist",
+    "tools/shortcuts-simulator-qa/XcodeProject/ReceiverApp/ReceiverApp.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/CallbackPayloadDiagnostics.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/DebugLabelPreviewPolicy.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/DifferentialImportTiming.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/EditorForegroundRecovery.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/EvidenceGeometry.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/ImportSheetSelection.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/LibraryForegroundGate.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/Shared/PrimaryNoInputLaunch.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriDifferentialBatchUITests.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/UITests/CherriSimulatorQAUITests.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/UITests/DebugLabelPreviewObserver.swift",
+    "tools/shortcuts-simulator-qa/XcodeProject/project.yml"
+]
+BUILD_HELPER_FILES = [
+    "tools/shortcuts-simulator-qa/project_prerequisite.py",
+    "tools/shortcuts-simulator-qa/project_prerequisite_observation.py",
+    "tools/shortcuts-simulator-qa/qa_terminal_receipts.py",
+    "tools/shortcuts-simulator-qa/run_differential_batch.py",
+    "tools/shortcuts-simulator-qa/simulator_session_recovery.py"
+]
+BUILD_QUALIFICATION_FILES = [
+    "tools/shortcuts-simulator-qa/verify_differential_import_timing.swift",
+    "tools/shortcuts-simulator-qa/verify_import_sheet_selection.swift",
+    "tools/shortcuts-simulator-qa/verify_primary_no_input_r2.py"
+]
+BUILD_SCOPE_PATHS = [PROJECT, *BUILD_HELPER_FILES, *BUILD_QUALIFICATION_FILES]
+BUILD_INPUT_FILES = set(BUILD_PROJECT_FILES + BUILD_HELPER_FILES + BUILD_QUALIFICATION_FILES)
 require, read, record, original = native.require, native.read, native.record, native.original
 sha = lambda value: hashlib.sha256(value).hexdigest()
 
@@ -82,6 +113,26 @@ def validate_import(dispatch, receipt, argv, phase):
     require(timing.get("sheetContract") == "requested-identity-and-add-v1"
             and all(timing.get(name) is True for name in ("sheetButtonExists", "sheetButtonHittable",
                 "sheetIdentityMatched", "sheetCanTap")), "IMPORT_SHEET_READINESS")
+    require(timing.get("sheetSelectionContract") == "current-container-bound-add-v1"
+            and timing.get("sheetSelectionReason") == "UNIQUE_CURRENT_NAMED_CONTAINER",
+            "IMPORT_CURRENT_CONTAINER_CONTRACT")
+    for name, low, high in (("sheetQueryCandidateCount", 1, 32), ("sheetCurrentContainerCount", 1, 8192),
+                            ("sheetMatchedCandidateCount", 1, 1), ("sheetSelectedQueryIndex", 0, 31)):
+        value = timing.get(name)
+        require(type(value) is int and low <= value <= high, "IMPORT_CURRENT_CONTAINER_COUNTS")
+    require(timing["sheetSelectedQueryIndex"] < timing["sheetQueryCandidateCount"],
+            "IMPORT_CURRENT_CONTAINER_INDEX")
+    paths = []
+    for name in ("sheetSelectedContainerPath", "sheetSelectedTitlePath", "sheetSelectedButtonPath"):
+        path = timing.get(name)
+        require(isinstance(path, list) and 0 < len(path) <= 64
+                and all(type(index) is int and 0 <= index < 8192 for index in path),
+                "IMPORT_CURRENT_CONTAINER_PATH")
+        paths.append(path)
+    container, title, button = paths
+    require(all(len(path) > len(container) and path[:len(container)] == container
+                for path in (title, button))
+            and title[len(container)] != button[len(container)], "IMPORT_CURRENT_CONTAINER_ANCESTRY")
     instants = []
     for name in ("addObservedUTC", "lastSheetCheckUTC", "sheetMatchedAfterCaptureUTC"):
         raw = timing.get(name)
@@ -150,20 +201,47 @@ def packet_inventory(root):
 
 def validate_clean_build_metadata(build, qualification):
     require(isinstance(build, dict) and isinstance(qualification, dict), "BUILD_METADATA_TYPES")
-    require(qualification.get("schema") == "cherri-standalone-storage-harness-build-qualification/2"
+    require(qualification.get("schema") == "cherri-standalone-storage-harness-build-qualification/3"
             and qualification.get("status") == "BUILD_VALIDATED"
             and qualification.get("builtHarnessCommit") == BUILD and qualification.get("builtHarnessTree") == BUILD_TREE
             and qualification.get("sourceTrackedBytesUnchanged") is True
             and qualification.get("sourceCleanAfterRetainedProjectRelocation") is True
             and qualification.get("xcodeBuildReexecuted") is False and qualification.get("compilerRebuilt") is False
-            and qualification.get("nativeInvocation") is False, "BUILD_QUALIFICATION")
-    require(build.get("schema") == "cherri-standalone-storage-harness-build/1"
+            and qualification.get("nativeInvocation") is False
+            and qualification.get("completeRepositoryInventory") is False
+            and qualification.get("completeTrackedProject") is True
+            and qualification.get("sourceScope") == BUILD_SCOPE
+            and qualification.get("scopePaths") == BUILD_SCOPE_PATHS
+            and type(qualification.get("sourceFiles")) is int and qualification["sourceFiles"] == 22
+            and type(qualification.get("projectInputCount")) is int and qualification["projectInputCount"] == 14,
+            "BUILD_QUALIFICATION")
+    require(build.get("schema") == "cherri-standalone-storage-harness-build/2"
             and build.get("status") == "BUILD_VALIDATED" and build.get("builtHarnessCommit") == BUILD
             and build.get("builtHarnessTree") == BUILD_TREE and build.get("error") is None
             and build.get("sourceGuardError") is None and build.get("sourceUnchanged") is True
             and build.get("generatedProjectRetained") is True
             and build.get("compilerBuilt") is False and build.get("shortcutExecuted") is False
-            and build.get("testsExecuted") is False, "BUILD_ORIGINAL_OUTCOME")
+            and build.get("testsExecuted") is False
+            and build.get("completeRepositoryInventory") is False and build.get("sourceScope") == BUILD_SCOPE
+            and type(build.get("sourceFiles")) is int and build["sourceFiles"] == 22
+            and type(build.get("projectInputCount")) is int and build["projectInputCount"] == 14,
+            "BUILD_ORIGINAL_OUTCOME")
+
+
+def validate_build_source(source):
+    require(isinstance(source, dict) and source.get("commit") == BUILD and source.get("tree") == BUILD_TREE
+            and source.get("completeTrackedSource") is False and source.get("completeTrackedProject") is True
+            and source.get("sourceScope") == BUILD_SCOPE and source.get("scopePaths") == BUILD_SCOPE_PATHS,
+            "BUILD_SOURCE_IDENTITY")
+    files = source.get("files")
+    require(isinstance(files, dict) and set(files) == BUILD_INPUT_FILES, "BUILD_SOURCE_SCOPE")
+    for pin in files.values():
+        require(isinstance(pin, dict) and set(pin) == {"bytes", "gitBlob", "mode", "sha256"}
+                and type(pin["bytes"]) is int and pin["bytes"] >= 0 and pin["mode"] in ("100644", "100755")
+                and isinstance(pin["gitBlob"], str) and re.fullmatch(r"[0-9a-f]{40}", pin["gitBlob"]) is not None
+                and isinstance(pin["sha256"], str) and re.fullmatch(r"[0-9a-f]{64}", pin["sha256"]) is not None,
+                "BUILD_SOURCE_PIN")
+    return files
 
 
 def verify_build(plan, repo, current_sources):
@@ -192,13 +270,15 @@ def verify_build(plan, repo, current_sources):
     require(before == after and sha(before) == qualification["sourceBeforeSHA256"]
             and sha(after) == qualification["sourceAfterSHA256"], "BUILD_SOURCE_CHANGED")
     source = native.launch.strict_json(before)
-    require(source["commit"] == BUILD and source["tree"] == BUILD_TREE and source["completeTrackedSource"] is True,
-            "BUILD_SOURCE_IDENTITY")
-    project = {k: v for k, v in source["files"].items() if k.startswith(PROJECT)}
-    require(len(project) == 13, "BUILD_PROJECT_INVENTORY")
-    for name, pin in project.items():
-        require(sha(read(repo / name)) == pin["sha256"]
-                and current_sources["files"][name]["sha256"] == pin["sha256"], "BUILD_CONTROLLER_PROJECT_BYTES")
+    files = validate_build_source(source)
+    project = {k: files[k] for k in BUILD_PROJECT_FILES}
+    for name, pin in files.items():
+        data = read(repo / name)
+        blob = hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\0" + data).hexdigest()
+        mode = "100755" if (repo / name).stat().st_mode & 0o111 else "100644"
+        require(len(data) == pin["bytes"] and sha(data) == pin["sha256"]
+                and blob == pin["gitBlob"] and mode == pin["mode"]
+                and current_sources["files"][name]["sha256"] == pin["sha256"], "BUILD_CONTROLLER_INPUT_BYTES")
     products_raw = read(root / "build-products.original.json")
     require(sha(products_raw) == qualification["buildProductsSHA256"], "BUILD_PRODUCTS_MANIFEST")
     products = native.launch.strict_json(products_raw)
