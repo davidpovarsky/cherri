@@ -23,9 +23,7 @@ func encodeTypedLiteralParam(value backend.SemanticValue) any {
 		for _, item := range value.ListVal {
 			items = append(items, EncodeDictionaryItemShared("", encodeTypedLiteralParam(item)))
 		}
-		array := makeArrayValue(items)
-		array.explicitEmpty = true
-		return array
+		return makeArrayValue(items)
 	case backend.ValString:
 		return WFTextTokenString{
 			WFSerializationType: "WFTextTokenString",

@@ -122,9 +122,9 @@ func p15FunctionProbeSenders(actions []map[string]any) (map[string]int, error) {
 	return found, nil
 }
 
-// This prepares one public diagnostic and saves the original native bytes.
-// Complete graph/trace validation and an explicit no-input Apple invocation
-// are still prerequisites. It grants no RP26/BRG15 or native execution credit.
+// This historical replay retains the exact b82 artifact and all original
+// sender-corruption controls. It grants zero current-compiler or native credit.
+// The independently versioned R2 preparation compiles the current encoder.
 func TestP15FunctionEnvelopePresenceProbePreparation(t *testing.T) {
 	source, err := os.ReadFile(p15FunctionProbePath)
 	if err != nil {
@@ -133,11 +133,14 @@ func TestP15FunctionEnvelopePresenceProbePreparation(t *testing.T) {
 	if got := fmt.Sprintf("%x", sha256.Sum256(source)); got != "e3d9c1de1ef9ee78b8a11e73b3c296a746a30cf35b69f6a5fddf683f2318241a" {
 		t.Fatal("public diagnostic source changed", got)
 	}
-	raw, err := CompileSourceToPlist("CherriFunctionEnvelopePresenceProbe.cherri", string(source))
+	raw, err := os.ReadFile("tools/shortcuts-simulator-qa/testdata/function-envelope-presence-compiled.original.plist")
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("FUNCTION_ENVELOPE_PRESENCE_PREPARATION source_sha256=%x native_sha256=%x bytes=%d plist_base64=%s",
+	if got := fmt.Sprintf("%x", sha256.Sum256(raw)); got != "54889840e546acc60ffe05c8399e1d4bd54f0dc846ec3fd520b4fffc0aa6c7d0" {
+		t.Fatal("historical b82 native original changed", got)
+	}
+	t.Logf("FUNCTION_ENVELOPE_PRESENCE_HISTORICAL_B82_REPLAY source_sha256=%x native_sha256=%x bytes=%d plist_base64=%s",
 		sha256.Sum256(source), sha256.Sum256(raw), len(raw), base64.StdEncoding.EncodeToString(raw))
 	var document map[string]any
 	if _, err := plist.Unmarshal(raw, &document); err != nil {
@@ -223,5 +226,5 @@ func TestP15FunctionEnvelopePresenceProbePreparation(t *testing.T) {
 	if strings.Count(string(source), "if callerKey == 1 {") != 3 {
 		t.Fatal("caller absent-key observation guard changed")
 	}
-	t.Log("Preparation only: authored row existence does not establish runtime key preservation or caller absence.")
+	t.Log("Historical b82 replay only: no current-compiler, no-input invocation, Apple behavior or formal acceptance credit.")
 }

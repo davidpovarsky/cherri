@@ -1,0 +1,57 @@
+{
+  "schema": "cherri-function-envelope-presence-engineering/2",
+  "fixture_id": "qa-function-envelope-presence-v2-r2",
+  "source_sha256": "8c044ebef8e0ecd1481a99eb030ef843de2a9ddc4b4fb129545501d1bdb28be1",
+  "workflow_name": "CherriFunctionEnvelopePresenceProbeR2",
+  "diagnostic_prefix": "CHERRI_FUNCTION_ENVELOPE_PRESENCE_V1:",
+  "case_order": [
+    "probeZero",
+    "probeDefault",
+    "probeOptional"
+  ],
+  "field_order": [
+    "CASE",
+    "KEY_COUNT",
+    "CALLER_KEY",
+    "ARGUMENTS_KEY",
+    "ARG_FLAG_KEY",
+    "ARG_VALUE_KEY",
+    "ARG_FLAG",
+    "CALLER_FIELD_COUNT",
+    "CALLER_SAVED_COUNT",
+    "CALLER_FIELD_TYPE64",
+    "CALLER_SAVED_TYPE64",
+    "PARAMETER"
+  ],
+  "action_count": 379,
+  "exact_key_comparisons": 12,
+  "trace": {
+    "schema_version": "1.4",
+    "run_id": "qa-function-envelope-presence-v2-r2",
+    "label": "function-envelope-presence",
+    "stages": [
+      "collector_begin",
+      "before",
+      "after",
+      "collector_end"
+    ],
+    "transport": "ndjson-stream"
+  },
+  "required_launch": {
+    "input_mode": "none",
+    "first_and_only_semantic_invocation": true,
+    "input_changing_fallback_allowed": false
+  },
+  "limits": {
+    "semantic_bytes": 4096,
+    "unsigned_xml_bytes": 1048576
+  },
+  "scope": "R2 engineering observation after explicit native empty-array serialization. Distinct workflow and trace identity; original three cases and no-input goals preserved. Complete dispatch admission and iOS27 behavior remain unverified.",
+  "formal_acceptance_granted": false,
+  "predecessor": {
+    "source_sha256": "e3d9c1de1ef9ee78b8a11e73b3c296a746a30cf35b69f6a5fddf683f2318241a",
+    "unsigned_sha256": "54889840e546acc60ffe05c8399e1d4bd54f0dc846ec3fd520b4fffc0aa6c7d0",
+    "contract_sha256": "56822e337ae3742cc637f93921c11d9dbf2939990cce4b79dfb6ea6d43c7baac",
+    "current_compiler_credit": false
+  }
+}

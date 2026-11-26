@@ -138,15 +138,6 @@ func (c *p15FTCursor) payload(name string, args ...p15FTArgument) map[string]any
 	}
 	fields["arguments"] = values
 	var _, wire = p15ContainerFieldValue(fields)
-	if len(args) == 0 {
-		var rows = wire.(map[string]any)["Value"].(map[string]any)["WFDictionaryFieldValueItems"].([]any)
-		for _, raw := range rows {
-			var row = raw.(map[string]any)
-			if reflect.DeepEqual(row["WFKey"], p15ContainerText("arguments")) {
-				row["WFValue"] = map[string]any{"WFSerializationType": "WFArrayParameterState"}
-			}
-		}
-	}
 	return c.take("dictionary", "FunctionPayload", map[string]any{"WFItems": wire}, true)
 }
 func (c *p15FTCursor) call(payload map[string]any, name string) map[string]any {

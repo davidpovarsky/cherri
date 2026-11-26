@@ -1,13 +1,10 @@
 package main
 
-// MarshalPlist preserves explicit empty authored array fields without changing
-// the historical omission shape of Legacy and raw/import array parameters.
-// Both paths retain the same native WFArrayParameterState representation.
+// MarshalPlist keeps the required Value array for every compiler-generated
+// WFArrayParameterState, including a nil or empty item slice. Native Dictionary
+// deserialization treats an omitted Value as missing state, not an empty array.
+// Opaque raw/import maps bypass this typed encoder and retain their source shape.
 func (value WFArrayValue) MarshalPlist() (any, error) {
-	if !value.explicitEmpty {
-		type plainArrayValue WFArrayValue
-		return plainArrayValue(value), nil
-	}
 	items := value.Value
 	if items == nil {
 		items = []WFDictionaryFieldValueItem{}
