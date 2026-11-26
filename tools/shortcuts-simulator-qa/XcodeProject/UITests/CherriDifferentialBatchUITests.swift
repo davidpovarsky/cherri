@@ -150,14 +150,40 @@ final class CherriDifferentialBatchUITests: XCTestCase {
     }
 
 
+
+    private func importSelectionNode(_ snapshot: XCUIElementSnapshot, depth: Int = 0,
+                                     count: inout Int) throws -> QAImportSheetSelection.Node {
+        count += 1
+        guard count <= 8192, depth <= 64,
+              snapshot.label.utf8.count <= 4096, snapshot.identifier.utf8.count <= 4096 else {
+            throw NSError(domain: "CherriQAImportSelection", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "IMPORT_SNAPSHOT_BOUNDS"])
+        }
+        let kind: QAImportSheetSelection.Kind
+        switch snapshot.elementType {
+        case .application: kind = .application
+        case .window: kind = .window
+        case .other: kind = .other
+        case .sheet: kind = .sheet
+        case .scrollView: kind = .scrollView
+        case .button: kind = .button
+        case .staticText: kind = .staticText
+        default: kind = .unsupported
+        }
+        let children = try snapshot.children.map {
+            try importSelectionNode($0, depth: depth + 1, count: &count)
+        }
+        return QAImportSheetSelection.Node(kind: kind, label: snapshot.label,
+            identifier: snapshot.identifier, enabled: snapshot.isEnabled, selected: snapshot.isSelected,
+            frame: snapshot.frame, children: children)
+    }
+
     private func importShortcut(_ command: DifferentialCommand) throws -> [String: Any] {
         let name = try XCTUnwrap(command.shortcutName)
         if shortcuts.state != .runningForeground {
             shortcuts.activate()
             _ = shortcuts.wait(for: .runningForeground, timeout: 8)
         }
-        let button = shortcuts.buttons.matching(
-            NSPredicate(format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Replace'")).firstMatch
         var timing = QADifferentialImportTiming(searchStartedAt: Date())
         let dispatchPath = runDirectory.appendingPathComponent("dispatch-" + command.id + ".json")
         let formatter = ISO8601DateFormatter()
@@ -227,20 +253,55 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         // receipt and the clock again after each call, before using its result.
         // Every invocation reads fresh values, including after capture().
         var identity = false
+        var selectedButton: XCUIElement?
         func observeSheet() throws -> QADifferentialImportTiming.SheetDecision {
-            if let failure = checkAdd().failure { return .rejected(failure) }
-            let found = button.exists
-            if let failure = checkAdd().failure { return .rejected(failure) }
-            var hittable = false
+            selectedButton = nil
             identity = false
-            if found {
-                hittable = button.isHittable
+            if let failure = checkAdd().failure { return .rejected(failure) }
+            let buttons = shortcuts.buttons.matching(NSPredicate(
+                format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Replace'")).allElementsBoundByIndex
+            if let failure = checkAdd().failure { return .rejected(failure) }
+            guard buttons.count <= 32 else { return .rejected("IMPORT_QUERY_BOUNDS") }
+            var candidates: [QAImportSheetSelection.Candidate] = []
+            for (index, button) in buttons.enumerated() {
+                let exists = button.exists
                 if let failure = checkAdd().failure { return .rejected(failure) }
-                let snapshot = try shortcuts.snapshot()
-                if let failure = checkAdd().failure { return .rejected(failure) }
-                identity = hasName(snapshot, name: name)
+                var hittable = false
+                var observed: QAImportSheetSelection.Node?
+                if exists {
+                    hittable = button.isHittable
+                    if let failure = checkAdd().failure { return .rejected(failure) }
+                    let snapshot = try button.snapshot()
+                    if let failure = checkAdd().failure { return .rejected(failure) }
+                    var count = 0
+                    observed = try importSelectionNode(snapshot, count: &count)
+                }
+                candidates.append(QAImportSheetSelection.Candidate(queryIndex: index, exists: exists,
+                                                                   hittable: hittable, snapshot: observed))
             }
-            return checkSheet(found: found, hittable: hittable, identity: identity)
+            let snapshot = try shortcuts.snapshot()
+            if let failure = checkAdd().failure { return .rejected(failure) }
+            var count = 0
+            let current = try importSelectionNode(snapshot, count: &count)
+            let selected = QAImportSheetSelection.select(current: current, candidates: candidates, expectedName: name)
+            timingReceipt["sheetSelectionContract"] = "current-container-bound-add-v1"
+            timingReceipt["sheetSelectionReason"] = selected.reason
+            timingReceipt["sheetQueryCandidateCount"] = candidates.count
+            timingReceipt["sheetCurrentContainerCount"] = selected.currentContainerCount
+            timingReceipt["sheetMatchedCandidateCount"] = selected.matchedCandidateCount
+            for key in ["sheetSelectedQueryIndex", "sheetSelectedContainerPath", "sheetSelectedTitlePath", "sheetSelectedButtonPath"] {
+                timingReceipt.removeValue(forKey: key)
+            }
+            if let binding = selected.binding {
+                selectedButton = buttons[binding.queryIndex]
+                identity = true
+                timingReceipt["sheetSelectedQueryIndex"] = binding.queryIndex
+                timingReceipt["sheetSelectedContainerPath"] = binding.containerPath
+                timingReceipt["sheetSelectedTitlePath"] = binding.titlePath
+                timingReceipt["sheetSelectedButtonPath"] = binding.buttonPath
+            }
+            return checkSheet(found: candidates.contains { $0.exists },
+                              hittable: candidates.contains { $0.exists && $0.hittable }, identity: identity)
         }
         while true {
             let decision = try QADifferentialImportTiming.inspectSheetForConsent(
@@ -258,7 +319,7 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             Thread.sleep(forTimeInterval: max(0, min(0.2, remaining)))
         }
         XCTAssertTrue(identity, "Signed import sheet must identify " + name)
-        guard identity else {
+        guard identity, let button = selectedButton else {
             return receipt(["outcome": "IMPORT_IDENTITY_MISMATCH", "name": name])
         }
         button.tap()
@@ -411,3 +472,4 @@ final class CherriDifferentialBatchUITests: XCTestCase {
         XCTFail("Differential batch exceeded its bounded deadline")
     }
 }
+

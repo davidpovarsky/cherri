@@ -41,3 +41,9 @@ python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_primary_no_input.py" \
 
 python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_primary_no_input_r2.py" \
   --artifacts-dir "$QA_TEST_DIR/primary-no-input-r2"
+
+swiftc -parse-as-library \
+  "$ROOT_DIR/tools/shortcuts-simulator-qa/XcodeProject/Shared/ImportSheetSelection.swift" \
+  "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_import_sheet_selection.swift" \
+  -o "$QA_TEST_DIR/qa-import-sheet-selection-contracts"
+"$QA_TEST_DIR/qa-import-sheet-selection-contracts"
