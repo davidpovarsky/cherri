@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Offline controls for the new diagnostic protocol; no native calls or keys."""
 import copy
+import contextlib
 import importlib.util
 import io
 import json
 import os
 from pathlib import Path
+import runpy
 import shutil
 import stat
 import subprocess
@@ -568,6 +570,120 @@ class TestIOSXCResultSummary(unittest.TestCase):
         self.assertIn('"-only-testing:CherriUITests/CherriEditorUITests/testE01CompletionDisplayAndInsertionUI"', workflow)
         self.assertEqual(subject.BUDGETS, {"preflightMs": 15000, "summaryMs": 20000,
                                          "encryptionMs": 20000, "postTestMs": 60000})
+
+
+class TestIOSXCResultPrepareFailureObservation(unittest.TestCase):
+    """Injected rejected boundaries; no Apple, Git child, or native execution."""
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="ios-prepare-observation-")
+        self.addCleanup(self.temp.cleanup)
+        self.parent = Path(self.temp.name).resolve()
+        self.repo = self.parent / CANARY
+        self.repo.mkdir()
+        self.output = self.parent / "step-output"
+        self.output.write_bytes(b"")
+        self.env = {
+            "RUNNER_OS": "macOS", "RUNNER_TEMP": str(self.parent),
+            "GITHUB_RUN_ID": "12345", "GITHUB_RUN_ATTEMPT": "1",
+            "GITHUB_SHA": "a" * 40, "GITHUB_WORKFLOW_SHA": "a" * 40,
+            "GITHUB_REPOSITORY": subject.REPOSITORY, "GITHUB_WORKFLOW": subject.WORKFLOW_NAME,
+            "GITHUB_JOB": "ios-build", "GITHUB_EVENT_NAME": "workflow_dispatch",
+            "GITHUB_REF": "refs/heads/synthetic-prepare-observation",
+            "GITHUB_WORKFLOW_REF": subject.REPOSITORY + "/" + subject.WORKFLOW +
+                "@refs/heads/synthetic-prepare-observation",
+            "GITHUB_WORKSPACE": str(self.repo), "GITHUB_OUTPUT": str(self.output),
+        }
+
+    def invoke(self, mode="prepare", git_side_effect=None, context_valid=True):
+        out, err = io.StringIO(), io.StringIO()
+        environment = dict(self.env)
+        if not context_valid:
+            environment["GITHUB_REPOSITORY"] = CANARY
+        with mock.patch.dict(os.environ, environment, clear=True), \
+                mock.patch.object(sys, "platform", "darwin"), \
+                mock.patch.object(sys, "argv", ["collector", mode, "--repo", str(self.repo)]), \
+                mock.patch.object(subprocess, "run", side_effect=git_side_effect) as run, \
+                contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            with self.assertRaises(SystemExit) as terminal:
+                runpy.run_path(str(HERE / "collect_ios_xcresult_summary.py"), run_name="__main__")
+        self.assertEqual(terminal.exception.code, 70)
+        self.assertEqual(out.getvalue(), "")
+        self.assertNotIn(CANARY, err.getvalue())
+        self.assertNotIn("Traceback", err.getvalue())
+        self.assertEqual(self.output.read_bytes(), b"")
+        return err.getvalue(), run.call_args_list
+
+    def observation(self, raw):
+        lines = raw.splitlines()
+        self.assertEqual(lines[0], "IOS_XCRESULT_SUMMARY_REJECTED")
+        self.assertEqual(len(lines), 2)
+        prefix = "IOS_XCRESULT_PREPARE_DIAGNOSTIC:"
+        self.assertTrue(lines[1].startswith(prefix))
+        self.assertLessEqual(len(lines[1].encode()), 8192 + len(prefix))
+        value = json.loads(lines[1][len(prefix):])
+        self.assertEqual(value["schema"], "cherri-ios-xcresult-prepare-failure/1")
+        self.assertEqual(value["prepareEnvelopeMs"], 15000)
+        self.assertFalse(value["formalAcceptanceGranted"])
+        self.assertFalse(value["processCleanupObserved"])
+        self.assertFalse(value["commandOverflow"])
+        return value
+
+    def test_prepare_context_rejection_names_stage_without_private_values(self):
+        raw, calls = self.invoke(context_valid=False)
+        value = self.observation(raw)
+        self.assertEqual(value["lastStage"], "context")
+        self.assertEqual(value["exceptionType"], "Rejected")
+        self.assertEqual(value["rejectionCode"], "CONTEXT_REJECTED")
+        self.assertFalse(value["envelopeStarted"])
+        self.assertEqual(value["commands"], [])
+        self.assertEqual(calls, [])
+
+    def test_prepare_git_timeout_keeps_command_allowance_and_private_streams_closed(self):
+        def timeout(argv, **kwargs):
+            self.assertEqual(argv, ["/usr/bin/git", "--no-replace-objects", "-C", str(self.repo),
+                                    "rev-parse", "--verify", "HEAD"])
+            self.assertGreater(kwargs["timeout"], 0)
+            self.assertLessEqual(kwargs["timeout"], 15)
+            self.assertIs(kwargs["stdin"], subprocess.DEVNULL)
+            raise subprocess.TimeoutExpired([CANARY], kwargs["timeout"],
+                                            output=CANARY.encode(), stderr=CANARY.encode())
+        raw, calls = self.invoke(git_side_effect=timeout)
+        value = self.observation(raw)
+        self.assertEqual(value["lastStage"], "git_head")
+        self.assertEqual(value["exceptionType"], "TimeoutExpired")
+        self.assertTrue(value["envelopeStarted"])
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(len(value["commands"]), 1)
+        row = value["commands"][0]
+        self.assertEqual(row["operation"], "head")
+        self.assertEqual(row["state"], "INTERRUPTED")
+        self.assertIsNone(row["returnCode"])
+        self.assertEqual(row["stdoutBytes"], len(CANARY.encode()))
+        self.assertEqual(row["stderrBytes"], len(CANARY.encode()))
+
+    def test_prepare_physical_failure_is_distinct_from_returned_git_commands(self):
+        entries = b"".join(("100644 blob " + "c" * 40 + "\t" + path + "\0").encode()
+                           for path in subject.SOURCE_FILES)
+        replies = [b"a" * 40 + b"\n", str(self.repo).encode() + b"\n",
+                   b"b" * 40 + b"\n", entries]
+        def returned(argv, **kwargs):
+            self.assertTrue(replies)
+            return subprocess.CompletedProcess(argv, 0, replies.pop(0), b"")
+        raw, calls = self.invoke(git_side_effect=returned)
+        value = self.observation(raw)
+        self.assertEqual(value["lastStage"], "source_file")
+        self.assertEqual(value["sourceFileIndex"], 0)
+        self.assertEqual(value["exceptionType"], "FileNotFoundError")
+        self.assertEqual(len(calls), 4)
+        self.assertEqual([r["operation"] for r in value["commands"]],
+                         ["head", "toplevel", "tree", "entries"])
+        self.assertTrue(all(r["state"] == "RETURNED" and r["returnCode"] == 0
+                            for r in value["commands"]))
+
+    def test_collect_rejection_keeps_original_closed_output(self):
+        raw, calls = self.invoke(mode="collect", context_valid=False)
+        self.assertEqual(raw, "IOS_XCRESULT_SUMMARY_REJECTED\n")
+        self.assertEqual(calls, [])
 
 
 if __name__ == "__main__":

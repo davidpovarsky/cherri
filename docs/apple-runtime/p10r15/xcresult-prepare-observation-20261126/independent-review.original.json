@@ -1,0 +1,132 @@
+{
+  "addedMethods": [
+    "TestIOSXCResultPrepareFailureObservation.test_collect_rejection_keeps_original_closed_output",
+    "TestIOSXCResultPrepareFailureObservation.test_prepare_context_rejection_names_stage_without_private_values",
+    "TestIOSXCResultPrepareFailureObservation.test_prepare_git_timeout_keeps_command_allowance_and_private_streams_closed",
+    "TestIOSXCResultPrepareFailureObservation.test_prepare_physical_failure_is_distinct_from_returned_git_commands"
+  ],
+  "findings": [],
+  "manifestSha256": "ebbf7edd1a8c5ccc4eb321fbca4867dc4b823b3febe155510c415d00f9e98524",
+  "originalMethodASTCount": 22,
+  "originalMethodASTUnchanged": true,
+  "patchSha256": "69ada8f0f9ce1b4998b0286d08f97b7e228fe7e10971a6966b16cb7c1387bfdc",
+  "qualificationIntake": {
+    "path": "/workspace/scratch/01e52f52d8f4/hosted-xcresult-prepare-observation-01/qualification-intake.original.json",
+    "sha256": "a27d24dd24571d8bcc87985b378d67320c4cafd56cefac3416903e522b73e87d"
+  },
+  "qualificationOriginals": [
+    {
+      "bytes": 1132,
+      "path": "qualification-01/old/run/result.original.json",
+      "sha256": "2bddde431e240e0e3a3730a35e08f2ba0794932f185ef9baddaa0cda6ebca160"
+    },
+    {
+      "bytes": 756,
+      "path": "qualification-01/old/run/command.original.json",
+      "sha256": "47baacc52dfe36f7dd9dab55b5e1ee382f4fe425cb203192198f1e911853dff5"
+    },
+    {
+      "bytes": 386,
+      "path": "qualification-01/old/run/events.original.json",
+      "sha256": "0a10c2f9a67b411283bee67b5e0080754708bf44942a6697a123a5cef015cf35"
+    },
+    {
+      "bytes": 863,
+      "path": "qualification-01/old/run/source-before.original.json",
+      "sha256": "35c90bd0fcccaef5ef07340087e5df9532f707e3b6063bf01f3a23c6fb00e42f"
+    },
+    {
+      "bytes": 863,
+      "path": "qualification-01/old/run/source-after.original.json",
+      "sha256": "35c90bd0fcccaef5ef07340087e5df9532f707e3b6063bf01f3a23c6fb00e42f"
+    },
+    {
+      "bytes": 0,
+      "path": "qualification-01/old/run/stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1216,
+      "path": "qualification-01/old/run/stderr.original",
+      "sha256": "330a798648c50f9ba8293bafcc41e551d9ed9b4f104baa8f9163a21471e38037"
+    },
+    {
+      "bytes": 1987,
+      "path": "qualification-01/candidate/run/result.original.json",
+      "sha256": "63911b9c4e4ec5be5111b3f28682f53afad837b566552cad4b1034306cde78c4"
+    },
+    {
+      "bytes": 1178,
+      "path": "qualification-01/candidate/run/command.original.json",
+      "sha256": "383a4051af0f069b5225733e5605514ed2e5b18380dbe59392fbcd9a088d8c1c"
+    },
+    {
+      "bytes": 1224,
+      "path": "qualification-01/candidate/run/events.original.json",
+      "sha256": "14ed04263ab053ea5a47054162d20bca0f5ed0342d43c3fcf0191b49f4e9cfdf"
+    },
+    {
+      "bytes": 881,
+      "path": "qualification-01/candidate/run/source-before.original.json",
+      "sha256": "6449ef4998976f22a8a5e60c8ef4e23527aa1923c57de4035cfec471f0e0f198"
+    },
+    {
+      "bytes": 881,
+      "path": "qualification-01/candidate/run/source-after.original.json",
+      "sha256": "6449ef4998976f22a8a5e60c8ef4e23527aa1923c57de4035cfec471f0e0f198"
+    },
+    {
+      "bytes": 0,
+      "path": "qualification-01/candidate/run/stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 928,
+      "path": "qualification-01/candidate/run/stderr.original",
+      "sha256": "65eaa982b7a797533a3beb4f50c1481d697d326b0136c119d7eec843c7da9e28"
+    }
+  ],
+  "reviewedProperties": [
+    "prepare-only rejection observation; collect CLI rejection remains original generic output",
+    "closed stage/operation/exception/rejection names, numeric timings/byte counts and source ordinal only",
+    "raw paths, argv values, captured streams, exception messages and source bytes are not emitted",
+    "eight command rows and 8192-byte observation cap; failure in observation retains original exit70",
+    "original source and context checks,15-second prepare and60-second post-test envelopes retained",
+    "workflow adds only fixed begin marker before unchanged prepare command",
+    "formalAcceptanceGranted=false and processCleanupObserved=false prevent cleanup/native claims",
+    "same immutable proposal joins reported original-context RED1 and candidate4PASS without reviewer execution"
+  ],
+  "reviewer": "/root/docs_remote_consumers",
+  "schema": "cherri-xcresult-prepare-independent-source-review/1",
+  "scope": {
+    "goExecuted": false,
+    "historicalHostedInternalCauseEstablished": false,
+    "nativeExecuted": false,
+    "sourceEdited": false,
+    "testsExecutedByReviewer": false,
+    "workflowDispatched": false
+  },
+  "sourceBase": "5bf7c5e04d45bedbf55f92701a25f25aa03d0ffa",
+  "sourcePins": [
+    {
+      "afterSha256": "ad464a4c4bad0d9434eda4fb6969c80f6ea52011f190f62e2bc2a925542374d0",
+      "beforeSha256": "99b0f2894775e9ff395c3382f2428b18d919733762109b999a3c7dfb21330402",
+      "bytes": 36870,
+      "path": "ios/scripts/collect_ios_xcresult_summary.py"
+    },
+    {
+      "afterSha256": "193a596e6d79e9c7566c18dbd936bf34a6bd64a72fa01bc50a5eea0bedf87580",
+      "beforeSha256": "9c8ec67fca1669b612248f3d4b8f7757f3501107f9652a3bd2a4dc001416ce61",
+      "bytes": 36049,
+      "path": "ios/scripts/test_ios_xcresult_summary.py"
+    },
+    {
+      "afterSha256": "c8de2bb6b106d8fb3ed56ccb8b8fbb1d67800f7f2df0edacfdbe78243e73f7b8",
+      "beforeSha256": "52c68014f6cbd7a7691c9136677bdc6de4f3493edaa26202c3047a3fa721ef85",
+      "bytes": 23694,
+      "path": ".github/workflows/ios-build.yml"
+    }
+  ],
+  "status": "PASS_SOURCE_PRIVACY_DEFAULT_COMPATIBILITY_REVIEW",
+  "utc": "2026-11-26T19:19:39.729734+00:00"
+}

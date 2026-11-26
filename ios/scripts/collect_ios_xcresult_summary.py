@@ -70,6 +70,91 @@ class EnvelopeExpired(BaseException):
     pass
 
 
+class PrepareFailureObservation:
+    """Closed metadata for a rejected prepare; never a source or native receipt."""
+    def __init__(self):
+        self.started = time.monotonic()
+        self.envelope_started = None
+        self.stage_started = self.started
+        self.stage = "arguments"
+        self.file_index = None
+        self.commands = []
+        self.active_command = None
+        self.command_overflow = False
+
+    def mark(self, stage, file_index=None):
+        self.stage, self.file_index = stage, file_index
+        self.stage_started = time.monotonic()
+
+    def git_started(self, args, allowance):
+        operations = {
+            ("rev-parse", "--verify", "HEAD"): "head",
+            ("rev-parse", "--show-toplevel"): "toplevel",
+            ("rev-parse", "HEAD^{tree}"): "tree",
+        }
+        operation = operations.get(tuple(args),
+            "entries" if args[:3] == ["ls-tree", "-r", "-z"] else
+            "status" if args[:3] == ["status", "--porcelain", "--untracked-files=no"] else
+            "unclassified")
+        self.mark("git_" + operation)
+        if len(self.commands) >= 8:
+            self.command_overflow = True
+            self.active_command = None
+            return
+        row = {"operation": operation, "requestedTimeoutMs": round(allowance * 1000),
+               "startedElapsedMs": round((self.stage_started - self.started) * 1000),
+               "state": "NOT_RETURNED", "elapsedMs": None, "returnCode": None,
+               "stdoutBytes": None, "stderrBytes": None}
+        self.commands.append(row)
+        self.active_command = row
+
+    def git_returned(self, process):
+        if self.active_command is not None:
+            self.active_command.update(state="RETURNED", returnCode=process.returncode,
+                elapsedMs=round((time.monotonic() - self.stage_started) * 1000),
+                stdoutBytes=len(process.stdout), stderrBytes=len(process.stderr))
+            self.active_command = None
+
+    def emit_failure(self, error):
+        now = time.monotonic()
+        if self.active_command is not None:
+            self.active_command.update(state="INTERRUPTED",
+                elapsedMs=round((now - self.stage_started) * 1000))
+            if isinstance(error, subprocess.TimeoutExpired):
+                for key, raw in (("stdoutBytes", error.output), ("stderrBytes", error.stderr)):
+                    self.active_command[key] = len(raw) if isinstance(raw, bytes) else None
+        classes = (Rejected, EnvelopeExpired, subprocess.TimeoutExpired,
+                   FileNotFoundError, PermissionError, OSError, ValueError, KeyError)
+        kind = next((cls.__name__ for cls in classes if isinstance(error, cls)), "OtherException")
+        codes = {"ARGUMENTS_REJECTED", "CONTEXT_REJECTED", "PATH_REJECTED", "SOURCE_CHANGED",
+                 "RESERVATION_INVALID", "NATIVE_EXIT_INVALID", "DIAGNOSTIC_DEADLINE",
+                 "FILE_REJECTED", "RESULT_INVALID", "OUTPUT_LIMIT", "SCHEMA_REJECTED",
+                 "DIGEST_REJECTED", "JSON_REJECTED"}
+        code = str(error) if isinstance(error, Rejected) and str(error) in codes else None
+        value = {"schema": "cherri-ios-xcresult-prepare-failure/1", "mode": "prepare",
+                 "lastStage": self.stage, "sourceFileIndex": self.file_index,
+                 "elapsedMs": round((now - self.started) * 1000),
+                 "stageElapsedMs": round((now - self.stage_started) * 1000),
+                 "envelopeStarted": self.envelope_started is not None,
+                 "envelopeElapsedMs": None if self.envelope_started is None else
+                     round((now - self.envelope_started) * 1000),
+                 "prepareEnvelopeMs": BUDGETS["preflightMs"],
+                 "exceptionType": kind, "rejectionCode": code,
+                 "commands": self.commands, "commandOverflow": self.command_overflow,
+                 "processCleanupObserved": False, "formalAcceptanceGranted": False}
+        raw = canonical(value)
+        require(len(raw) <= 8192, "OUTPUT_LIMIT")
+        sys.stderr.write("IOS_XCRESULT_PREPARE_DIAGNOSTIC:" + raw.decode("utf-8"))
+
+
+_prepare_observation = None
+
+
+def observe_prepare(stage, file_index=None):
+    if _prepare_observation is not None:
+        _prepare_observation.mark(stage, file_index)
+
+
 def require(condition, code):
     if not condition:
         raise Rejected(code)
@@ -240,9 +325,13 @@ def local_git(repo, args, deadline):
     env = {k: os.environ[k] for k in ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR") if k in os.environ}
     env.update({"GIT_NO_REPLACE_OBJECTS": "1", "GIT_OPTIONAL_LOCKS": "0",
                 "GIT_TERMINAL_PROMPT": "0"})
+    if _prepare_observation is not None:
+        _prepare_observation.git_started(args, remaining)
     process = subprocess.run(["/usr/bin/git", "--no-replace-objects", "-C", str(repo), *args],
                              stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE, timeout=remaining, env=env)
+    if _prepare_observation is not None:
+        _prepare_observation.git_returned(process)
     require(process.returncode == 0 and len(process.stdout) <= METADATA_LIMIT and
             len(process.stderr) <= METADATA_LIMIT and time.monotonic() < deadline,
             "SOURCE_CHANGED")
@@ -268,6 +357,7 @@ def validate_sources(value, source=None):
 
 
 def source_binding(repo, source, deadline):
+    observe_prepare("source_path")
     repo = Path(repo).absolute()
     require(repo == repo.resolve(strict=True), "SOURCE_CHANGED")
     require(local_git(repo, ["rev-parse", "--verify", "HEAD"], deadline).strip().decode() == source,
@@ -292,6 +382,7 @@ def source_binding(repo, source, deadline):
             "SOURCE_CHANGED")
     files = {}
     for name in SOURCE_FILES:
+        observe_prepare("source_file", SOURCE_FILES.index(name))
         raw = read_regular(repo / name, SOURCE_LIMIT)
         mode, blob = entries[name]
         info = (repo / name).lstat()
@@ -302,6 +393,7 @@ def source_binding(repo, source, deadline):
     require(not local_git(repo, ["status", "--porcelain", "--untracked-files=no",
                                  "--", *SOURCE_FILES, ABSENT_SOURCE], deadline).strip(),
             "SOURCE_CHANGED")
+    observe_prepare("source_validation")
     return validate_sources({"sourceSha": source, "tree": tree, "files": files,
                              "absent": [ABSENT_SOURCE]}, source)
 
@@ -360,6 +452,7 @@ def publish_step_output(value):
 
 
 def prepare(repo, context, root, *, deadline):
+    observe_prepare("reservation_preconditions")
     repo, root = Path(repo).absolute(), Path(root).absolute()
     validate_context(context)
     require(root.name == root_name(context) and not root.exists() and not root.is_symlink(),
@@ -368,8 +461,10 @@ def prepare(repo, context, root, *, deadline):
     exit_path = repo / "ios/xcodetest.exitcode"
     require(not exit_path.exists() and not exit_path.is_symlink(), "NATIVE_EXIT_INVALID")
     sources = source_binding(repo, context["sourceSha"], deadline)
+    observe_prepare("root_creation")
     root.mkdir(mode=0o700)
     created = directory_identity(root)
+    observe_prepare("root_permissions")
     # A setgid parent can add that bit to mkdir's requested 0700 mode.
     descriptor = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     try:
@@ -382,6 +477,7 @@ def prepare(repo, context, root, *, deadline):
         os.close(descriptor)
     require(directory_identity(root) == {**created, "mode": 0o700},
             "RESERVATION_INVALID")
+    observe_prepare("private_creation")
     private = root / "private"
     private.mkdir(mode=0o700)
     bundle = root / "tests.xcresult"
@@ -390,6 +486,7 @@ def prepare(repo, context, root, *, deadline):
               "root": str(root), "rootIdentity": directory_identity(root),
               "resultPath": str(bundle), "resultAbsent": True,
               "exitPath": str(exit_path), "exitAbsent": True}
+    observe_prepare("reservation_write")
     raw = write_json(private / "reservation.json", marker)
     require(time.monotonic() < deadline, "DIAGNOSTIC_DEADLINE")
     return sha(raw)
@@ -642,21 +739,30 @@ def envelope(seconds):
 
 
 def main(argv=None):
+    observe_prepare("arguments")
     parser = FixedParser(prog="collect_ios_xcresult_summary.py", description=__doc__)
     parser.add_argument("mode", choices=("prepare", "collect"))
     parser.add_argument("--repo", required=True)
     parser.add_argument("--reservation-sha")
     args = parser.parse_args(argv)
     require(sys.flags.isolated == 1, "ARGUMENTS_REJECTED")
+    observe_prepare("context")
     context = ci_context()
+    observe_prepare("repo_path")
     repo = Path(args.repo).resolve(strict=True)
+    observe_prepare("workspace_path")
     require(repo == Path(os.environ["GITHUB_WORKSPACE"]).resolve(strict=True), "SOURCE_CHANGED")
+    observe_prepare("owned_root")
     root = owned_root(context)
+    observe_prepare("envelope")
     with envelope(15 if args.mode == "prepare" else 60):
         start = time.monotonic()
         if args.mode == "prepare":
+            if _prepare_observation is not None:
+                _prepare_observation.envelope_started = start
             require(args.reservation_sha is None, "ARGUMENTS_REJECTED")
             reservation_sha = prepare(repo, context, root, deadline=start + 15)
+            observe_prepare("publish_step_output")
             publish_step_output(reservation_sha)
             print("IOS_XCRESULT_SUMMARY_RESERVED")
             return 0
@@ -666,8 +772,15 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    if sys.argv[1:2] == ["prepare"]:
+        _prepare_observation = PrepareFailureObservation()
     try:
         raise SystemExit(main())
-    except (Exception, EnvelopeExpired):
+    except (Exception, EnvelopeExpired) as error:
         print("IOS_XCRESULT_SUMMARY_REJECTED", file=sys.stderr)
+        if _prepare_observation is not None:
+            try:
+                _prepare_observation.emit_failure(error)
+            except (Exception, EnvelopeExpired):
+                print("IOS_XCRESULT_PREPARE_DIAGNOSTIC_UNAVAILABLE", file=sys.stderr)
         raise SystemExit(70)

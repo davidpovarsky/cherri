@@ -347,6 +347,7 @@ jobs:
           xcrun simctl spawn "$SIMULATOR_UDID" defaults write -g ConnectHardwareKeyboard -bool NO 2>/dev/null || true
 
           XCRESULT_ROOT="$RUNNER_TEMP/cherri-ios-xcresult-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_SHA}"
+          printf 'IOS_XCRESULT_PREPARE_COMMAND_BEGIN\n'
           python3 -I -B scripts/collect_ios_xcresult_summary.py prepare --repo ..
 
           set +e
