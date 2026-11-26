@@ -26,6 +26,7 @@ def extract_toolchain(owner, archive):
     destination = fixed.BASE/"toolchain"
     destination.mkdir(mode=0o700)
     rows, names, total = [], set(), 0
+    prefix = PurePosixPath(fixed.TOOLCHAIN_PREFIX).parts
     with zipfile.ZipFile(archive) as source:
         entries = source.infolist()
         fixed.require(len(entries) == fixed.TOOLCHAIN_ENTRIES, "TOOLCHAIN_MEMBER_COUNT")
@@ -35,7 +36,8 @@ def extract_toolchain(owner, archive):
                 owner.monitor()
             relative = PurePosixPath(item.filename)
             mode = item.external_attr >> 16
-            fixed.require(not relative.is_absolute() and relative.parts[0] == fixed.TOOLCHAIN_PREFIX and
+            fixed.require(not relative.is_absolute() and relative.parts[:len(prefix)] == prefix and
+                          len(relative.parts) > len(prefix) and
                           all(part not in ("", ".", "..") for part in relative.parts) and
                           item.filename not in names and not item.is_dir() and
                           stat.S_ISREG(mode) and mode & 0o7777 in (0o644, 0o755), "REGULAR_TOOLCHAIN_MEMBER")
