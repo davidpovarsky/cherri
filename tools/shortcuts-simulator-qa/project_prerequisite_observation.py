@@ -291,7 +291,8 @@ def kill_group(process):
 
 
 def capture(command, allowance, *, output, error_output, hard_deadline,
-            stream_limit=STREAM_LIMIT, execution_deadline=None, journal=None):
+            stream_limit=STREAM_LIMIT, execution_deadline=None, journal=None,
+            inherited_fds=()):
     """Bounded POSIX pipe capture, sharing one stage deadline with drain/wait.
 
     A zero parent exit cannot bypass held pipe descriptors or group cleanup.
@@ -300,6 +301,9 @@ def capture(command, allowance, *, output, error_output, hard_deadline,
     require(os.name == "posix", "POSIX_PROCESS_GROUP_REQUIRED")
     require(finite_number(allowance) and allowance >= 0, "ALLOWANCE_TYPE")
     require(type(stream_limit) is int and 0 < stream_limit <= STREAM_LIMIT, "STREAM_LIMIT")
+    require(type(inherited_fds) is tuple and len(inherited_fds) in (0, 2) and
+            all(type(fd) is int and fd >= 3 for fd in inherited_fds) and
+            len(set(inherited_fds)) == len(inherited_fds), "INHERITED_STDIO_FDS")
     start = time.monotonic()
     deadline = min(start + allowance, hard_deadline,
                    execution_deadline if execution_deadline is not None else hard_deadline)
@@ -324,7 +328,8 @@ def capture(command, allowance, *, output, error_output, hard_deadline,
         try:
             with defer_cancellation_signals():
                 process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True,
+                    **({"pass_fds": inherited_fds} if inherited_fds else {}))
                 details["pid"] = process.pid
                 if journal is not None:
                     journal("started", details)

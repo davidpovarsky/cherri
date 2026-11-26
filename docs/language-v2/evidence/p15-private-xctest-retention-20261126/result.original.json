@@ -1,0 +1,391 @@
+{
+  "archive": {
+    "bytes": 356675,
+    "path": "/var/tmp/cherri-xcresult-retention-20261126/qualification-intake-01/synthetic-originals.zip",
+    "sha256": "56346c5436ed07a8a17b6a14288a015c2e811bfda273432c187b827771b466e7"
+  },
+  "baselineCommitSha": "31d7b8d871618ff3eb82a65f0afd994d2c336d36",
+  "checks": 243,
+  "completedUTC": "2026-11-26T21:28:44.292242+00:00",
+  "elapsedMs": 264,
+  "failedOwner02ClosingSourceSnapshotPresent": false,
+  "failedOwner02Preserved": true,
+  "nativeCommandLinesUnchanged": 21,
+  "nativeInvocations": 0,
+  "originalMemberBytes": 1475347,
+  "originalMemberCount": 77,
+  "originalRuns": [
+    {
+      "events": {
+        "errors": 0,
+        "events": [
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_completed_bundles_survive_actual_cleanup_with_exact_bytes_and_modes"
+          },
+          {
+            "event": "FAIL",
+            "id": "retention_controls.XCTestRetentionTests.test_completed_bundles_survive_actual_cleanup_with_exact_bytes_and_modes"
+          }
+        ],
+        "failures": 1,
+        "skips": 0,
+        "testsRun": 1
+      },
+      "process": {
+        "elapsedMs": 105,
+        "exitCode": 1,
+        "result": "EXIT_NONZERO"
+      },
+      "processSHA256": "4d1f0ab8f6a2ac2e5d2d80a44d528d4a31e9c3a4cc0e1cf786e5270e5a4ae589",
+      "qualification": "oracle-qualification-01",
+      "run": "red-original"
+    },
+    {
+      "events": {
+        "errors": 0,
+        "events": [
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_completed_bundles_survive_actual_cleanup_with_exact_bytes_and_modes"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_completed_bundles_survive_actual_cleanup_with_exact_bytes_and_modes"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_failed_exit_trap_preserves_partial_bundle_and_original_exit"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_failed_exit_trap_preserves_partial_bundle_and_original_exit"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_collision_rejects_without_clobber_or_scratch_cleanup"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_collision_rejects_without_clobber_or_scratch_cleanup"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_original_symlink_rejected_and_foreign_target_untouched"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_original_symlink_rejected_and_foreign_target_untouched"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_private_directory_symlink_rejected_without_foreign_write"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_private_directory_symlink_rejected_without_foreign_write"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_confirm_and_metadata_cleanup_retains_only_after_original_collection"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_confirm_and_metadata_cleanup_retains_only_after_original_collection"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_repeated_retention_keeps_old_objects_and_adds_new_confirmation"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_repeated_retention_keeps_old_objects_and_adds_new_confirmation"
+          }
+        ],
+        "failures": 0,
+        "skips": 0,
+        "testsRun": 7
+      },
+      "process": {
+        "elapsedMs": 428,
+        "exitCode": 0,
+        "result": "PASS"
+      },
+      "processSHA256": "565486cf0c70f5cb5203cf1e0baf60d137e20a306083cc1aa62810620ca6c8ad",
+      "qualification": "oracle-qualification-01",
+      "run": "green-retention"
+    },
+    {
+      "events": {
+        "errors": 0,
+        "events": [
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_normal_cleanup_then_installed_exit_cleanup_is_idempotent"
+          },
+          {
+            "event": "FAIL",
+            "id": "retention_controls.XCTestRetentionTests.test_normal_cleanup_then_installed_exit_cleanup_is_idempotent"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_original_closing_receipt_io_still_has_the_retention_deadline"
+          },
+          {
+            "event": "FAIL",
+            "id": "retention_controls.XCTestRetentionTests.test_original_closing_receipt_io_still_has_the_retention_deadline"
+          }
+        ],
+        "failures": 2,
+        "skips": 0,
+        "testsRun": 2
+      },
+      "process": {
+        "elapsedMs": 294,
+        "exitCode": 1,
+        "result": "EXIT_NONZERO"
+      },
+      "processSHA256": "12ac49e9877d11a83f909a7bbbdf9f09b21c166a4719f53e6ba4596635e863a8",
+      "qualification": "oracle-qualification-02",
+      "run": "red-original"
+    },
+    {
+      "events": {
+        "errors": 0,
+        "events": [
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_completed_bundles_survive_actual_cleanup_with_exact_bytes_and_modes"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_completed_bundles_survive_actual_cleanup_with_exact_bytes_and_modes"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_failed_exit_trap_preserves_partial_bundle_and_original_exit"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_failed_exit_trap_preserves_partial_bundle_and_original_exit"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_collision_rejects_without_clobber_or_scratch_cleanup"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_collision_rejects_without_clobber_or_scratch_cleanup"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_original_symlink_rejected_and_foreign_target_untouched"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_original_symlink_rejected_and_foreign_target_untouched"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_private_directory_symlink_rejected_without_foreign_write"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_private_directory_symlink_rejected_without_foreign_write"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_confirm_and_metadata_cleanup_retains_only_after_original_collection"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_confirm_and_metadata_cleanup_retains_only_after_original_collection"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_repeated_retention_keeps_old_objects_and_adds_new_confirmation"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_repeated_retention_keeps_old_objects_and_adds_new_confirmation"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_normal_cleanup_then_installed_exit_cleanup_is_idempotent"
+          },
+          {
+            "event": "FAIL",
+            "id": "retention_controls.XCTestRetentionTests.test_normal_cleanup_then_installed_exit_cleanup_is_idempotent"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_original_closing_receipt_io_still_has_the_retention_deadline"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_original_closing_receipt_io_still_has_the_retention_deadline"
+          }
+        ],
+        "failures": 1,
+        "skips": 0,
+        "testsRun": 9
+      },
+      "process": {
+        "elapsedMs": 511,
+        "exitCode": 1,
+        "result": "EXIT_NONZERO"
+      },
+      "processSHA256": "06eccc64f524c2280ed85a518c88302a6597e81e448b104d55fec9d093fcefc7",
+      "qualification": "oracle-qualification-02",
+      "run": "green-retention"
+    },
+    {
+      "events": {
+        "errors": 0,
+        "events": [
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_normal_cleanup_then_installed_exit_cleanup_is_idempotent"
+          },
+          {
+            "event": "FAIL",
+            "id": "retention_controls.XCTestRetentionTests.test_normal_cleanup_then_installed_exit_cleanup_is_idempotent"
+          }
+        ],
+        "failures": 1,
+        "skips": 0,
+        "testsRun": 1
+      },
+      "process": {
+        "elapsedMs": 159,
+        "exitCode": 1,
+        "result": "EXIT_NONZERO"
+      },
+      "processSHA256": "e901e84cc0dbab27a6315254a25794c6287d2cd223115541e1e0c5d3c7785a8d",
+      "qualification": "oracle-qualification-03",
+      "run": "red-original"
+    },
+    {
+      "events": {
+        "errors": 0,
+        "events": [
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_completed_bundles_survive_actual_cleanup_with_exact_bytes_and_modes"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_completed_bundles_survive_actual_cleanup_with_exact_bytes_and_modes"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_collision_rejects_without_clobber_or_scratch_cleanup"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_collision_rejects_without_clobber_or_scratch_cleanup"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_original_symlink_rejected_and_foreign_target_untouched"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_original_symlink_rejected_and_foreign_target_untouched"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_private_directory_symlink_rejected_without_foreign_write"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_private_directory_symlink_rejected_without_foreign_write"
+          },
+          {
+            "event": "start",
+            "id": "retention_controls.XCTestRetentionTests.test_normal_cleanup_then_installed_exit_cleanup_is_idempotent"
+          },
+          {
+            "event": "PASS",
+            "id": "retention_controls.XCTestRetentionTests.test_normal_cleanup_then_installed_exit_cleanup_is_idempotent"
+          }
+        ],
+        "failures": 0,
+        "skips": 0,
+        "testsRun": 5
+      },
+      "process": {
+        "elapsedMs": 301,
+        "exitCode": 0,
+        "result": "PASS"
+      },
+      "processSHA256": "1fb1d4b843e64d45a4465e0d6721be06d1942d6be73fa7a0cd227e384cf698e0",
+      "qualification": "oracle-qualification-03",
+      "run": "green-retention"
+    }
+  ],
+  "productionSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c",
+  "qualifiedControlCount": 9,
+  "qualifiedIdentities": [
+    {
+      "id": "retention_controls.XCTestRetentionTests.test_collision_rejects_without_clobber_or_scratch_cleanup",
+      "methodASTSHA256": "d2791b13d22e12800f372bef8e3273198e0759e89af3b73643af998c4b31d2d3",
+      "original": "oracle-qualification-03/green-retention/events.original.json",
+      "sourceSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c"
+    },
+    {
+      "id": "retention_controls.XCTestRetentionTests.test_completed_bundles_survive_actual_cleanup_with_exact_bytes_and_modes",
+      "methodASTSHA256": "a12671746fb5ff2647e5153a3613265c868fcc9ce6ab9f69ca0d9411da80efa9",
+      "original": "oracle-qualification-03/green-retention/events.original.json",
+      "sourceSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c"
+    },
+    {
+      "id": "retention_controls.XCTestRetentionTests.test_confirm_and_metadata_cleanup_retains_only_after_original_collection",
+      "methodASTSHA256": "1e55eb0334cb94776c8ead89a464850cda2264fee2921a5938f5ddaf72c1ab67",
+      "original": "oracle-qualification-02/green-retention/events.original.json",
+      "sourceSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c"
+    },
+    {
+      "id": "retention_controls.XCTestRetentionTests.test_failed_exit_trap_preserves_partial_bundle_and_original_exit",
+      "methodASTSHA256": "d82109d436a33edc959858a0111d1478f014bd34fdddc90b9d4019b7869f0fc3",
+      "original": "oracle-qualification-02/green-retention/events.original.json",
+      "sourceSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c"
+    },
+    {
+      "id": "retention_controls.XCTestRetentionTests.test_normal_cleanup_then_installed_exit_cleanup_is_idempotent",
+      "methodASTSHA256": "d735f04a8258dd44aa827e4fe77dcb1a57bb27a1a5fac2d28899e49acd3c4814",
+      "original": "oracle-qualification-03/green-retention/events.original.json",
+      "sourceSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c"
+    },
+    {
+      "id": "retention_controls.XCTestRetentionTests.test_original_closing_receipt_io_still_has_the_retention_deadline",
+      "methodASTSHA256": "f375dac0e85284cb8365283087daf97458295a7132b809683fcf232a5d6899ce",
+      "original": "oracle-qualification-02/green-retention/events.original.json",
+      "sourceSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c"
+    },
+    {
+      "id": "retention_controls.XCTestRetentionTests.test_original_symlink_rejected_and_foreign_target_untouched",
+      "methodASTSHA256": "149972c2e72efb96453e3704acaea181d3d31456a63e482e38cce132f1d87c46",
+      "original": "oracle-qualification-03/green-retention/events.original.json",
+      "sourceSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c"
+    },
+    {
+      "id": "retention_controls.XCTestRetentionTests.test_private_directory_symlink_rejected_without_foreign_write",
+      "methodASTSHA256": "1d0d15038fe521888bc61638ae615ae15ac4e891f1f8ac3ffe5d3df6679e1834",
+      "original": "oracle-qualification-03/green-retention/events.original.json",
+      "sourceSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c"
+    },
+    {
+      "id": "retention_controls.XCTestRetentionTests.test_repeated_retention_keeps_old_objects_and_adds_new_confirmation",
+      "methodASTSHA256": "e2bc73223db431abeda457d279ca6f9cf03b4b1e99af2b786504c6f516bb29d0",
+      "original": "oracle-qualification-02/green-retention/events.original.json",
+      "sourceSHA256": "b029c0bf1af37e38a8e47dfb1a7a3dab8fda0807260592c01b9fb13fd6dd231c"
+    }
+  ],
+  "schema": "cherri-xctest-retention-original-intake/1",
+  "scope": "Linux filesystem and actual shell control qualification; no XCTest or native authority",
+  "singleNineControlGreenRun": false,
+  "status": "NINE_CURRENT_CONTROLS_JOINED_FROM_ORIGINAL_RUNS",
+  "testExecutions": 0,
+  "testSHA256": "e474ff491d1b2d6db29daa921865c518b7efac4c9f45586e5a393e3088d03196"
+}
