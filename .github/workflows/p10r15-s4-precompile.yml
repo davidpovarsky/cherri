@@ -1,0 +1,58 @@
+name: S4 Public Test Binary Precompile
+
+"on": create
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cherri-s4-precompile-44707350fb6e52dd0d947256bced105ac762a1ac
+  cancel-in-progress: false
+
+jobs:
+  public-test-binary:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-s4-precompile-20261126' &&
+      github.ref == 'refs/heads/probe/cherri-p10r15-s4-precompile-20261126' &&
+      github.run_attempt == '1'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - name: Check out the exact event controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the exact public Q source
+        uses: actions/checkout@v6
+        with:
+          ref: 44707350fb6e52dd0d947256bced105ac762a1ac
+          path: producer
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source and exact public Go prerequisites
+        run: /usr/bin/python3 -I -B controller/tools/ci/s4_precompile/prepare.py
+
+      - name: Compile the original public test package without executing tests
+        timeout-minutes: 17
+        run: /usr/bin/python3 -I -B controller/tools/ci/s4_precompile/build.py
+
+      - name: Seal public build originals and the verified test binary
+        if: always()
+        run: /usr/bin/python3 -I -B controller/tools/ci/s4_precompile/prepare.py --seal
+
+      - name: Retain public precompile originals
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: s4-public-test-binary-q447-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-s4-precompile-${{ github.run_id }}-1/evidence
+          if-no-files-found: error
+          retention-days: 30
