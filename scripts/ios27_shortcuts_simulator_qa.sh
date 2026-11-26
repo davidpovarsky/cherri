@@ -1858,24 +1858,88 @@ PY
     run_cmd_timeout() {
       local timeout_sec="$1"
       shift
-      python3 - "$timeout_sec" "$@" <<'PY'
-import os, signal, subprocess, sys
-t = int(sys.argv[1])
-cmd = sys.argv[2:]
-p = subprocess.Popen(cmd, start_new_session=True)
+      python3 -I -B - "$timeout_sec" "$ROOT_DIR" "$ARTIFACT_DIR" "$@" <<'PY'
+import json, os, pathlib, signal, sys, tempfile, time
+
+t, root, artifacts = int(sys.argv[1]), pathlib.Path(sys.argv[2]), pathlib.Path(sys.argv[3])
+cmd = sys.argv[4:]
+sys.path.insert(0, str(root / "tools/shortcuts-simulator-qa"))
+from project_prerequisite_observation import capture
+
+# Keep the caller's live streams, including uncapped Xcode logs, outside the
+# bounded control pipes. The adapter execs in the one capture-owned group.
+adapter = ("import os,sys; a,b=map(int,sys.argv[1:3]); "
+           "os.dup2(a,1); os.dup2(b,2); os.close(a); os.close(b); "
+           "os.execvp(sys.argv[3],sys.argv[3:])")
+os.umask(0o077)
+receipt_dir = pathlib.Path(tempfile.mkdtemp(prefix="owned-command-", dir=artifacts / "builds"))
+details, observation, failure, interrupt_signal = None, None, None, None
+fds = ()
+started = time.monotonic()
+exit_code = 70
+
+def save(name, value):
+    with (receipt_dir / name).open("x", encoding="utf-8") as stream:
+        json.dump(value, stream, sort_keys=True)
+        stream.write("\n")
+
+def journal(event, value):
+    global details
+    details = dict(value)
+    save(event + ".original.json", value)
+
+class Interrupted(BaseException):
+    pass
+
+def interrupted(number, frame):
+    global interrupt_signal
+    if interrupt_signal is None:
+        interrupt_signal = number
+        raise Interrupted()
+
+signals = (signal.SIGTERM, signal.SIGINT, signal.SIGALRM)
+previous = {number: signal.signal(number, interrupted) for number in signals}
+signal.setitimer(signal.ITIMER_REAL, t + 5)
 try:
-    sys.exit(p.wait(timeout=t))
-except subprocess.TimeoutExpired:
-    try:
-        os.killpg(p.pid, signal.SIGKILL)
-    except Exception:
-        pass
-    try:
-        p.wait(timeout=5)
-    except Exception:
-        pass
-    sys.stderr.write(f"command timed out after {t}s: {' '.join(cmd[:4])}\n")
-    sys.exit(124)
+    for stream in (1, 2):
+        fds += (os.dup(stream),)
+    owned_argv = [sys.executable, "-I", "-B", "-c", adapter, *map(str, fds), *cmd]
+    save("command.original.json", {"argv": cmd, "ownedArgv": owned_argv,
+         "inheritedFds": list(fds), "timeoutSeconds": t,
+         "cleanupEnvelopeSeconds": 5, "stdio": "inherited-direct"})
+    with (receipt_dir / "control.stdout.original").open("xb") as out, \
+            (receipt_dir / "control.stderr.original").open("xb") as err:
+        observation, details = capture(owned_argv, t, output=out, error_output=err,
+            hard_deadline=started + t + 5, journal=journal, inherited_fds=fds)
+    if observation["result"] in ("PASS", "EXIT_NONZERO"):
+        actual = observation["exitCode"]
+        exit_code = actual if actual >= 0 else 128 - actual
+    elif observation["result"] in ("TIMEOUT", "DEADLINE_EXHAUSTED"):
+        exit_code = 124
+        sys.stderr.write(f"command timed out after {t}s: {' '.join(cmd[:4])}\n")
+except Interrupted:
+    exit_code = 128 + interrupt_signal
+    failure = "INTERRUPTED"
+except BaseException as error:
+    failure = type(error).__name__
+finally:
+    signal.setitimer(signal.ITIMER_REAL, 0)
+    for number, handler in previous.items():
+        signal.signal(number, handler)
+    for fd in fds:
+        os.close(fd)
+    cleanup_complete = (details is not None and details["cleanupParentReaped"] is True
+        and details["groupAfterCleanup"] is not None
+        and details["groupAfterCleanup"]["state"] == "ABSENT")
+    if not cleanup_complete:
+        exit_code = 70
+    save("result.original.json", {"schema": "cherri-owned-shell-command/1",
+         "argv": cmd, "timeoutSeconds": t, "cleanupEnvelopeSeconds": 5,
+         "stdio": "inherited-direct", "observation": observation,
+         "process": details, "failure": failure, "interruptSignal": interrupt_signal,
+         "cleanupComplete": cleanup_complete, "exitCode": exit_code,
+         "elapsedMs": round((time.monotonic() - started) * 1000)})
+sys.exit(exit_code)
 PY
     }
 
