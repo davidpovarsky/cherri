@@ -16,6 +16,11 @@ on:
         required: false
         type: boolean
         default: false
+      workspace_presentation_only:
+        description: "Run three UIKit presentation component controls; publish no formal acceptance records"
+        required: false
+        type: boolean
+        default: false
       runner_label:
         description: "Existing macOS runner for the full iOS build and original test suite"
         required: true
@@ -41,6 +46,12 @@ jobs:
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v6
+      - name: Validate fixed iOS component mode
+        env:
+          DOCUMENTATION_COMPONENT_ONLY: ${{ inputs.documentation_component_only || false }}
+          STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
+          WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
+        run: python3 -I -B ios/scripts/record_workspace_presentation_source.py mode
       - name: Verify pinned documentation generator
         run: |
           mkdir -p "$RUNNER_TEMP/docs-component-evidence"
@@ -82,10 +93,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Validate fixed iOS component mode
+        env:
+          DOCUMENTATION_COMPONENT_ONLY: ${{ inputs.documentation_component_only || false }}
+          STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
+          WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
+        run: python3 -I -B ios/scripts/record_workspace_presentation_source.py mode
+
+      - name: Bind declared presentation component sources
+        id: workspace_component_source
+        if: ${{ inputs.workspace_presentation_only == true }}
+        env:
+          DOCUMENTATION_COMPONENT_ONLY: ${{ inputs.documentation_component_only || false }}
+          STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
+          WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
+        run: python3 -I -B ios/scripts/record_workspace_presentation_source.py before
+
       - name: Test bounded iOS evidence collector
         run: |
           python3 -m unittest discover -s ios/scripts -p 'test_collect_ios_test_evidence.py' -v
           python3 -m unittest discover -s ios/scripts -p 'test_ios_evidence_upload_contract.py' -v
+          python3 -I -B -m unittest discover -s ios/scripts -p 'test_record_workspace_presentation_source.py' -v
 
       - name: Verify bounded xcresult summary protocol
         run: python3 -I -B -m unittest discover -s ios/scripts -p 'test_ios_xcresult_summary.py' -v
@@ -282,6 +310,7 @@ jobs:
         working-directory: ios
         env:
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only }}
+          WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only }}
         run: |
           if [ ! -d "CherriUITests" ]; then
             echo "CRITICAL: ios/CherriUITests target missing!" >&2
@@ -302,6 +331,12 @@ jobs:
               "-only-testing:CherriUITests/CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI"
               "-only-testing:CherriUITests/CherriEditorUITests/testD03CurrentDocumentationSearchUI"
               "-only-testing:CherriUITests/CherriEditorUITests/testE01CompletionDisplayAndInsertionUI"
+            )
+          elif [ "$WORKSPACE_PRESENTATION_ONLY" = "true" ]; then
+            STARTUP_SELECTION=(
+              "-only-testing:CherriTests/CherriWorkspacePresentationTests/testCompactPaneTransitionsKeepNativeViewsAndDocumentState"
+              "-only-testing:CherriTests/CherriWorkspacePresentationTests/testCompactUncompiledDocumentsDoNotInstantiateWebKit"
+              "-only-testing:CherriTests/CherriWorkspacePresentationTests/testDocumentationSearchUsesLiteralNativeInputTraits"
             )
           fi
 
@@ -335,6 +370,25 @@ jobs:
           echo "xcodebuild test exit: $status (bounded diagnostics are collected in the next step)"
           exit "$status"
 
+      - name: Verify declared presentation component sources after native test
+        if: always() && inputs.workspace_presentation_only == true && steps.workspace_component_source.outcome == 'success'
+        env:
+          DOCUMENTATION_COMPONENT_ONLY: ${{ inputs.documentation_component_only || false }}
+          STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
+          WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
+        run: python3 -I -B ios/scripts/record_workspace_presentation_source.py after
+
+      - name: Upload presentation component source receipts
+        if: always() && inputs.workspace_presentation_only == true && steps.workspace_component_source.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-presentation-component-source
+          path: |
+            ios/.build/workspace-presentation-source/before.original.json
+            ios/.build/workspace-presentation-source/after.original.json
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Capture bounded iOS xcresult summary
         id: ios_xcresult_summary
         if: always()
@@ -364,9 +418,10 @@ jobs:
           IOS_EVIDENCE_SHA: ${{ github.sha }}
           IOS_EVIDENCE_RUN_ID: ${{ github.run_id }}
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only }}
+          WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only }}
         run: |
           DIAGNOSTIC_ARGS=()
-          if [ "$STARTUP_OBSERVATION_ONLY" = "true" ]; then
+          if [ "$STARTUP_OBSERVATION_ONLY" = "true" ] || [ "$WORKSPACE_PRESENTATION_ONLY" = "true" ]; then
             DIAGNOSTIC_ARGS=(--diagnostic-only)
           fi
           python3 scripts/collect_ios_test_evidence.py \

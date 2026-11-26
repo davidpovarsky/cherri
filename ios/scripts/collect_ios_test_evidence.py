@@ -117,10 +117,11 @@ RP40_UI_SCOPE = (
 )
 
 
-CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|CherriPreviewLifecycleTests|CherriPreviewEditTransactionTests|DocumentationIndexTests|CherriJoinedBridgeTests|CherriCompletionTextEditTests|CherriPreviewDocumentContextTests)|CherriUITests\.(?:CherriEditorUITests|CherriRP40UITests|CherriJoinedContractUITests|CherriPreviewDocumentUITests)) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
+CASE_LINE = re.compile(r"^Test Case '-\[(CherriTests\.(?:CherriCoreIntegrationTests|CherriEditorInputTests|CherriPreviewLifecycleTests|CherriWorkspacePresentationTests|CherriPreviewEditTransactionTests|DocumentationIndexTests|CherriJoinedBridgeTests|CherriCompletionTextEditTests|CherriPreviewDocumentContextTests)|CherriUITests\.(?:CherriEditorUITests|CherriRP40UITests|CherriJoinedContractUITests|CherriPreviewDocumentUITests)) (test[A-Za-z0-9_]+)\]' (started\.|(?:passed|failed) \([0-9.]+ seconds\)\.)$")
 FAILURE_LINE = re.compile(r"(CherriEditorUITests|CherriRP40UITests|CherriEditorInputTests|CherriPreviewLifecycleTests|CherriJoinedBridgeTests|CherriJoinedContractUITests|CherriCompletionTextEditTests|CherriPreviewDocumentContextTests|CherriPreviewDocumentUITests)\.swift:(\d+): error: -\[(?:CherriUITests|CherriTests)\.\1 (test[A-Za-z0-9_]+)\]")
 # This additional diagnostic class belongs only to the hosted app-test bundle.
 PREVIEW_TRANSACTION_FAILURE_LINE = re.compile(r"(?:^|[/\\])(CherriPreviewEditTransactionTests)\.swift:(\d+): error: -\[CherriTests\.\1 (test[A-Za-z0-9_]+)\]")
+WORKSPACE_PRESENTATION_FAILURE_LINE = re.compile(r"(?:^|[/\\])(CherriWorkspacePresentationTests)\.swift:(\d+): error: -\[CherriTests\.\1 (test[A-Za-z0-9_]+)\]")
 TEST_NAME = re.compile(r"^CherriEditorUITests/(test[A-Za-z0-9_]+)$")
 PRIVATE_TEXT = re.compile(r"(?i)(BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9]{16,}|Bearer\s+[A-Za-z0-9._-]+|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|/Users/[^/\s]+|[A-Z]:\\Users\\[^\\\s]+)")
 STAGES = {"empty-reset", "typed-source", "completion-insertion", "rapid-typed-source", "teardown", "completion-candidates"}
@@ -547,7 +548,8 @@ def bounded_log(raw_text):
                 receipts.append(receipt)
                 lines.append(RECEIPT_PREFIX + json.dumps(receipt, ensure_ascii=False, sort_keys=True))
         elif (failure := FAILURE_LINE.search(line)) or (
-                (failure := PREVIEW_TRANSACTION_FAILURE_LINE.search(line))
+                ((failure := PREVIEW_TRANSACTION_FAILURE_LINE.search(line))
+                 or (failure := WORKSPACE_PRESENTATION_FAILURE_LINE.search(line)))
                 and active_test == failure.group(1) + "/" + failure.group(3)):
             record = {"testId": failure.group(1) + "/" + failure.group(3), "sourceLine": int(failure.group(2)),
                       "failureCategory": failure_category(line[failure.end():])}

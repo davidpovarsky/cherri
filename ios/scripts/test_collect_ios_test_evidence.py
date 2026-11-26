@@ -1414,5 +1414,67 @@ class UIReadinessObservationTests(unittest.TestCase):
         self.assertEqual(records, [])
 
 
+
+
+class WorkspacePresentationRetentionTests(unittest.TestCase):
+    collect = IOSTestEvidenceTests.collect
+    transaction = PreviewTransactionRetentionTests.transaction
+    suite = "CherriWorkspacePresentationTests"
+    methods = (
+        "testCompactPaneTransitionsKeepNativeViewsAndDocumentState",
+        "testCompactUncompiledDocumentsDoNotInstantiateWebKit",
+        "testDocumentationSearchUsesLiteralNativeInputTraits",
+    )
+
+    def test_all_three_source_methods_keep_exact_outcomes_without_credit(self):
+        import re
+        source = (SCRIPT.parents[1] / "CherriTests" / (self.suite + ".swift")).read_text()
+        self.assertEqual(re.findall(r"func (test[A-Za-z0-9_]+)\(", source), list(self.methods))
+        for status, exit_code in (("passed", 0), ("failed", 65)):
+            with self.subTest(status=status):
+                diagnostic, records, _ = self.collect(
+                    "".join(self.transaction(name, status=status) for name in self.methods), exit_code)
+                self.assertEqual(diagnostic["runStatus"], status.upper())
+                self.assertEqual(diagnostic["testResults"], [
+                    {"testId": self.suite + "/" + name, "observedStatus": status}
+                    for name in sorted(self.methods)])
+                self.assertEqual(records, [])
+
+    def test_component_failure_keeps_location_without_private_payload(self):
+        method = self.methods[0]
+        failure = (f"/Users/runner/{self.suite}.swift:89: error: "
+                   f"-[CherriTests.{self.suite} {method}] : XCTAssertTrue failed - PRIVATE_CANARY")
+        diagnostic, records, outputs = self.collect(
+            self.transaction(status="failed", body=failure), 65)
+        self.assertEqual(diagnostic["testResults"], [
+            {"testId": self.suite + "/" + method, "observedStatus": "failed"}])
+        self.assertEqual(diagnostic["uiFailures"], [{
+            "testId": self.suite + "/" + method, "sourceLine": 89,
+            "failureCategory": "ASSERTION_FAILURE"}])
+        self.assertEqual(records, [])
+        self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+        self.assertNotIn("/Users/runner", "".join(outputs.values()))
+
+    def test_component_failure_requires_exact_bundle_class_and_active_case(self):
+        method = self.methods[0]
+        failure = (f"/Users/runner/{self.suite}.swift:89: error: "
+                   f"-[CherriTests.{self.suite} {method}] : PRIVATE_CANARY")
+        variants = [
+            ("wrong-bundle", self.transaction(target="CherriUITests." + self.suite,
+                                              body=failure.replace("CherriTests.", "CherriUITests."))),
+            ("class-suffix", self.transaction(target="CherriTests." + self.suite + "Other",
+                                              body=failure.replace(self.suite, self.suite + "Other"))),
+            ("outside-case", failure),
+            ("other-active-case", self.transaction(self.methods[1], body=failure)),
+        ]
+        for label, log in variants:
+            with self.subTest(label=label):
+                diagnostic, records, outputs = self.collect(log, 65)
+                self.assertEqual(diagnostic["uiFailures"], [])
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+                if label in {"wrong-bundle", "class-suffix", "outside-case"}:
+                    self.assertEqual(diagnostic["testResults"], [])
+
 if __name__ == "__main__":
     unittest.main()
