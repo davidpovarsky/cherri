@@ -177,7 +177,10 @@ def preflight(stage, live, evidence_path):
     skill = candidate / "source" / release["label"]
     skill_manifest = read_json(skill / "skills/cherri-shortcuts/compatibility-manifest.json")
     build_hash = sha((skill / "skills/cherri-shortcuts/scripts/build.sh").read_bytes())
-    validate_reports(reports, candidate, skill_manifest, build_hash)
+    source_files, source_receipt = expected_package(skill, release["skillSourceHead"], "source")
+    source_count = len(source_files)
+    validate_reports(reports, candidate, skill_manifest, build_hash,
+                     source_package_count=source_count)
     require(read_json(candidate / "active.json") == release, "Candidate active tuple differs")
     require(link_state(live / LINK)["target"] == link_state(candidate / LINK)["target"] == LINK_TARGET,
             "Registered relative route differs")
@@ -189,12 +192,17 @@ def preflight(stage, live, evidence_path):
                            (candidate, reports["stage"]["candidateHashes"])):
         require(all(sha((home / name).read_bytes()) == value for name, value in expected.items()), "Live/candidate evidence is stale")
     verify_runtime(candidate, release)
-    for kind, archive_key, report_key, count in (("source", "sourceArchive", "sourceIntegrity", 23),
-                                               ("runtime", "runtimeArchive", "runtimeIntegrity", 29)):
+    for kind, archive_key, report_key, count in (
+            ("source", "sourceArchive", "sourceIntegrity", source_count),
+            ("runtime", "runtimeArchive", "runtimeIntegrity", source_count + 6)):
         compiler = candidate / release["label"] / "runtime/bin/cherri" if kind == "runtime" else None
         migrator = candidate / release["label"] / "runtime/bin/cherri-migrate" if kind == "runtime" else None
-        files, receipt = expected_package(skill, release["skillSourceHead"], kind,
-                                          compiler=compiler, go=str(live / "tools/go/bin/go"), migrator=migrator)
+        if kind == "source":
+            files, receipt = source_files, source_receipt
+        else:
+            files, receipt = expected_package(
+                skill, release["skillSourceHead"], kind, compiler=compiler,
+                go=str(live / "tools/go/bin/go"), migrator=migrator)
         require(len(files) == count, "Unexpected committed package inventory")
         verify_archive(paths[archive_key], files)
         require(sha(paths[archive_key].read_bytes()) == reports[report_key]["archiveSha256"], "Archive receipt differs")

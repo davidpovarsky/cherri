@@ -103,7 +103,11 @@ def load_evidence(manifest_path, stage):
     return manifest, paths, records
 
 
-def validate_reports(records, candidate, skill_manifest, skill_build_hash):
+def validate_reports(records, candidate, skill_manifest, skill_build_hash, *, source_package_count):
+    # The caller derives this from expected_package at the exact committed K.
+    # Two binaries and their four sidecars are the six fixed runtime additions.
+    require(type(source_package_count) is int and source_package_count >= 11,
+            "Invalid committed source package inventory count")
     stage = records["stage"]
     release = stage["tuple"]
     validate_tuple(release)
@@ -222,9 +226,10 @@ def validate_reports(records, candidate, skill_manifest, skill_build_hash):
             remote_requests += 1
     require(remote_requests == 22, "Both remote signing routes must have 22 exact requests")
 
-    for name, kind, count, unpacked in (("sourceIntegrity", "source", 23, False),
-                                       ("runtimeIntegrity", "runtime", 29, False),
-                                       ("unpackedIntegrity", "runtime", 29, True)):
+    for name, kind, count, unpacked in (
+            ("sourceIntegrity", "source", source_package_count, False),
+            ("runtimeIntegrity", "runtime", source_package_count + 6, False),
+            ("unpackedIntegrity", "runtime", source_package_count + 6, True)):
         r = records[name]
         require(r["status"] == "PASS_PACKAGE_INTEGRITY" and r["kind"] == kind
                 and type(r["verifiedFiles"]) is int and r["verifiedFiles"] == count

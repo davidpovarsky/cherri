@@ -104,7 +104,8 @@ class EvidenceGates(unittest.TestCase):
     def validate(self, records):
         provenance = records["faults"]["provenance"]
         return gates.validate_reports(records, records["stage"]["candidateHome"],
-                                      provenance["skillManifest"], provenance["skillBuildSha256"])
+                                      provenance["skillManifest"], provenance["skillBuildSha256"],
+                                      source_package_count=23)  # Explicit synthetic historical model.
 
     def test_incomplete_actual_historical_report_rejected(self):
         records = reports_model()
