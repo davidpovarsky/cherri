@@ -549,7 +549,7 @@ def main():
                         fields = '{"Authorization": ' + auth + ', "X-Cherri-Client": "Cherri-P15"}'
                         code = prelude + f'paginate("{server.origin}/entry.json", "{items_key}", "{next_key}", {pages}, {items}, {fields})\n'
                     source.write_bytes(code.encode())
-                    command = [exe,"compile",source,"-o",target,"--skip-sign","--no-ansi","--build-profile",profile]+(["--legacy"] if legacy else [])
+                    command = [exe,"compile",source,"-o",target,"--skip-sign","--no-ansi","--build-profile="+profile]+(["--legacy"] if legacy else [])
                     checked(command,ident)
                     graph = plistlib.loads(target.read_bytes())["WFWorkflowActions"]
                     extractor = extract_header_paginate_graph if flavor == "headers-dynamic" else extract_paginate_graph
@@ -706,7 +706,7 @@ def main():
                 source,target=output/(ident+".cherri"),output/(ident+".shortcut")
                 source.write_bytes((code.replace("DECL","const" if legacy else "let")+"\n").encode())
                 target.unlink(missing_ok=True)
-                result=run([exe,"compile",source,"-o",target,"--skip-sign","--no-ansi","--build-profile",profile]+(["--legacy"] if legacy else []))
+                result=run([exe,"compile",source,"-o",target,"--skip-sign","--no-ansi","--build-profile="+profile]+(["--legacy"] if legacy else []))
                 assert result.returncode!=0 and not target.exists(), ident+" accepted an invalid contract"
                 negatives.append({"id":ident,"exitCode":result.returncode,"noArtifact":True,"status":"PASS"})
     after=fingerprint()

@@ -231,7 +231,7 @@ def main():
             ident = f"{'legacy' if legacy else 'v2'}-{profile}-{mode}-{flavor}"
             src, target = out / (ident + ".cherri"), out / (ident + ".shortcut")
             src.write_text(source(cfg, server.origin, legacy), encoding="utf-8")
-            command = [exe, "compile", src, "-o", target, "--skip-sign", "--no-ansi", "--build-profile", profile]
+            command = [exe, "compile", src, "-o", target, "--skip-sign", "--no-ansi", "--build-profile=" + profile]
             if legacy:
                 command.append("--legacy")
             base.checked(command, ident)
@@ -367,7 +367,7 @@ def main():
                 ident=f"reject-{legacy}-{profile}-{name}"
                 src,target=out/(ident+".cherri"),out/(ident+".shortcut")
                 src.write_text("paginate("+json.dumps(url)+', "items", "next", 3, 6, {}, '+mode+")\n")
-                result=base.run([exe,"compile",src,"-o",target,"--skip-sign","--no-ansi","--build-profile",profile]+(["--legacy"] if legacy else []))
+                result=base.run([exe,"compile",src,"-o",target,"--skip-sign","--no-ansi","--build-profile="+profile]+(["--legacy"] if legacy else []))
                 assert result.returncode!=0 and not target.exists(),"invalid traversal source emitted artifact"
                 (out/(ident+".stdout")).write_text(result.stdout)
                 (out/(ident+".stderr")).write_text(result.stderr)
