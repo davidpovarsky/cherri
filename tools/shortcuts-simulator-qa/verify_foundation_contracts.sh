@@ -38,3 +38,6 @@ swiftc -parse-as-library \
 python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_optional_receiver.py"
 python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_primary_no_input.py" \
   --artifacts-dir "$QA_TEST_DIR/primary-no-input"
+
+python3 "$ROOT_DIR/tools/shortcuts-simulator-qa/verify_primary_no_input_r2.py" \
+  --artifacts-dir "$QA_TEST_DIR/primary-no-input-r2"
