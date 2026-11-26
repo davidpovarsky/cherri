@@ -21,8 +21,19 @@ struct QAPrimaryNoInputContract {
     static let mode = "primary-no-input"
     static let fixture = "qa-function-envelope-presence-v2"
     static let workflow = "CherriFunctionEnvelopePresenceProbe"
+    static let r2Fixture = "qa-function-envelope-presence-v2-r2"
+    static let r2Workflow = "CherriFunctionEnvelopePresenceProbeR2"
+
+    // Each fixture is authorized only with its own immutable workflow name.
+    // Independent membership in two sets would admit a mixed identity.
+    private static func approvedPair(fixture: String, workflow: String) -> Bool {
+        (byteEqual(fixture, Self.fixture) && byteEqual(workflow, Self.workflow)) ||
+        (byteEqual(fixture, Self.r2Fixture) && byteEqual(workflow, Self.r2Workflow))
+    }
     let original: Data
     let sha256: String
+    let fixtureId: String
+    let workflowName: String
     let runNonce: String
     let primaryURL: String
 
@@ -97,8 +108,9 @@ struct QAPrimaryNoInputContract {
         }
         guard values["schema"] as? String == Self.schema,
               values["mode"] as? String == Self.mode,
-              values["fixtureId"] as? String == Self.fixture,
-              values["workflowName"] as? String == Self.workflow,
+              let selectedFixture = values["fixtureId"] as? String,
+              let selectedWorkflow = values["workflowName"] as? String,
+              Self.approvedPair(fixture: selectedFixture, workflow: selectedWorkflow),
               let nonce = values["runNonce"] as? String,
               let url = values["primaryURL"] as? String else {
             throw QAPrimaryNoInputFailure.contractIdentity
@@ -112,7 +124,7 @@ struct QAPrimaryNoInputContract {
         let outer = try Self.query(url, scheme: "shortcuts", host: "x-callback-url",
                     path: "/run-shortcut",
                     keys: ["name", "x-source", "x-success", "x-error", "x-cancel"])
-        guard Self.byteEqual(outer["name"], Self.workflow),
+        guard Self.byteEqual(outer["name"], selectedWorkflow),
               Self.byteEqual(outer["x-source"], "CherriSimulatorQAReceiver") else {
             throw QAPrimaryNoInputFailure.primaryURL
         }
@@ -125,14 +137,16 @@ struct QAPrimaryNoInputContract {
                 throw QAPrimaryNoInputFailure.callbackURL
             }
             guard Self.byteEqual(callback["runId"], nonce),
-                  Self.byteEqual(callback["fixtureId"], Self.fixture),
-                  Self.byteEqual(callback["shortcutName"], Self.workflow),
+                  Self.byteEqual(callback["fixtureId"], selectedFixture),
+                  Self.byteEqual(callback["shortcutName"], selectedWorkflow),
                   Self.byteEqual(callback["source"], "shortcuts-x-callback") else {
                 throw QAPrimaryNoInputFailure.callbackURL
             }
         }
         original = data
         sha256 = Self.digest(data)
+        fixtureId = selectedFixture
+        workflowName = selectedWorkflow
         runNonce = nonce
         primaryURL = url
     }
@@ -264,8 +278,8 @@ final class QAPrimaryNoInputLaunchGate {
         }
         if let plan = contract {
             let primary = Data(plan.primaryURL.utf8)
-            row["fixtureId"] = QAPrimaryNoInputContract.fixture
-            row["workflowName"] = QAPrimaryNoInputContract.workflow
+            row["fixtureId"] = plan.fixtureId
+            row["workflowName"] = plan.workflowName
             row["runNonce"] = plan.runNonce
             row["primaryURL"] = plan.primaryURL
             row["primaryURLUTF8Base64"] = primary.base64EncodedString()
