@@ -283,6 +283,13 @@ enum QAImportedLibrarySelection {
         let label: String
         let identifier: String
         let frame: CGRect
+
+        static func == (left: Binding, right: Binding) -> Bool {
+            left.queryIndex == right.queryIndex && left.cellPath == right.cellPath &&
+            QAImportSheetSelection.bytesEqual(left.label, right.label) &&
+            QAImportSheetSelection.bytesEqual(left.identifier, right.identifier) &&
+            left.frame == right.frame
+        }
     }
 
     struct Decision {
