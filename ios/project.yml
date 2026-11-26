@@ -66,6 +66,13 @@ targets:
         SWIFT_VERSION: "5.0"
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         TARGETED_DEVICE_FAMILY: "1,2"
+      configs:
+        Release:
+          PRODUCT_BUNDLE_IDENTIFIER: com.davidpovarsky.cherri
+          DEVELOPMENT_TEAM: NA6HPWARQ2
+          CODE_SIGN_STYLE: Manual
+          "CODE_SIGN_IDENTITY[sdk=iphoneos*]": Apple Distribution
+          "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]": "$(CHERRI_APP_STORE_PROFILE_UUID)"
     dependencies:
       - package: CodeEditorView
         product: CodeEditorView
