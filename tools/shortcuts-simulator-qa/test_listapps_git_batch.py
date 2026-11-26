@@ -337,33 +337,6 @@ class ListAppsGitBatchTests(unittest.TestCase):
         native.assert_not_called()
         self.assertEqual(probe.commands[0]["result"], "DEADLINE_EXHAUSTED")
 
-
-class RawTreeParsingTests(unittest.TestCase):
-    def test_exact_regular_tree_entries_and_typed_child_entries(self):
-        raw = b"".join(mode + b" " + name + b"\0" + bytes.fromhex(oid) for mode, name, oid in (
-            (b"100644", b"one.txt", "1" * 40), (b"100755", b"run.sh", "2" * 40),
-            (b"40000", b"nested", "3" * 40), (b"120000", b"link", "4" * 40),
-            (b"160000", b"submodule", "5" * 40)))
-        parsed = batch.tree_entries(raw)
-        self.assertEqual(parsed[b"one.txt"], ("100644", "1" * 40))
-        self.assertEqual(parsed[b"run.sh"], ("100755", "2" * 40))
-        self.assertEqual(len(parsed), 5)
-
-    def test_truncated_ambiguous_and_malformed_tree_bytes_are_rejected(self):
-        good = b"100644 one\0" + b"x" * 20
-        cases = {"no_nul": b"100644 one", "short_oid": good[:-1], "trailing": good + b"x",
-                 "duplicate": good + good, "invalid_mode": b"100600 one\0" + b"x" * 20,
-                 "no_mode": b"one\0" + b"x" * 20, "empty_name": b"100644 \0" + b"x" * 20,
-                 "slash": b"100644 a/b\0" + b"x" * 20, "dot": b"100644 .\0" + b"x" * 20,
-                 "parent": b"100644 ..\0" + b"x" * 20,
-                 "oversize_name": b"100644 " + b"x" * 4097 + b"\0" + b"x" * 20,
-                 "oversize_tree": b"x" * (batch.TREE_LIMIT + 1)}
-        for label, raw in cases.items():
-            with self.subTest(case=label):
-                with self.assertRaises(ValueError):
-                    batch.tree_entries(raw)
-
-
     def test_source_reads_reuse_directory_handles_with_fresh_file_checks(self):
         # The original failure completed Git object reads but exhausted its
         # deadline resolving absolute ancestors for the 40th physical file.
@@ -459,6 +432,33 @@ class RawTreeParsingTests(unittest.TestCase):
         self.assertLess(value["elapsedMs"], 2000)
         self.assertFalse(value["nativeExecution"])
         self.assertFalse(value["formalAcceptanceGranted"])
+
+
+class RawTreeParsingTests(unittest.TestCase):
+    def test_exact_regular_tree_entries_and_typed_child_entries(self):
+        raw = b"".join(mode + b" " + name + b"\0" + bytes.fromhex(oid) for mode, name, oid in (
+            (b"100644", b"one.txt", "1" * 40), (b"100755", b"run.sh", "2" * 40),
+            (b"40000", b"nested", "3" * 40), (b"120000", b"link", "4" * 40),
+            (b"160000", b"submodule", "5" * 40)))
+        parsed = batch.tree_entries(raw)
+        self.assertEqual(parsed[b"one.txt"], ("100644", "1" * 40))
+        self.assertEqual(parsed[b"run.sh"], ("100755", "2" * 40))
+        self.assertEqual(len(parsed), 5)
+
+    def test_truncated_ambiguous_and_malformed_tree_bytes_are_rejected(self):
+        good = b"100644 one\0" + b"x" * 20
+        cases = {"no_nul": b"100644 one", "short_oid": good[:-1], "trailing": good + b"x",
+                 "duplicate": good + good, "invalid_mode": b"100600 one\0" + b"x" * 20,
+                 "no_mode": b"one\0" + b"x" * 20, "empty_name": b"100644 \0" + b"x" * 20,
+                 "slash": b"100644 a/b\0" + b"x" * 20, "dot": b"100644 .\0" + b"x" * 20,
+                 "parent": b"100644 ..\0" + b"x" * 20,
+                 "oversize_name": b"100644 " + b"x" * 4097 + b"\0" + b"x" * 20,
+                 "oversize_tree": b"x" * (batch.TREE_LIMIT + 1)}
+        for label, raw in cases.items():
+            with self.subTest(case=label):
+                with self.assertRaises(ValueError):
+                    batch.tree_entries(raw)
+
 
 
 if __name__ == "__main__":
