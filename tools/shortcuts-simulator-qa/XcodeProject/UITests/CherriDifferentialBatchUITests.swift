@@ -357,10 +357,10 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             let foreground = shortcuts.state == .runningForeground
             if let failure = editorNavigationBoundary() { return .rejected(failure) }
             guard foreground else { return .rejected("EDITOR_NOT_FOREGROUND") }
-            let namedBars = shortcuts.navigationBars.matching(identifier: name).count
+            let namedBars = shortcuts.navigationBars.matching(identifier: name).allElementsBoundByIndex
             if let failure = editorNavigationBoundary() { return .rejected(failure) }
-            guard namedBars > 0 && namedBars <= 32 else { return .rejected("NO_CURRENT_REQUESTED_EDITOR_BACK") }
-            let buttons = shortcuts.buttons.matching(identifier: "BackButton").allElementsBoundByIndex
+            guard namedBars.count == 1 else { return .rejected("NO_UNIQUE_CURRENT_REQUESTED_EDITOR") }
+            let buttons = namedBars[0].buttons.matching(identifier: "BackButton").allElementsBoundByIndex
             if let failure = editorNavigationBoundary() { return .rejected(failure) }
             guard buttons.count <= 32 else { return .rejected("INVALID_EDITOR_OBSERVATION") }
             var candidates: [QAImportSheetSelection.Candidate] = []
