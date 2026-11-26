@@ -1,0 +1,65 @@
+name: P10R15 Original Release Gates a6bf
+
+# One reviewed create event activates this fixed a6bf controller. No main mutation,
+# second trigger, remote write token, or automatic attempt is available here.
+"on": create
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cherri-canonical-release-a6bf7b5d928670d7c011a2aa2849ba3e43b3844d
+  cancel-in-progress: false
+
+jobs:
+  original-release:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-canonical-release-a6bf-20261126' &&
+      github.ref == 'refs/heads/probe/cherri-p10r15-canonical-release-a6bf-20261126' &&
+      github.run_attempt == '1'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 65
+    steps:
+      - name: Check out the exact event controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the original a6bf producer
+        uses: actions/checkout@v6
+        with:
+          ref: a6bf7b5d928670d7c011a2aa2849ba3e43b3844d
+          path: producer
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source and exact public Go prerequisites
+        id: prerequisites
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_release/prepare.py
+
+      - name: Execute the original 56-gate protocol once
+        id: release
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_release/run.py
+
+      - name: Validate original release receipts and prepare the C3 adoption bundle
+        if: ${{ !cancelled() && steps.release.outcome == 'success' }}
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_release/adopt.py
+
+      - name: Seal all original phase receipts and streams
+        if: always()
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_release/prepare.py --seal
+
+      - name: Retain original release receipts and the C3 bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-release-a6bf-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-canonical-release-${{ github.run_id }}-1/evidence
+          if-no-files-found: error
+          retention-days: 30
