@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import tempfile
 import time
+import threading
 import unittest
 from unittest import mock
 
@@ -361,6 +362,103 @@ class RawTreeParsingTests(unittest.TestCase):
             with self.subTest(case=label):
                 with self.assertRaises(ValueError):
                     batch.tree_entries(raw)
+
+
+    def test_source_reads_reuse_directory_handles_with_fresh_file_checks(self):
+        # The original failure completed Git object reads but exhausted its
+        # deadline resolving absolute ancestors for the 40th physical file.
+        ancestors = {p for name in self.files for p in (self.repo / name).parents}
+        absolute_ancestor_reads, file_reads, directory_fds = [], [], []
+        original_stat = Path.lstat
+        original_read = app.observation.bound_read
+        original_open = os.open
+        def stat_path(path, *args, **kwargs):
+            if path in ancestors:
+                absolute_ancestor_reads.append(str(path))
+            return original_stat(path, *args, **kwargs)
+        def read_file(path, limit, **kwargs):
+            result = original_read(path, limit, **kwargs)
+            file_reads.append(str(Path(path).relative_to(self.repo)))
+            return result
+        def open_file(path, flags, *args, **kwargs):
+            fd = original_open(path, flags, *args, **kwargs)
+            if flags & os.O_DIRECTORY:
+                directory_fds.append(fd)
+            return fd
+        probe = self.probe()
+        with mock.patch.object(Path, "lstat", stat_path), \
+                mock.patch.object(app.observation, "bound_read", side_effect=read_file), \
+                mock.patch.object(os, "open", side_effect=open_file):
+            self.verify(probe)
+        probe.write("physical-read-control.original.json", {
+            "selectedFiles": len(self.files),
+            "absoluteAncestorReads": len(absolute_ancestor_reads),
+            "distinctAncestors": len(ancestors),
+            "physicalFileReads": file_reads,
+            "directoryHandleCount": len(directory_fds),
+            "nativeExecution": False,
+        })
+        self.assertEqual(file_reads, list(self.files) * 2)
+        self.assertLessEqual(len(absolute_ancestor_reads), 2 * len(ancestors),
+            "fresh checks must not repeatedly resolve every full ancestor pathname")
+        self.assertEqual(len(directory_fds), len(ancestors))
+        for fd in directory_fds:
+            with self.assertRaises(OSError):
+                os.fstat(fd)
+        self.assertEqual(self.original(probe)["status"], "SOURCE_VERIFIED")
+
+    def test_failed_source_deadline_reaps_own_parent_without_authentication(self):
+        # A real child remains live when the source decision fails. Delay only
+        # the synthetic signal delivery, making the zero-wait race causal.
+        original_object = batch.Batch.object
+        actual_kill = app.observation.kill_group
+        deliveries, timers = [], []
+        expired = False
+        def expire_after_head(instance, request, *args):
+            nonlocal expired
+            result = original_object(instance, request, *args)
+            if request == "HEAD" and not expired:
+                expired = True
+                instance.deadline = time.monotonic() - .001
+            return result
+        def deliver_later(process):
+            def deliver():
+                deliveries.append({"pid": process.pid, "signal": actual_kill(process)})
+            timer = threading.Timer(.05, deliver)
+            timers.append(timer)
+            timer.start()
+            return {"state": "SENT", "signalSent": True, "errno": None}
+        native = mock.Mock(side_effect=AssertionError("No native call permitted"))
+        probe = self.probe(runner=native)
+        try:
+            with mock.patch.object(batch.Batch, "object", expire_after_head), \
+                    mock.patch.object(app.observation, "kill_group", side_effect=deliver_later), \
+                    mock.patch.object(subprocess, "Popen", side_effect=self.record):
+                self.assertFalse(probe.observe())
+        finally:
+            for timer in timers:
+                timer.join(timeout=2)
+                self.assertFalse(timer.is_alive())
+        native.assert_not_called()
+        value = self.original(probe)
+        probe.write("failure-reap-control.original.json", {
+            "injection": "Expire the batch decision deadline after actual HEAD; delay owned SIGKILL delivery by 50ms",
+            "actualDeliveries": deliveries,
+            "process": value["process"],
+            "nativeExecution": False,
+        })
+        self.assertEqual(value["error"], "SOURCE_GUARD_DEADLINE")
+        self.assertEqual(value["status"], "SOURCE_UNVERIFIED")
+        self.assertEqual(len(deliveries), 1)
+        self.assertEqual(deliveries[0]["pid"], self.processes[0].pid)
+        self.assertTrue(value["process"]["parentReaped"],
+            "a failed acceptance deadline must still allow bounded owned-parent reaping")
+        self.assertEqual(value["process"]["returnCodeObserved"], -signal.SIGKILL)
+        self.assertEqual(value["process"]["groupAfterCleanup"]["state"], "ABSENT")
+        self.assertEqual(probe.commands[0]["journalEvents"], ["started", "finished"])
+        self.assertLess(value["elapsedMs"], 2000)
+        self.assertFalse(value["nativeExecution"])
+        self.assertFalse(value["formalAcceptanceGranted"])
 
 
 if __name__ == "__main__":
