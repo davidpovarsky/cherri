@@ -1,0 +1,44 @@
+{
+  "budget_seconds": 90,
+  "cleanup_complete": true,
+  "command": [
+    "go",
+    "test",
+    "-p=2",
+    "-count=1",
+    "-json",
+    "-timeout=60s",
+    "./tools/language-docs",
+    "-run",
+    "^(TestGeneratedReferenceIncludesSeparateMacroContracts|TestP15D01PrimaryParameterContract|TestP15D01AllGeneratedSignaturesAndCategories|TestP15D01CheckGateProducesAndRejectsFaults)$"
+  ],
+  "cwd": "/home/runner/work/_temp/cherri-docs-compiler/src",
+  "elapsed_seconds": 2.524294,
+  "finished_utc": "2026-11-26T02:56:49.574715+00:00",
+  "label": "go-controls",
+  "orphaned_group": false,
+  "passed": true,
+  "pid": 9190,
+  "process_group": 9190,
+  "returncode": 0,
+  "signals": [],
+  "started_utc": "2026-11-26T02:56:47.050325+00:00",
+  "state": "TERMINAL",
+  "stderr": {
+    "bytes": 0,
+    "device": 66305,
+    "inode": 8549730,
+    "mtime_ns": 1795661807050430452,
+    "path": "/home/runner/work/_temp/cherri-docs-generation/go-controls.stderr.original",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 13483,
+    "device": 66305,
+    "inode": 8549727,
+    "mtime_ns": 1795661809561183016,
+    "path": "/home/runner/work/_temp/cherri-docs-generation/go-controls.stdout.original",
+    "sha256": "96bd2bac51ece5f7d18793038e23bb1da12500894315339f5b98307e885b82ae"
+  },
+  "timed_out": false
+}

@@ -25,7 +25,8 @@ GEN_TESTS = ("TestP15D01PrimaryParameterContract", "TestP15D01AllGeneratedSignat
              "TestP15D01CheckGateProducesAndRejectsFaults")
 GEN_EVENTS = GEN_TESTS + tuple(GEN_TESTS[2]+"/"+name for name in (
     "optional_primary", "typed_default", "callable_identity", "wire_key",
-    "return_type", "macro_identity", "missing_category", "extra_section"))
+    "return_type", "macro_identity", "scoped_dialect", "scoped_void_result",
+    "missing_category", "extra_section"))
 PARITY_EVENTS = ("TestP10_CatalogCLIAndMobileRegistryParity",)
 CALLS = ("compiler-input-build-info", "compiler-build-info", "compiler-capabilities", "compiler-catalog",
     "direct-action-show", "wrapper-action-show", "direct-action-resizeimage", "wrapper-action-resizeimage",
