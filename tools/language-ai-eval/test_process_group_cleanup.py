@@ -20,7 +20,8 @@ class ProcessGroupCleanupTests(unittest.TestCase):
         # Mock its kernel existence probe as well as its process-table state.
         # Other groups cannot block or satisfy the owned group's cancellation.
         replies = [self.observed("8 Ss\n42 R\n42 Z\n"), self.observed("8 Ss\n42 Z+\n")]
-        with patch.object(runner.os, "killpg", return_value=None), \
+        with patch.object(runner.sys, "platform", "linux"), \
+             patch.object(runner.os, "killpg", return_value=None), \
              patch.object(runner.subprocess, "run", side_effect=replies) as observe:
             runner.wait_for_posix_group_exit(42, runner.time.monotonic() + 5)
         self.assertEqual(observe.call_count, 2)
@@ -29,6 +30,30 @@ class ProcessGroupCleanupTests(unittest.TestCase):
             self.assertGreater(call.kwargs["timeout"], 0)
             self.assertLessEqual(call.kwargs["timeout"], 1)
             self.assertEqual(set(call.kwargs["env"]), {"PATH", "LC_ALL"})
+
+    def test_darwin_owned_group_snapshot_avoids_unrelated_enumeration(self):
+        # Actual Darwin observations retained for this regression showed both
+        # whole-host forms timing out at 1s, while the owned-PGID form returned
+        # valid rows within that same bound. Reproduce that interface condition
+        # deterministically; it does not turn an unavailable snapshot into PASS.
+        for group, remaining in ((42, 1.0), (107, 0.25)):
+            with self.subTest(group=group, remaining=remaining):
+                def observe(command, **options):
+                    self.assertEqual(options, {
+                        "stdout": subprocess.PIPE, "stderr": subprocess.DEVNULL,
+                        "text": True, "encoding": "ascii", "errors": "strict",
+                        "env": {"PATH": runner.os.defpath, "LC_ALL": "C"},
+                        "timeout": remaining, "check": False})
+                    if "-A" in command:
+                        raise subprocess.TimeoutExpired(command, remaining)
+                    self.assertEqual(command, ["ps", "-g", str(group), "-o", "pgid=", "-o", "stat="])
+                    return self.observed(str(group) + " Z\n")
+                with patch.object(runner.sys, "platform", "darwin"), \
+                     patch.object(runner.os, "killpg", return_value=None), \
+                     patch.object(runner.time, "monotonic", return_value=10.0), \
+                     patch.object(runner.subprocess, "run", side_effect=observe) as snapshot:
+                    runner.wait_for_posix_group_exit(group, 10.0 + remaining)
+                snapshot.assert_called_once()
 
     def test_live_threads_under_zombie_leader_exhaust_the_bound(self):
         with patch.object(runner.os, "killpg", return_value=None), \

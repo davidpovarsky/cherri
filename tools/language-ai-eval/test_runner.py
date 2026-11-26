@@ -171,7 +171,9 @@ class EvaluationHarnessTests(unittest.TestCase):
             os.killpg(process.pid, 0)
             calls = []
             def snapshot(argv, **kwargs):
-                self.assertEqual(argv, ["ps", "-A", "-o", "pgid=,stat="])
+                expected = (["ps", "-g", str(process.pid), "-o", "pgid=", "-o", "stat="]
+                            if sys.platform == "darwin" else ["ps", "-A", "-o", "pgid=,stat="])
+                self.assertEqual(argv, expected)
                 self.assertGreater(kwargs["timeout"], 0)
                 self.assertLessEqual(kwargs["timeout"], 1)
                 calls.append(process.pid)

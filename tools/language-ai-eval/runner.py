@@ -125,8 +125,13 @@ def wait_for_posix_group_exit(group, deadline):
             raise ValueError("adapter process-group cleanup deadline expired")
         if posix_group_absent(group, deadline):
             return
+        # Darwin can exceed the bounded snapshot interval while enumerating
+        # the whole host. Select the owned PGID; retain the same state parser,
+        # kernel-absence proof and cleanup deadline below.
+        command = (["ps", "-g", str(group), "-o", "pgid=", "-o", "stat="]
+                   if sys.platform == "darwin" else ["ps", "-A", "-o", "pgid=,stat="])
         try:
-            observed = subprocess.run(["ps", "-A", "-o", "pgid=,stat="],
+            observed = subprocess.run(command,
                                       stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                                       text=True, encoding="ascii", errors="strict",
                                       env={"PATH": os.defpath, "LC_ALL": "C"},
