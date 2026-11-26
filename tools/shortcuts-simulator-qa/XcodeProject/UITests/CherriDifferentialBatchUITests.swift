@@ -110,8 +110,8 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             try require(foreground, "OBSERVATION_SHORTCUTS_NOT_FOREGROUND")
         }
         let before = try shortcuts.snapshot()
-        try budget()
         try save(try flatten(before), "snapshot.before.original.json")
+        try budget()
         let buttons = shortcuts.buttons.matching(NSPredicate(
             format: "label == 'Add Shortcut' OR label == '+ Add Shortcut' OR label == 'Replace'")).allElementsBoundByIndex
         try budget()
@@ -133,13 +133,14 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             try save(row, String(format: "candidate-%02d.original.json", index))
         }
         let after = try shortcuts.snapshot()
-        try budget()
         try save(try flatten(after), "snapshot.after.original.json")
-        let png = XCUIScreen.main.screenshot().pngRepresentation
         try budget()
+        let png = XCUIScreen.main.screenshot().pngRepresentation
+        try require(png.count <= 8 * 1024 * 1024, "OBSERVATION_IMAGE_BOUNDS")
         try png.write(to: folder.appendingPathComponent("screen.original.png"), options: .withoutOverwriting)
         try FileManager.default.setAttributes([.posixPermissions: 0o600],
             ofItemAtPath: folder.appendingPathComponent("screen.original.png").path)
+        try budget()
         let result: [String: Any] = ["schema": "cherri-import-sheet-observation/1",
             "outcome": "OBSERVED_AX_ONLY", "expectedName": name, "candidateCount": candidates.count,
             "completedUTC": formatter.string(from: Date()), "nativeImportInvoked": false,
