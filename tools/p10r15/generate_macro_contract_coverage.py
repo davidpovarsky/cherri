@@ -309,6 +309,53 @@ def origin_matches(actions, producer, dialect):
 
 
 
+def empty_measure_void_graph_matches(actions, profile, dialect):
+    # Independent empty-body contract from EmitScopedMeasureVoid and the existing
+    # p15MeasureVoidGraphError oracle: start clock, elapsed diagnostic, then one
+    # parameter-free Nothing. Bind only opaque producer/slot identities; compare
+    # every action, parameter, token wrapper and reference without normalizing
+    # or deleting any observed graph element.
+    if profile != "debug" or dialect not in ("legacy", "v2") or type(actions) is not list or len(actions) != 5:
+        return False
+    if any(type(a) is not dict for a in actions) or any(type(a.get("WFWorkflowActionParameters")) is not dict for a in actions[:4]):
+        return False
+    timer = params(actions[0]).get("WFVariableName")
+    elapsed = params(actions[1]).get("UUID")
+    forwarded = params(actions[3]).get("UUID")
+    uuid = r"[0-9A-Fa-f]{8}-(?:[0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}"
+    if (type(timer) is not str or not timer.startswith("__cherri_debug_timer_") or
+        len(timer) <= len("__cherri_debug_timer_") or
+        any(type(value) is not str or re.fullmatch(uuid, value) is None for value in (elapsed, forwarded)) or
+        elapsed == forwarded):
+        return False
+    def attachment(value):
+        return {"WFSerializationType": "WFTextTokenAttachment", "Value": value}
+    def date_string(value):
+        return {"WFSerializationType": "WFTextTokenString", "Value": {
+            "string": "\ufffc", "attachmentsByRange": {"{0, 1}": value}}}
+    def action(suffix, parameters):
+        return {"WFWorkflowActionIdentifier": NATIVE_PREFIX + suffix, "WFWorkflowActionParameters": parameters}
+    elapsed_ref = {"Type": "ActionOutput", "OutputUUID": elapsed, "OutputName": "Time Between Dates"}
+    expected = [
+        action("setvariable", {"WFVariableName": timer, "WFInput": attachment({"Type": "CurrentDate"})}),
+        action("gettimebetweendates", {"UUID": elapsed, "WFTimeUntilUnit": "Seconds",
+            "WFTimeUntilFromDate": date_string({"Type": "Variable", "VariableName": timer}),
+            "WFInput": date_string({"Type": "CurrentDate"})}),
+        action("appendvariable", {"WFVariableName": "__cherri_debug_log", "WFInput": attachment(elapsed_ref)}),
+        action("getvariable", {"UUID": forwarded, "WFVariable": attachment(elapsed_ref)}),
+        {"WFWorkflowActionIdentifier": NATIVE_PREFIX + "nothing"},
+    ]
+    return actions == expected
+
+
+def negative_result_matches(spec, exit_code, log, artifact_exists):
+    if exit_code == 0 or artifact_exists or spec["diagnostic"] not in log:
+        return False
+    if "diagnosticExact" in spec:
+        return type(exit_code) is int and exit_code == 1 and log == spec["diagnosticExact"]
+    return True
+
+
 def structural_checks(kind, profile, actions, dialect):
     checks = {}
     if kind == "require":
@@ -325,6 +372,8 @@ def structural_checks(kind, profile, actions, dialect):
         checks["noTextNumberCoercion"] = not named(actions, "gettext") and not named(actions, "number")
         checks["timerProfile"] = len(named(actions, "gettimebetweendates")) == (1 if profile == "debug" else 0)
         checks["releaseNoDiagnosticAppend"] = profile != "release" or not named(actions, "appendvariable")
+    elif kind == "measure-void":
+        checks["emptyVoidWholeGraph"] = empty_measure_void_graph_matches(actions, profile, dialect)
     elif kind == "collect":
         loops = named(actions, "repeat.each")
         checks["pairedRepeatRegion"] = (len(loops) == 2 and
@@ -372,12 +421,21 @@ def fixture_specs():
     result.append({"id": "collect_v2_dictionary", "kind": "collect", "dialect": "v2",
         "profile": "debug", "source": 'let result = for item in [1, 2] { yield {"name": "typed", "flag": false} }\ngetVariable(result)\n'})
     result.extend((
-        {"id": "measure_legacy_empty_rejected", "kind": "negative", "dialect": "legacy", "profile": "debug",
-         "source": 'measure("empty") {}\n', "diagnostic": "E_BLOCK_VALUE_REQUIRED"},
+        # Preserve the historical ID and exact source. The original name records
+        # an obsolete expectation; this source is a legal Void statement.
+        {"id": "measure_legacy_empty_rejected", "kind": "measure-void", "dialect": "legacy", "profile": "debug",
+         "source": 'measure("empty") {}\n',
+         "historicalIDNote": "Original rejected suffix retained; exact source is now checked as a legal Void statement."},
         {"id": "measure_legacy_control_value_rejected", "kind": "negative", "dialect": "legacy", "profile": "debug",
          "source": 'measure("control") {\nconst value = if 1 == 1 {\ntext("body")\n}\nyield value\n}\n', "diagnostic": "E_BLOCK_LEGACY_CONTROL_VALUE"},
         {"id": "measure_v2_empty_rejected", "kind": "negative", "dialect": "v2", "profile": "debug",
-         "source": 'let result = measure("empty") {}\n', "diagnostic": "E_BLOCK_VALUE_REQUIRED"},
+         "source": 'let result = measure("empty") {}\n', "diagnostic": "E_BLOCK_VOID_VALUE",
+         "diagnosticExact": "Compilation error: semantic error [E_BLOCK_VOID_VALUE]: a void scoped block cannot initialize a binding; end the block with an explicit value at <synthetic-fixtures>/measure_v2_empty_rejected/source.cherri:1:14-1:33\n"},
+        {"id": "measure_v2_empty_statement", "kind": "measure-void", "dialect": "v2", "profile": "debug",
+         "source": 'measure("empty") {}\n'},
+        {"id": "measure_legacy_empty_binding_rejected", "kind": "negative", "dialect": "legacy", "profile": "debug",
+         "source": 'const result = measure("empty") {\n}\n', "diagnostic": "E_BLOCK_VOID_VALUE",
+         "diagnosticExact": "\nError: E_BLOCK_VOID_VALUE: a Void scoped body has no value to bind or consume\n\n"},
     ))
     for dialect in ("v2", "legacy"):
         for kind, pages in (("paginate", 3), ("paginate-zero", 0)):
@@ -401,10 +459,14 @@ def compile_case(spec, binary, repo, work):
            "command": ["<freshly-built-compiler>"] + [str(a).replace(str(work), "<synthetic-fixtures>") for a in args[1:]],
            "exitCode": process.returncode, "diagnosticTail": log[-1200:],
            "signedRuntime": "NOT_EXECUTED", "physicalDevice": "NOT_EXECUTED"}
+    if "historicalIDNote" in spec:
+        row["historicalIDNote"] = spec["historicalIDNote"]
     if spec["kind"] == "negative":
         row["expectedDiagnostic"] = spec["diagnostic"]
+        if "diagnosticExact" in spec:
+            row["expectedDiagnosticExact"] = spec["diagnosticExact"]
         row["noArtifact"] = not target.exists()
-        row["verdict"] = "PASS" if process.returncode != 0 and spec["diagnostic"] in log and not target.exists() else "FAIL"
+        row["verdict"] = "PASS" if negative_result_matches(spec, process.returncode, log, target.exists()) else "FAIL"
         return row, None
     if process.returncode != 0 or not target.exists():
         row["verdict"] = "FAIL"
@@ -452,7 +514,14 @@ MUTATION_SCENARIOS = (
         ("measure_v2_release", "wrong_final_consumer", "originalUUIDPassthrough"),
         ("require_v2_release", "original_uuid_replaced", "originalUUIDPassthrough"),
         ("require_legacy_release", "legacy_void_terminator", "originalUUIDPassthrough"),
-)
+) + tuple((case, mutation, "emptyVoidWholeGraph")
+    for case in ("measure_legacy_empty_rejected", "measure_v2_empty_statement")
+    for mutation in (
+        "void_wrong_start_clock", "void_wrong_stop_origin", "void_wrong_stop_clock",
+        "void_wrong_elapsed_log", "void_wrong_elapsed_forward", "void_elapsed_coercion",
+        "void_wrong_unit", "void_missing_boundary", "void_boundary_payload",
+        "void_extra_value", "void_duplicate_elapsed_id", "void_extra_action",
+    ))
 
 
 def check_mutations(outputs):
@@ -466,7 +535,31 @@ def check_mutations(outputs):
         changed = copy.deepcopy(actual)
         spec = specs[case_id]
         consumer = final_consumer_index(changed, spec["dialect"])
-        if mutation == "wrong_type_action":
+        if mutation == "void_wrong_start_clock":
+            params(changed[0])["WFInput"]["Value"]["Type"] = "Clipboard"
+        elif mutation == "void_wrong_stop_origin":
+            params(changed[1])["WFTimeUntilFromDate"]["Value"]["attachmentsByRange"]["{0, 1}"]["VariableName"] += "_unowned"
+        elif mutation == "void_wrong_stop_clock":
+            params(changed[1])["WFInput"]["Value"]["attachmentsByRange"]["{0, 1}"]["Type"] = "Clipboard"
+        elif mutation == "void_wrong_elapsed_log":
+            params(changed[2])["WFInput"]["Value"]["OutputUUID"] = params(changed[3])["UUID"]
+        elif mutation == "void_wrong_elapsed_forward":
+            params(changed[3])["WFVariable"]["Value"]["OutputUUID"] = params(changed[3])["UUID"]
+        elif mutation == "void_elapsed_coercion":
+            params(changed[3])["WFVariable"]["Value"]["Aggrandizements"] = [{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}]
+        elif mutation == "void_wrong_unit":
+            params(changed[1])["WFTimeUntilUnit"] = "Minutes"
+        elif mutation == "void_missing_boundary":
+            changed.pop()
+        elif mutation == "void_boundary_payload":
+            changed[-1]["WFWorkflowActionParameters"] = {"WFInput": "invented value"}
+        elif mutation == "void_extra_value":
+            changed.insert(4, {"WFWorkflowActionIdentifier": NATIVE_PREFIX + "number", "WFWorkflowActionParameters": {"WFNumberActionNumber": 0}})
+        elif mutation == "void_duplicate_elapsed_id":
+            params(changed[3])["UUID"] = params(changed[1])["UUID"]
+        elif mutation == "void_extra_action":
+            changed.append({"WFWorkflowActionIdentifier": NATIVE_PREFIX + "nothing"})
+        elif mutation == "wrong_type_action":
             named(changed, "getitemtype")[0]["WFWorkflowActionIdentifier"] = NATIVE_PREFIX + "gettypeaction"
         elif mutation in ("lost_output_uuid", "wrong_repeat_result"):
             params(changed[consumer])["WFVariable"] = {"Value": {"Type": "ActionOutput", "OutputUUID": "missing-producer"}, "WFSerializationType": "WFTextTokenAttachment"}
@@ -515,8 +608,8 @@ def build_rows(macros, cases, label_controls=None):
     links = {
         "require": ["require_v2_debug", "require_v2_release", "require_legacy_debug", "require_legacy_release"],
         "label": label_cases,
-        "blocks": ["measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release", "measure_legacy_empty_rejected", "measure_legacy_control_value_rejected", "measure_v2_empty_rejected"],
-        "measure": ["measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release"],
+        "blocks": ["measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release", "measure_legacy_empty_rejected", "measure_legacy_control_value_rejected", "measure_v2_empty_rejected", "measure_v2_empty_statement", "measure_legacy_empty_binding_rejected"],
+        "measure": ["measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release", "measure_legacy_empty_rejected", "measure_v2_empty_rejected", "measure_v2_empty_statement", "measure_legacy_empty_binding_rejected"],
         "collect": ["collect_v2_0", "collect_v2_1", "collect_v2_100", "collect_v2_dictionary"],
         "paginate": ["paginate_v2", "paginate_legacy", "paginate-zero_v2", "paginate-zero_legacy"],
         "profiles": ["require_v2_debug", "require_v2_release", "require_legacy_debug", "require_legacy_release", "measure_v2_debug", "measure_v2_release", "measure_legacy_debug", "measure_legacy_release"],
@@ -685,8 +778,11 @@ def markdown(report):
         roundtrip = row.get("decompile", {}).get("nativeActionsExact")
         detail = str(roundtrip) if roundtrip is not None else "expected unavailable/invalid diagnostic"
         lines.append("| " + row["id"] + " | " + row["dialect"] + "/" + row["profile"] + " | " + str(row.get("nativeActionCount", "-")) + " | " + detail + " | " + row["verdict"] + " |")
+    for row in report["compiles"]:
+        if "historicalIDNote" in row:
+            lines.extend(["", row["id"] + ": " + row["historicalIDNote"]])
     lines.extend(["", "## Separate label CLI component", "",
-                  "These twelve reviewed fixtures use the same freshly built compiler. Their existing helper verifies real graphs and 314 causal mutations. They are separate from the nineteen cases and fourteen mutations above; no label roundtrip, signed execution or native value/cardinality result is claimed. Native execution remains NOT_RUN and formal acceptance remains false.", "",
+                  "These twelve reviewed fixtures use the same freshly built compiler. Their existing helper verifies real graphs and 314 causal mutations. They are separate from the " + str(report["summary"]["compileChecks"]) + " cases and " + str(report["summary"]["causalMutationChecks"]) + " mutations above; no label roundtrip, signed execution or native value/cardinality result is claimed. Native execution remains NOT_RUN and formal acceptance remains false.", "",
                   "| Reviewed fixture | Native actions in unsigned graph | Rejected causal mutations | Native execution |",
                   "|---|---:|---:|---|"])
     for row in report["labelControls"]["fixtures"]:
@@ -723,11 +819,17 @@ def verify(report, repo):
         raise ValueError("MACRO_EXECUTION_COUNT_MISMATCH")
     if any(not m.get("positiveControl") or not m.get("faultRejected") for m in report["causalMutations"]):
         raise ValueError("MACRO_MUTATION_NOT_CAUSAL")
+    specs = {spec["id"]: spec for spec in fixture_specs()}
     for case in report["compiles"]:
+        spec = specs[case["id"]]
+        if any(case[field] != spec[field] for field in ("id", "kind", "dialect", "profile", "source")):
+            raise ValueError("MACRO_FIXTURE_IDENTITY_MISMATCH")
         if case["sourceSHA256"] != sha(case["source"].encode("utf-8")):
             raise ValueError("MACRO_FIXTURE_HASH_MISMATCH")
         if case["kind"] == "negative":
-            if case["exitCode"] == 0 or not case["noArtifact"] or case["expectedDiagnostic"] not in case["diagnosticTail"]:
+            if (case["expectedDiagnostic"] != spec["diagnostic"] or
+                case.get("expectedDiagnosticExact") != spec.get("diagnosticExact") or
+                not negative_result_matches(spec, case["exitCode"], case["diagnosticTail"], not case["noArtifact"])):
                 raise ValueError("MACRO_NEGATIVE_NOT_CAUSAL")
             continue
         if case["exitCode"] != 0 or not case["structuralChecks"] or not all(case["structuralChecks"].values()):
