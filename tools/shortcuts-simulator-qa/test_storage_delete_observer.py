@@ -44,6 +44,12 @@ def import_receipts():
                                 "dispatchReceipt": "dispatch-import-unique.json",
                                 "sheetContract": "requested-identity-and-add-v1", "sheetButtonExists": True,
                                 "sheetButtonHittable": True, "sheetIdentityMatched": True, "sheetCanTap": True,
+                                "sheetSelectionContract": "current-container-bound-add-v1",
+                                "sheetSelectionReason": "UNIQUE_CURRENT_NAMED_CONTAINER",
+                                "sheetQueryCandidateCount": 3, "sheetCurrentContainerCount": 1,
+                                "sheetMatchedCandidateCount": 1, "sheetSelectedQueryIndex": 2,
+                                "sheetSelectedContainerPath": [0, 0], "sheetSelectedTitlePath": [0, 0, 0],
+                                "sheetSelectedButtonPath": [0, 0, 2],
                                 "addObservedUTC": "2026-11-25T00:00:01.000Z",
                                 "lastSheetCheckUTC": "2026-11-25T00:00:02.000Z",
                                 "sheetMatchedAfterCaptureUTC": "2026-11-25T00:00:02.001Z"}}
@@ -217,6 +223,78 @@ class StorageObserverControls(unittest.TestCase):
                 build, qualification = clean_build_metadata()
                 qualification[key] = value
                 self.reject(subject.validate_clean_build_metadata, build, qualification)
+
+    def test_current_container_selection_positive_and_paths(self):
+        argv, dispatch, receipt = import_receipts()
+        subject.validate_import(dispatch, receipt, argv, "import-unique")
+        timing = receipt["importTiming"]
+        timing["sheetSelectedContainerPath"] = [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0]
+        timing["sheetSelectedTitlePath"] = timing["sheetSelectedContainerPath"] + [0]
+        timing["sheetSelectedButtonPath"] = timing["sheetSelectedContainerPath"] + [6]
+        subject.validate_import(dispatch, receipt, argv, "import-unique")
+
+    def test_current_container_selection_contract_required(self):
+        for field, value in (("sheetSelectionContract", "old"),
+                             ("sheetSelectionContract", None),
+                             ("sheetSelectionReason", "NO_CURRENT_HITTABLE_MATCH"),
+                             ("sheetSelectionReason", "AMBIGUOUS_CURRENT_MATCH"),
+                             ("sheetSelectionReason", True)):
+            with self.subTest(field=field, value=value):
+                argv, dispatch, receipt = import_receipts()
+                receipt["importTiming"][field] = value
+                self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_current_container_selection_integer_bounds(self):
+        values = {
+            "sheetQueryCandidateCount": (0, 33, True, 3.0, "3"),
+            "sheetCurrentContainerCount": (0, 8193, True, 1.0),
+            "sheetMatchedCandidateCount": (0, 2, True, 1.0),
+            "sheetSelectedQueryIndex": (-1, 3, True, 2.0),
+        }
+        for field, bad in values.items():
+            for value in bad:
+                with self.subTest(field=field, value=value):
+                    argv, dispatch, receipt = import_receipts()
+                    receipt["importTiming"][field] = value
+                    self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_current_container_selection_path_shape(self):
+        for field in ("sheetSelectedContainerPath", "sheetSelectedTitlePath", "sheetSelectedButtonPath"):
+            for value in (None, "", [], [True], [-1], [8192], [0] * 65, [0.0], [0, "1"]):
+                with self.subTest(field=field, value=value):
+                    argv, dispatch, receipt = import_receipts()
+                    receipt["importTiming"][field] = value
+                    self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_current_container_selection_cross_sheet_rejected(self):
+        for field, value in (("sheetSelectedContainerPath", [1, 0]),
+                             ("sheetSelectedTitlePath", [0, 1, 0]),
+                             ("sheetSelectedButtonPath", [0, 1, 2]),
+                             ("sheetSelectedTitlePath", [0, 0]),
+                             ("sheetSelectedButtonPath", [0, 0]),
+                             ("sheetSelectedButtonPath", [0, 0, 0]),
+                             ("sheetSelectedTitlePath", [0, 0, 2, 1])):
+            with self.subTest(field=field, value=value):
+                argv, dispatch, receipt = import_receipts()
+                receipt["importTiming"][field] = value
+                self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_current_container_selection_evidence_complete(self):
+        for field in ("sheetSelectionContract", "sheetSelectionReason", "sheetQueryCandidateCount",
+                      "sheetCurrentContainerCount", "sheetMatchedCandidateCount", "sheetSelectedQueryIndex",
+                      "sheetSelectedContainerPath", "sheetSelectedTitlePath", "sheetSelectedButtonPath"):
+            with self.subTest(field=field):
+                argv, dispatch, receipt = import_receipts()
+                del receipt["importTiming"][field]
+                self.reject(subject.validate_import, dispatch, receipt, argv, "import-unique")
+
+    def test_previous_hidden_first_match_build_rejected(self):
+        build, qualification = clean_build_metadata()
+        for document in (build, qualification):
+            document["builtHarnessCommit"] = "43b962d4dc07e9f8e94c8d4394af95abdf12ebe7"
+            document["builtHarnessTree"] = "029ff3f51ce6cbaadb5fe41a29e12ccfee13b4b8"
+        self.reject(subject.validate_clean_build_metadata, build, qualification)
+
 
 
 def clean_build_metadata():
