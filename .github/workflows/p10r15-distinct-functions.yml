@@ -1,0 +1,57 @@
+name: Distinct RP26 and BRG15 Qualification
+
+"on": create
+
+permissions:
+  contents: read
+
+concurrency:
+  group: distinct-functions-9eed0d5-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  actual-distinct-producers:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-distinct-functions-20261126' &&
+      github.run_attempt == '1'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    steps:
+      - name: Check out the exact controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the fixed compiler source
+        uses: actions/checkout@v6
+        with:
+          ref: 9eed0d556c6b11c78100c99daf8e0a73bb864a26
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select the existing qualified Go version
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.13'
+          cache-dependency-path: source/go.sum
+
+      - name: Execute the three distinct local producer methods
+        timeout-minutes: 21
+        run: /usr/bin/python3 -I -B controller/tools/ci/distinct_functions/run.py
+
+      - name: Retain original component evidence and public binaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: distinct-functions-9eed0d5-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-distinct-functions-9eed0d5
+          if-no-files-found: error
+          retention-days: 30
+          include-hidden-files: true
