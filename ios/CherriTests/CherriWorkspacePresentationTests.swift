@@ -91,6 +91,126 @@ final class CherriWorkspacePresentationTests: XCTestCase {
         return hit === view || hit.isDescendant(of: view)
     }
 
+    /// Records only values already read by the original short-circuit predicate.
+    /// -1 means not evaluated; the two masks retain prior true/false observations.
+    @MainActor
+    private final class PaneTrace {
+        let stage: String
+        let started = ProcessInfo.processInfo.systemUptime
+        var last: [Int]
+        var seenTrue = 0
+        var seenFalse = 0
+        var polls = 0
+
+        init(stage: String, terms: Int) {
+            self.stage = stage
+            last = Array(repeating: -1, count: terms)
+        }
+
+        func beginPoll() {
+            polls += 1
+            last = Array(repeating: -1, count: last.count)
+        }
+
+        func term(_ index: Int, _ value: Bool) -> Bool {
+            last[index] = value ? 1 : 0
+            if value { seenTrue |= 1 << index } else { seenFalse |= 1 << index }
+            return value
+        }
+    }
+
+    /// Synthetic diagnostics only. The snapshot does not re-run hit tests, query
+    /// accessibility, read source/URLs, or issue JavaScript or responder actions.
+    /// Window roles refer to these two fixture windows, never object addresses.
+    /// Elapsed time starts at trace creation and includes the before-event
+    /// snapshot; it is not the duration or an extension of the unchanged wait.
+    private func observePane(_ trace: PaneTrace, phase: String, completed: Bool?,
+                             mounted: Mounted, selector: UISegmentedControl,
+                             editor: UITextView, web: WKWebView,
+                             otherWindow: UIWindow? = nil, otherInput: UITextField? = nil) {
+        func relation(_ window: UIWindow?) -> String {
+            guard let window else { return "NONE" }
+            if window === mounted.window { return "MOUNTED" }
+            if let otherWindow, window === otherWindow { return "OTHER" }
+            return "ELSEWHERE"
+        }
+
+        func responderViews(_ window: UIWindow?) -> [String: Any] {
+            guard let window else { return ["role": "NO_WINDOW", "visited": 0, "matches": 0] }
+            var queue: [UIView] = [window]
+            var index = 0
+            var matches = 0
+            var role = "NONE_OBSERVED"
+            var truncated = false
+            while index < queue.count {
+                let view = queue[index]
+                index += 1
+                if view.isFirstResponder {
+                    matches += 1
+                    if view === editor { role = "EDITOR" }
+                    else if view === web { role = "WEB" }
+                    else if view.isDescendant(of: web) { role = "WEB_DESCENDANT" }
+                    else if let otherInput, view === otherInput { role = "OTHER_INPUT" }
+                    else { role = "OTHER_VIEW" }
+                }
+                let children = view.subviews
+                let remaining = 512 - queue.count
+                if children.count > remaining { truncated = true }
+                queue.append(contentsOf: children.prefix(remaining))
+            }
+            if truncated { role = "TRUNCATED" }
+            else if matches > 1 { role = "MULTIPLE" }
+            return ["role": role, "visited": index, "matches": matches]
+        }
+
+        let segment: String
+        switch selector.selectedSegmentIndex {
+        case UISegmentedControl.noSegment: segment = "NONE"
+        case 0: segment = "CODE"
+        case 1: segment = "PREVIEW"
+        default: segment = "OTHER"
+        }
+        let progress = web.estimatedProgress
+        let progressPermille = progress.isFinite && (0...1).contains(progress)
+            ? Int((progress * 1000).rounded()) : -1
+        let state: [String: Any] = [
+            "selectedSegment": segment,
+            "mountedKey": mounted.window.isKeyWindow,
+            "otherPresent": otherWindow != nil,
+            "otherKey": otherWindow?.isKeyWindow ?? false,
+            "selectorWindow": relation(selector.window),
+            "editorWindow": relation(editor.window),
+            "webWindow": relation(web.window),
+            "otherInputWindow": relation(otherInput?.window),
+            "editorFirstResponder": editor.isFirstResponder,
+            "otherInputFirstResponder": otherInput?.isFirstResponder ?? false,
+            "webFirstResponder": web.isFirstResponder,
+            "editorInteractionEnabled": editor.isUserInteractionEnabled,
+            "webInteractionEnabled": web.isUserInteractionEnabled,
+            "webAccessibilityHidden": web.accessibilityElementsHidden,
+            "webLoading": web.isLoading,
+            "webProgressPermille": progressPermille,
+            "webHasURL": web.url != nil,
+            "mountedResponderViews": responderViews(mounted.window),
+            "otherResponderViews": responderViews(otherWindow),
+        ]
+        let row: [String: Any] = [
+            "schema": "cherri-workspace-presentation-observation/1",
+            "testId": "CherriWorkspacePresentationTests/testCompactPaneTransitionsKeepNativeViewsAndDocumentState",
+            "diagnosticOnly": true, "stage": trace.stage, "phase": phase,
+            "budgetMilliseconds": 3000,
+            "elapsedMilliseconds": Int(max(0, ProcessInfo.processInfo.systemUptime - trace.started) * 1000),
+            "waitCompleted": completed.map { $0 as Any } ?? NSNull(),
+            "polls": trace.polls, "lastTerms": trace.last,
+            "seenTrueMask": trace.seenTrue, "seenFalseMask": trace.seenFalse,
+            "state": state,
+        ]
+        if let data = try? JSONSerialization.data(withJSONObject: row, options: [.sortedKeys]),
+           data.count <= 4000, let text = String(data: data, encoding: .utf8) {
+            print("[CHERRI_WORKSPACE_PRESENTATION] " + text)
+        }
+    }
+
     func testCompactPaneTransitionsKeepNativeViewsAndDocumentState() async throws {
         let source = "show(\"COMPACT_PRESENTATION_CONTROL\")\n"
         let model = PresentationDocument(source: source)
@@ -128,29 +248,43 @@ final class CherriWorkspacePresentationTests: XCTestCase {
         await Task.yield()
         XCTAssertTrue(isNativeHitTarget(editor, in: mounted))
         XCTAssertFalse(isNativeHitTarget(web, in: mounted))
+        let previewTrace = PaneTrace(stage: "preview", terms: 7)
+        observePane(previewTrace, phase: "before-event", completed: nil, mounted: mounted,
+                    selector: selector, editor: editor, web: web)
         selector.sendActions(for: .valueChanged)
         let previewSelected = try await wait(3) {
-            selector.selectedSegmentIndex == 1 && self.hasWindowGeometry(web, in: mounted)
-                && self.descendants(WKWebView.self, in: mounted.controller.view).first === web
-                && self.isNativeHitTarget(web, in: mounted)
-                && !self.isNativeHitTarget(editor, in: mounted)
-                && !editor.isFirstResponder
-                && !web.accessibilityElementsHidden
+            previewTrace.beginPoll()
+            return previewTrace.term(0, selector.selectedSegmentIndex == 1)
+                && previewTrace.term(1, self.hasWindowGeometry(web, in: mounted))
+                && previewTrace.term(2, self.descendants(WKWebView.self, in: mounted.controller.view).first === web)
+                && previewTrace.term(3, self.isNativeHitTarget(web, in: mounted))
+                && previewTrace.term(4, !self.isNativeHitTarget(editor, in: mounted))
+                && previewTrace.term(5, !editor.isFirstResponder)
+                && previewTrace.term(6, !web.accessibilityElementsHidden)
         }
+        observePane(previewTrace, phase: "after-wait", completed: previewSelected, mounted: mounted,
+                    selector: selector, editor: editor, web: web)
         XCTAssertTrue(previewSelected, "The native segment event must select the real preview and exclude the hidden editor from touch and keyboard input")
         XCTAssertTrue(descendants(UITextView.self, in: mounted.controller.view).contains { $0 === editor })
         XCTAssertEqual(model.document.text, source)
         XCTAssertEqual(editor.text, source)
 
         selector.selectedSegmentIndex = 0
+        let codeTrace = PaneTrace(stage: "code", terms: 6)
+        observePane(codeTrace, phase: "before-event", completed: nil, mounted: mounted,
+                    selector: selector, editor: editor, web: web)
         selector.sendActions(for: .valueChanged)
         let codeSelected = try await wait(3) {
-            selector.selectedSegmentIndex == 0 && self.hasWindowGeometry(editor, in: mounted)
-                && self.descendants(UITextView.self, in: mounted.controller.view).contains { $0 === editor }
-                && self.isNativeHitTarget(editor, in: mounted)
-                && !self.isNativeHitTarget(web, in: mounted)
-                && web.accessibilityElementsHidden
+            codeTrace.beginPoll()
+            return codeTrace.term(0, selector.selectedSegmentIndex == 0)
+                && codeTrace.term(1, self.hasWindowGeometry(editor, in: mounted))
+                && codeTrace.term(2, self.descendants(UITextView.self, in: mounted.controller.view).contains { $0 === editor })
+                && codeTrace.term(3, self.isNativeHitTarget(editor, in: mounted))
+                && codeTrace.term(4, !self.isNativeHitTarget(web, in: mounted))
+                && codeTrace.term(5, web.accessibilityElementsHidden)
         }
+        observePane(codeTrace, phase: "after-wait", completed: codeSelected, mounted: mounted,
+                    selector: selector, editor: editor, web: web)
         XCTAssertTrue(codeSelected, "Returning to Code must retain the existing native editor and its geometry")
         XCTAssertTrue(descendants(WKWebView.self, in: mounted.controller.view).contains { $0 === web })
         XCTAssertEqual(editor.selectedRange, originalSelection)
@@ -176,12 +310,20 @@ final class CherriWorkspacePresentationTests: XCTestCase {
             XCTAssertTrue(otherInput.becomeFirstResponder())
             for target in [1, 0] {
                 selector.selectedSegmentIndex = target
+                let otherTrace = PaneTrace(stage: target == 1 ? "other-preview" : "other-code", terms: 3)
+                observePane(otherTrace, phase: "before-event", completed: nil, mounted: mounted,
+                            selector: selector, editor: editor, web: web,
+                            otherWindow: otherWindow, otherInput: otherInput)
                 selector.sendActions(for: .valueChanged)
                 let changed = try await wait(3) {
-                    self.isNativeHitTarget(target == 1 ? web : editor, in: mounted)
-                        && !self.isNativeHitTarget(target == 1 ? editor : web, in: mounted)
-                        && web.accessibilityElementsHidden == (target == 0)
+                    otherTrace.beginPoll()
+                    return otherTrace.term(0, self.isNativeHitTarget(target == 1 ? web : editor, in: mounted))
+                        && otherTrace.term(1, !self.isNativeHitTarget(target == 1 ? editor : web, in: mounted))
+                        && otherTrace.term(2, web.accessibilityElementsHidden == (target == 0))
                 }
+                observePane(otherTrace, phase: "after-wait", completed: changed, mounted: mounted,
+                            selector: selector, editor: editor, web: web,
+                            otherWindow: otherWindow, otherInput: otherInput)
                 XCTAssertTrue(changed)
                 XCTAssertTrue(otherInput.isFirstResponder)
                 XCTAssertEqual(otherInput.text, "OTHER_WINDOW_INPUT")

@@ -417,6 +417,146 @@ def failure_category(message):
     return "UNCLASSIFIED"
 
 
+WORKSPACE_OBSERVATION_PREFIX = "[CHERRI_WORKSPACE_PRESENTATION] "
+WORKSPACE_OBSERVATION_REJECTED = "[CHERRI_WORKSPACE_PRESENTATION_REJECTED] "
+WORKSPACE_OBSERVATION_TEST = (
+    "CherriWorkspacePresentationTests/"
+    "testCompactPaneTransitionsKeepNativeViewsAndDocumentState"
+)
+# Ordered terms are the unchanged native predicates, with -1 for short-circuit
+# non-evaluation. These diagnostics never produce an acceptance record.
+WORKSPACE_OBSERVATION_TERMS = {
+    "preview": ("segment", "geometry", "identity", "hit", "otherNotHit",
+                "editorNotResponder", "webNotHidden"),
+    "code": ("segment", "geometry", "identity", "hit", "otherNotHit", "webHidden"),
+    "other-preview": ("hit", "otherNotHit", "webVisibility"),
+    "other-code": ("hit", "otherNotHit", "webVisibility"),
+}
+
+
+def workspace_observation_row(raw, active_test):
+    def require(value):
+        if not value:
+            raise ValueError("invalid closed workspace observation")
+
+    keys = {"schema", "testId", "diagnosticOnly", "stage", "phase",
+            "budgetMilliseconds", "elapsedMilliseconds", "waitCompleted",
+            "polls", "lastTerms", "seenTrueMask", "seenFalseMask", "state"}
+    require(isinstance(raw, dict) and set(raw) == keys)
+    require(raw["schema"] == "cherri-workspace-presentation-observation/1"
+            and raw["testId"] == active_test == WORKSPACE_OBSERVATION_TEST
+            and raw["diagnosticOnly"] is True)
+    require(isinstance(raw["stage"], str) and raw["stage"] in WORKSPACE_OBSERVATION_TERMS)
+    require(isinstance(raw["phase"], str) and raw["phase"] in {"before-event", "after-wait"})
+    require(type(raw["budgetMilliseconds"]) is int and raw["budgetMilliseconds"] == 3000)
+    require(type(raw["elapsedMilliseconds"]) is int and 0 <= raw["elapsedMilliseconds"] <= 120000)
+    size = len(WORKSPACE_OBSERVATION_TERMS[raw["stage"]])
+    require(type(raw["polls"]) is int and 0 <= raw["polls"] <= 4096)
+    last = raw["lastTerms"]
+    require(isinstance(last, list) and len(last) == size
+            and all(type(value) is int and value in (-1, 0, 1) for value in last))
+    for key in ("seenTrueMask", "seenFalseMask"):
+        require(type(raw[key]) is int and 0 <= raw[key] < (1 << size))
+    if raw["phase"] == "before-event":
+        require(raw["waitCompleted"] is None and raw["polls"] == 0
+                and last == [-1] * size and raw["seenTrueMask"] == raw["seenFalseMask"] == 0)
+    else:
+        require(type(raw["waitCompleted"]) is bool and raw["polls"] > 0)
+        # Each poll evaluates a true prefix, optionally one false, then nothing.
+        require(last == [1] * size or any(
+            last == [1] * index + [0] + [-1] * (size - index - 1)
+            for index in range(size)))
+        require(not raw["waitCompleted"] or last == [1] * size)
+        for index, value in enumerate(last):
+            if value != -1:
+                mask = raw["seenTrueMask"] if value else raw["seenFalseMask"]
+                require(mask & (1 << index))
+    state = raw["state"]
+    booleans = {
+        "mountedKey", "otherPresent", "otherKey", "editorFirstResponder",
+        "otherInputFirstResponder", "webFirstResponder", "editorInteractionEnabled",
+        "webInteractionEnabled", "webAccessibilityHidden", "webLoading", "webHasURL",
+    }
+    windows = {"selectorWindow", "editorWindow", "webWindow", "otherInputWindow"}
+    responders = {"mountedResponderViews", "otherResponderViews"}
+    require(isinstance(state, dict) and set(state) == booleans | windows | responders | {
+        "selectedSegment", "webProgressPermille"})
+    require(all(type(state[key]) is bool for key in booleans))
+    require(isinstance(state["selectedSegment"], str)
+            and state["selectedSegment"] in {"NONE", "CODE", "PREVIEW", "OTHER"})
+    require(all(isinstance(state[key], str)
+                and state[key] in {"NONE", "MOUNTED", "OTHER", "ELSEWHERE"} for key in windows))
+    require(type(state["webProgressPermille"]) is int and -1 <= state["webProgressPermille"] <= 1000)
+    roles = {"NO_WINDOW", "NONE_OBSERVED", "EDITOR", "WEB", "WEB_DESCENDANT",
+             "OTHER_INPUT", "OTHER_VIEW", "MULTIPLE", "TRUNCATED"}
+    for key in responders:
+        item = state[key]
+        require(isinstance(item, dict) and set(item) == {"role", "visited", "matches"})
+        require(isinstance(item["role"], str) and item["role"] in roles)
+        require(type(item["visited"]) is int and 0 <= item["visited"] <= 512
+                and type(item["matches"]) is int and 0 <= item["matches"] <= item["visited"])
+        if item["role"] == "NO_WINDOW":
+            require(item["visited"] == item["matches"] == 0)
+        else:
+            require(item["visited"] > 0)
+            if item["role"] == "TRUNCATED":
+                require(item["visited"] == 512)
+            elif item["role"] == "MULTIPLE":
+                require(item["matches"] > 1)
+            else:
+                require(item["matches"] == (0 if item["role"] == "NONE_OBSERVED" else 1))
+    require(state["mountedResponderViews"]["role"] != "NO_WINDOW")
+    require(state["otherPresent"] == raw["stage"].startswith("other-"))
+    if not state["otherPresent"]:
+        require(not state["otherKey"] and not state["otherInputFirstResponder"]
+                and state["otherInputWindow"] == "NONE"
+                and state["otherResponderViews"]["role"] == "NO_WINDOW"
+                and all(state[key] != "OTHER" for key in windows))
+    else:
+        require(state["otherResponderViews"]["role"] != "NO_WINDOW")
+    return raw
+
+
+class WorkspaceObservationGuard:
+    def __init__(self):
+        self.position = 0
+        self.rejections = 0
+        self.blocked = False
+
+    def observe(self, raw_line, active_test):
+        line = raw_line.strip()
+        if not line.startswith(WORKSPACE_OBSERVATION_PREFIX.rstrip()):
+            return None
+        try:
+            if self.blocked or len(raw_line.encode("utf-8")) > 4096:
+                raise ValueError("blocked or oversized")
+
+            def unique(pairs):
+                value = {}
+                for key, item in pairs:
+                    if key in value:
+                        raise ValueError("duplicate key")
+                    value[key] = item
+                return value
+
+            if not line.startswith(WORKSPACE_OBSERVATION_PREFIX):
+                raise ValueError("prefix")
+            raw = json.loads(line[len(WORKSPACE_OBSERVATION_PREFIX):], object_pairs_hook=unique)
+            workspace_observation_row(raw, active_test)
+            order = [(stage, phase) for stage in WORKSPACE_OBSERVATION_TERMS
+                     for phase in ("before-event", "after-wait")]
+            if self.position >= len(order) or (raw["stage"], raw["phase"]) != order[self.position]:
+                raise ValueError("duplicate or out-of-order stage")
+            self.position += 1
+            return raw_line
+        except (ValueError, TypeError, RecursionError):
+            self.blocked = True
+            if self.rejections >= 8:
+                return ""
+            self.rejections += 1
+            return WORKSPACE_OBSERVATION_REJECTED + "INVALID_OBSERVATION"
+
+
 def bounded_log(raw_text):
     lines, receipts, failures = [], [], []
     case_events = 0
@@ -434,8 +574,14 @@ def bounded_log(raw_text):
     preview_guard = preview.LogGuard(Path(__file__).resolve().parents[2])
     e07_guard = e07.LogGuard()
     readiness_guard = readiness.LogGuard()
+    workspace_guard = WorkspaceObservationGuard()
     for raw_line in raw_text.splitlines():
         line = raw_line.strip()
+        workspace_line = workspace_guard.observe(raw_line, active_test)
+        if workspace_line is not None:
+            if workspace_line:
+                lines.append(workspace_line)
+            continue
         readiness_line = readiness_guard.observe(raw_line, active_test)
         if readiness_line is not None:
             if readiness_line:
@@ -833,6 +979,7 @@ def collect(log_path, output_dir, implementation_sha, run_id, exit_code_path,
         "inputReceipts": [json.loads(line[len(INPUT_PREFIX):]) for line in log_text.splitlines() if line.startswith(INPUT_PREFIX)],
         "stockPasteDiagnostics": [json.loads(line[len(STOCK_PASTE_PREFIX):]) for line in log_text.splitlines() if line.startswith(STOCK_PASTE_PREFIX)],
         "nativeRuntimeEvents": [json.loads(line[len(RUNTIME_PREFIX):]) for line in log_text.splitlines() if line.startswith(RUNTIME_PREFIX)],
+        "workspacePresentationObservations": [json.loads(line.strip()[len(WORKSPACE_OBSERVATION_PREFIX):]) for line in log_text.splitlines() if line.strip().startswith(WORKSPACE_OBSERVATION_PREFIX)],
         "privacy": {"rawLogsPublished": False, "screenshotsPublished": False,
                     "sourceRequiresVerifiedEmptyReset": True, "startupReceiptsContainOnlyKnownControlState": True},
     }
