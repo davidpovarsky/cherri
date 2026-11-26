@@ -1,7 +1,7 @@
 # Cherri P10 — Compiler-Supported Catalog Report (`505` Entries)
 
-- **Source Commit**: `810f183a965d9e9c4f581bee0f3d52966f884079`
-- **Input Dependency Fingerprint**: `780d28ba4980faf935627f08cbd19d68c7bb264cd898c5e8ba6fc253b97207ea`
+- **Source Commit**: `714a9aeb9675b5cc0497a6623fd7acee5cf157d4`
+- **Input Dependency Fingerprint**: `2934cd54d583c25f56518e9fb2571363baf327b60fe19513ae81896e1ea04337`
 - **Total Catalog Entries**: `505` (`497` callable actions + `8` compiler constructs)
 - **Legacy Compiler Verified (`LEGACY_COMPILE_PASS`)**: `505 / 505`
 - **V2 Compiler Verified (`V2_COMPILE_PASS`)**: `505 / 505`
