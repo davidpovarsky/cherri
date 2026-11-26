@@ -245,8 +245,8 @@ class Batch:
     def finish(self):
         # Reuse the existing qualified group observer; a reaped parent alone
         # cannot establish that its owned descendants are gone.
-        from project_prerequisite_observation import group_observation, kill_group
         if self.process is not None:
+            from project_prerequisite_observation import group_observation, kill_group
             self.record["groupBeforeCleanup"] = group_observation(self.process.pid)
             self.record["cleanupSignal"] = kill_group(self.process)
             try:
@@ -301,7 +301,7 @@ def verify_raw_sources(repo, source, files, *, deadline, originals=None):
     batch = Batch(root, deadline, len(files) * (FILE_LIMIT + 128) + 2 * (COMMIT_LIMIT + 128))
     value = {"schema": "cherri-selected-git-batch/1", "sourceCommitSha": source,
              "status": "SOURCE_UNVERIFIED", "completeTrackedSource": False,
-             "sourceFiles": [], "error": None, "process": batch.record,
+             "sourceFiles": [], "error": None, "cleanupError": None, "process": batch.record,
              "nativeExecution": False, "formalAcceptanceGranted": False}
     error = None
     with cancellation_scope():
@@ -332,7 +332,16 @@ def verify_raw_sources(repo, source, files, *, deadline, originals=None):
             error = caught
             value["error"] = (str(caught) if isinstance(caught, ValueError) else type(caught).__name__)
         finally:
-            batch.finish()
+            try:
+                batch.finish()
+            except BaseException as caught:
+                # Cleanup observation is separate from the original setup,
+                # launch or source failure. Keep both even if no child exists.
+                value["cleanupError"] = (str(caught) if isinstance(caught, ValueError)
+                                         else type(caught).__name__)
+                if error is None:
+                    error = caught
+                    value["error"] = value["cleanupError"]
             if error is None:
                 try:
                     require(batch.clean(), "SOURCE_BATCH_PROCESS_CLEANUP")

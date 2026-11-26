@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import types
 import unittest
 from unittest import mock
 
@@ -429,6 +430,110 @@ raise SystemExit(v['exit'])
         with self.assertRaises(FileExistsError):
             self.verify(originals=self.originals)
         self.assertEqual((self.originals / "stdin.original").read_bytes(), original)
+
+    def test_bootstrap_without_builds_retains_source_before_context_failure(self):
+        import prepare_public_artifacts as public
+        for mode in ("checkpoint", "output-context", "collect", "receiver-path", "finalize"):
+            with self.subTest(mode=mode):
+                artifacts = self.base / ("bootstrap-" + mode)
+                artifacts.mkdir()
+                args = types.SimpleNamespace(repo=str(self.root), root=str(artifacts),
+                    source_sha=self.source, mode=mode, fixture_id=None, run_id=artifacts.name)
+                with mock.patch.object(public, "trusted_fixture_sources", return_value={}), \
+                     mock.patch.object(public, "verify_synthetic_sources",
+                         side_effect=ValueError("SYNTHETIC_SOURCE_INVALID")):
+                    with self.assertRaisesRegex(ValueError, "SYNTHETIC_SOURCE_INVALID"):
+                        self.module._cli_context(args)
+                receipts = list((artifacts / "builds").glob("qa-source-*/result.original.json"))
+                self.assertEqual(len(receipts), 1)
+                value = json.loads(receipts[0].read_bytes())
+                self.assertEqual(value["status"], "SOURCE_VERIFIED")
+                self.assertFalse(value["formalAcceptanceGranted"])
+                self.assertTrue(value["process"]["parentReaped"])
+                self.assertEqual(value["process"]["groupAfterCleanup"]["state"], "ABSENT")
+                self.assertEqual((artifacts / "builds").stat().st_mode & 0o777, 0o700)
+                self.assertFalse((artifacts / "acquisition-status.json").exists())
+
+    def test_bootstrap_builds_symlink_is_rejected_before_spawn(self):
+        artifacts = self.base / "bootstrap-link"
+        artifacts.mkdir()
+        outside = self.base / "foreign-private"
+        outside.mkdir()
+        (artifacts / "builds").symlink_to(outside, target_is_directory=True)
+        args = types.SimpleNamespace(repo=str(self.root), root=str(artifacts),
+            source_sha=self.source, mode="finalize")
+        with mock.patch.object(subprocess, "Popen", side_effect=self.record):
+            with self.assertRaisesRegex(ValueError, "ORIGINAL_SYMLINK"):
+                self.module._cli_context(args)
+        self.assertEqual(self.calls, [])
+        self.assertEqual(list(outside.iterdir()), [])
+
+    def test_bootstrap_builds_file_is_rejected_without_replacement(self):
+        artifacts = self.base / "bootstrap-file"
+        artifacts.mkdir()
+        original = b"existing original, not a directory\n"
+        (artifacts / "builds").write_bytes(original)
+        args = types.SimpleNamespace(repo=str(self.root), root=str(artifacts),
+            source_sha=self.source, mode="finalize")
+        with mock.patch.object(subprocess, "Popen", side_effect=self.record):
+            with self.assertRaises((ValueError, OSError)):
+                self.module._cli_context(args)
+        self.assertEqual(self.calls, [])
+        self.assertEqual((artifacts / "builds").read_bytes(), original)
+
+    def test_metadata_and_cleanup_errors_preserve_first_outcome_without_pid(self):
+        with mock.patch.dict(os.environ, {"GIT_DIR": "synthetic-redirect"}), \
+             mock.patch.object(batch.Batch, "finish", side_effect=RuntimeError("cleanup observation failed")):
+            with self.assertRaisesRegex(ValueError, "SOURCE_GIT_REDIRECT"):
+                self.verify(originals=self.originals)
+        value = json.loads((self.originals / "result.original.json").read_bytes())
+        self.assertEqual(value["error"], "SOURCE_GIT_REDIRECT")
+        self.assertEqual(value["cleanupError"], "RuntimeError")
+        self.assertEqual(value["status"], "SOURCE_UNVERIFIED")
+        self.assertIsNone(value["process"]["pid"])
+        self.assertIsNone(value["process"]["parentReaped"])
+        self.assertEqual(self.calls, [])
+        for name in ("stdin", "stdout", "stderr"):
+            self.assertEqual((self.originals / (name + ".original")).read_bytes(), b"")
+
+    def test_launch_and_cleanup_errors_preserve_first_outcome_without_pid(self):
+        with mock.patch.object(subprocess, "Popen", side_effect=OSError("synthetic launch failure")), \
+             mock.patch.object(batch.Batch, "finish", side_effect=RuntimeError("cleanup observation failed")):
+            with self.assertRaisesRegex(OSError, "synthetic launch failure"):
+                self.module.verify_checkout(self.root, self.source, originals=self.originals)
+        value = json.loads((self.originals / "result.original.json").read_bytes())
+        self.assertEqual(value["error"], "OSError")
+        self.assertEqual(value["cleanupError"], "RuntimeError")
+        self.assertEqual(value["status"], "SOURCE_UNVERIFIED")
+        self.assertIsNone(value["process"]["pid"])
+        self.assertIsNone(value["process"]["parentReaped"])
+
+    def test_cleanup_error_after_zero_exit_retains_transcript_without_authentication(self):
+        original = batch.Batch.finish
+        def finish(instance):
+            original(instance)
+            raise RuntimeError("synthetic final cleanup observation failure")
+        with mock.patch.object(batch.Batch, "finish", finish):
+            with self.assertRaisesRegex(RuntimeError, "synthetic final cleanup"):
+                self.verify(originals=self.originals)
+        value = json.loads((self.originals / "result.original.json").read_bytes())
+        self.assertEqual(value["error"], "RuntimeError")
+        self.assertEqual(value["cleanupError"], "RuntimeError")
+        self.assertEqual(value["status"], "SOURCE_UNVERIFIED")
+        self.assertEqual(value["process"]["exitCode"], 0)
+        self.assertTrue(value["process"]["parentReaped"])
+        self.assertEqual(value["process"]["groupAfterCleanup"]["state"], "ABSENT")
+        self.assertGreater((self.originals / "stdout.original").stat().st_size, 0)
+
+    def test_unstarted_cleanup_does_not_import_process_observer(self):
+        with mock.patch.dict(sys.modules, {"project_prerequisite_observation": None}), \
+             mock.patch.object(subprocess, "Popen", side_effect=OSError("synthetic launch failure")):
+            with self.assertRaisesRegex(OSError, "synthetic launch failure"):
+                self.module.verify_checkout(self.root, self.source, originals=self.originals)
+        value = json.loads((self.originals / "result.original.json").read_bytes())
+        self.assertEqual(value["error"], "OSError")
+        self.assertIsNone(value.get("cleanupError"))
+        self.assertIsNone(value["process"]["pid"])
 
 
 if __name__ == "__main__":

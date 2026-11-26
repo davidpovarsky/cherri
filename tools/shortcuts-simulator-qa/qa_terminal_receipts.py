@@ -637,7 +637,10 @@ def _cli_context(args):
     # Raw source/process transcripts remain private build originals. Each CLI
     # invocation owns a fresh directory, including failed closing checks.
     builds = contained(root, "builds", exists=False)
-    require(builds.is_dir(), "PRIVATE_ORIGINAL_DIRECTORY")
+    # A root may survive an interrupted bootstrap before builds was created.
+    # Preserve source originals before the unchanged manifest/context checks.
+    builds.mkdir(mode=0o700, exist_ok=True)
+    require(builds.is_dir() and not builds.is_symlink(), "PRIVATE_ORIGINAL_DIRECTORY")
     originals = Path(tempfile.mkdtemp(prefix="qa-source-" + args.mode + "-", dir=builds))
     verify_checkout(repo, args.source_sha, originals=originals)
     from prepare_public_artifacts import trusted_fixture_sources, verify_synthetic_sources
