@@ -211,26 +211,113 @@
     {
       "declaration": "statistic",
       "appleIdentifier": "is.workflow.actions.statistics",
-      "upstreamBehavior": "Uses WFInput parameter key and calculationOperation enum",
-      "p10Status": "Verified in P10 actions/math.cherri: uses 'WFInput' (not 'Input') and calculationOperation enum; 100% compatible with upstream"
+      "upstreamBehavior": "Historical declaration at bcc0095754e2cc0baaeb4d93dae172b8153b4716; see upstreamSource.",
+      "upstreamSource": {
+        "sourceCommit": "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
+        "path": "actions/math.cherri",
+        "sha256": "9de7ccf49fc09a23e4b84b5bb596dd0e08f581907661e8e0b07e5606b304cba6",
+        "line": 43,
+        "declaration": "action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'WFInput')"
+      },
+      "currentSource": {
+        "sourceCommit": "810f183a965d9e9c4f581bee0f3d52966f884079",
+        "path": "actions/math.cherri",
+        "sha256": "848fee5edfed787466065b20cbf3005e5ff129c78740b914f878d255390b34e2",
+        "line": 44,
+        "declaration": "action 'statistics' statistic(statisticOperations operation: 'WFStatisticsOperation', variable input: 'Input')"
+      },
+      "p10Status": "Current synthetic compiler sample emits [\"Input\", \"WFStatisticsOperation\"]; this does not establish every optional variant, fresh Apple execution or complete upstream equivalence.",
+      "currentSample": {
+        "path": "docs/apple-runtime/p10/p10-505-execution-evidence.json",
+        "sha256": "dd4532b8ff7d025cd09821979ce785d4ba4f2c4461877686d8d26b4c4779bf28",
+        "entry": "statistic",
+        "emittedKeysSample": [
+          "Input",
+          "WFStatisticsOperation"
+        ],
+        "scope": "SYNTHETIC_COMPILER_SAMPLE"
+      }
     },
     {
       "declaration": "calculate",
       "appleIdentifier": "is.workflow.actions.math",
-      "upstreamBehavior": "Built-in arithmetic expression / action handling",
-      "p10Status": "Handled natively by operator expression lowering and actions/math.cherri"
+      "upstreamBehavior": "Historical declaration at bcc0095754e2cc0baaeb4d93dae172b8153b4716; see upstreamSource.",
+      "upstreamSource": {
+        "sourceCommit": "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
+        "path": "actions/math.cherri",
+        "sha256": "9de7ccf49fc09a23e4b84b5bb596dd0e08f581907661e8e0b07e5606b304cba6",
+        "line": 23,
+        "declaration": "action 'math' calculate(\n    calculationOperation operation: 'WFScientificMathOperation',\n    number operandOne: 'WFInput',\n    number ?operandTwo: 'WFMathOperand'\n)"
+      },
+      "currentSource": {
+        "sourceCommit": "810f183a965d9e9c4f581bee0f3d52966f884079",
+        "path": "actions/math.cherri",
+        "sha256": "848fee5edfed787466065b20cbf3005e5ff129c78740b914f878d255390b34e2",
+        "line": 24,
+        "declaration": "action 'math' calculate(\n    calculationOperation operation: 'WFScientificMathOperation',\n    number operandOne: 'WFInput',\n    number ?operandTwo: 'WFScientificMathOperand'\n)"
+      },
+      "p10Status": "Current synthetic compiler sample emits [\"WFInput\", \"WFMathOperation\", \"WFScientificMathOperation\"]; this does not establish every optional variant, fresh Apple execution or complete upstream equivalence.",
+      "currentSample": {
+        "path": "docs/apple-runtime/p10/p10-505-execution-evidence.json",
+        "sha256": "dd4532b8ff7d025cd09821979ce785d4ba4f2c4461877686d8d26b4c4779bf28",
+        "entry": "calculate",
+        "emittedKeysSample": [
+          "WFInput",
+          "WFMathOperation",
+          "WFScientificMathOperation"
+        ],
+        "scope": "SYNTHETIC_COMPILER_SAMPLE"
+      }
     },
     {
       "declaration": "getFileDetail",
       "appleIdentifier": "is.workflow.actions.properties.files",
-      "upstreamBehavior": "Uses fileDetail enum and WFContentItemPropertyName",
-      "p10Status": "Preserved in actions/documents.cherri with extended macOS 27 file properties"
+      "upstreamBehavior": "Historical declaration at bcc0095754e2cc0baaeb4d93dae172b8153b4716; see upstreamSource.",
+      "upstreamSource": {
+        "sourceCommit": "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
+        "path": "actions/documents.cherri",
+        "sha256": "2729cbd74c60932de13457cfac51fea1350249a3b5e0a81b6ece1838470110d8",
+        "line": 77,
+        "declaration": "action 'properties.files' getFileDetail(variable file: 'WFFolder', fileDetail detail: 'WFContentItemPropertyName')"
+      },
+      "currentSource": {
+        "sourceCommit": "810f183a965d9e9c4f581bee0f3d52966f884079",
+        "path": "actions/documents.cherri",
+        "sha256": "b7d86a9a420fdb9d159a45d73164097c0c13c637fe0ffe5d0febacd3d1a5c70c",
+        "line": 104,
+        "declaration": "action 'properties.files' getFileDetail(variable file: 'WFInput', fileDetail detail: 'WFContentItemPropertyName')"
+      },
+      "p10Status": "Current synthetic compiler sample emits [\"WFContentItemPropertyName\", \"WFInput\"]; this does not establish every optional variant, fresh Apple execution or complete upstream equivalence.",
+      "currentSample": {
+        "path": "docs/apple-runtime/p10/p10-505-execution-evidence.json",
+        "sha256": "dd4532b8ff7d025cd09821979ce785d4ba4f2c4461877686d8d26b4c4779bf28",
+        "entry": "getFileDetail",
+        "emittedKeysSample": [
+          "WFContentItemPropertyName",
+          "WFInput"
+        ],
+        "scope": "SYNTHETIC_COMPILER_SAMPLE"
+      }
     },
     {
       "declaration": "calculationOperation",
       "appleIdentifier": "enum calculationOperation",
-      "upstreamBehavior": "Average, Minimum, Maximum, Sum, Standard Deviation, Median, Mode, Range",
-      "p10Status": "Preserved with exact Apple strings in actions/math.cherri"
+      "upstreamBehavior": "Historical declaration at bcc0095754e2cc0baaeb4d93dae172b8153b4716; see upstreamSource.",
+      "upstreamSource": {
+        "sourceCommit": "bcc0095754e2cc0baaeb4d93dae172b8153b4716",
+        "path": "actions/math.cherri",
+        "sha256": "9de7ccf49fc09a23e4b84b5bb596dd0e08f581907661e8e0b07e5606b304cba6",
+        "line": 5,
+        "declaration": "enum calculationOperation {\n    'x^2',\n    '\u0445^3',\n    'x^\u0443',\n    'e^x',\n    '10^x',\n    'In(x)',\n    'log(x)',\n    '\u221ax',\n    '\u221bx',\n    'x!',\n    'sin(x)',\n    'cos(X)',\n    'tan(x)',\n    'abs(x)',\n}"
+      },
+      "currentSource": {
+        "sourceCommit": "810f183a965d9e9c4f581bee0f3d52966f884079",
+        "path": "actions/math.cherri",
+        "sha256": "848fee5edfed787466065b20cbf3005e5ff129c78740b914f878d255390b34e2",
+        "line": 5,
+        "declaration": "enum calculationOperation {\n    'x^2',\n    '\u0445^3',\n    'x^\u0443',\n    'e^x',\n    '10^x',\n    'In(x)',\n    'log(x)',\n    '\u221ax',\n    '\u221bx',\n    'x!',\n    'sin(x)',\n    'cos(X)',\n    'tan(x)',\n    'abs(x)',\n    'Modulus',\n}"
+      },
+      "p10Status": "Current enum declaration is recorded from source. No Apple variant execution or complete upstream equivalence is inferred."
     }
   ]
 }
