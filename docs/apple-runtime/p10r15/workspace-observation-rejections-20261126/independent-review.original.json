@@ -1,0 +1,25 @@
+{
+  "acceptanceGranted": false,
+  "checks": 102,
+  "completedUTC": "2026-11-26T21:41:36.559027+00:00",
+  "findings": [
+    "No concrete blocker in the two-file delta. Existing admission predicates, original method bodies,8-row/4096-byte limits and blocked-after-first-failure behavior remain unchanged.",
+    "Only enumerated constants are public; raw rejected values and exception text cannot become a reason. JSON syntax/depth and unknown exceptions map to fixed codes.",
+    "The first rejection is separately classified; subsequent rows remain explicitly blocked.",
+    "This closes missing diagnostic reason observability only. The historical seven rejected rows and compact UI failure remain unresolved; no new native execution or result reclassification."
+  ],
+  "nativeExecutions": 0,
+  "originalFiles": 46,
+  "patchSHA256": "78f796379e23192049de1ca8579f9b9250332509fdc23940f5c6e19fd00971e4",
+  "qualificationSHA256": "e449ed08a8b75d1f4be0c790d273a0a9247542bd7d4013a3954699f61cf87d41",
+  "qualifiedOriginals": {
+    "green": 9,
+    "priorSetupErrorPreserved": true,
+    "red": 1
+  },
+  "reviewer": "actual /root/apple_runtime subagent",
+  "schema": "cherri-workspace-rejection-independent-review/1",
+  "source": "65eab52553e8f760d99fded448f0268e7cb77abd",
+  "status": "PASS_CLOSED_REJECTION_SOURCE_AND_ORIGINAL_REVIEW",
+  "testExecutions": 0
+}

@@ -434,43 +434,87 @@ WORKSPACE_OBSERVATION_TERMS = {
 }
 
 
+# Closed validation reasons only. Rejected values and exception text remain private.
+WORKSPACE_OBSERVATION_REASONS = frozenset({
+    'ABSENT_OTHER_WINDOW_STATE',
+    'AFTER_WAIT_STATE',
+    'BEFORE_EVENT_STATE',
+    'BLOCKED_AFTER_REJECTION',
+    'BUDGET',
+    'COMPLETED_TERM_STATE',
+    'ELAPSED',
+    'IDENTITY_OR_CONTEXT',
+    'JSON_DEPTH',
+    'JSON_DUPLICATE_KEY',
+    'JSON_SYNTAX',
+    'MOUNTED_WINDOW_PRESENT',
+    'MULTIPLE_RESPONDER_COUNT',
+    'NO_WINDOW_COUNTS',
+    'OTHER_WINDOW_PRESENT',
+    'OTHER_WINDOW_STAGE',
+    'PHASE',
+    'POLL_COUNT',
+    'PREFIX',
+    'RAW_SIZE',
+    'RESPONDER_COUNTS',
+    'RESPONDER_ROLE',
+    'RESPONDER_ROLE_COUNT',
+    'RESPONDER_SHAPE',
+    'ROOT_SHAPE',
+    'SEGMENT',
+    'SEQUENCE',
+    'STAGE',
+    'STATE_BOOLEANS',
+    'STATE_SHAPE',
+    'TERM_MASK',
+    'TERM_MASK_BINDING',
+    'TERM_ORDER',
+    'TERM_VECTOR',
+    'TRUNCATED_VISIT_COUNT',
+    'UNKNOWN_VALIDATION',
+    'WEB_PROGRESS',
+    'WINDOW_RELATIONS',
+    'WINDOW_VISIT_COUNT',
+})
+
+
 def workspace_observation_row(raw, active_test):
-    def require(value):
+    def require(value, reason):
         if not value:
-            raise ValueError("invalid closed workspace observation")
+            raise ValueError(reason)
 
     keys = {"schema", "testId", "diagnosticOnly", "stage", "phase",
             "budgetMilliseconds", "elapsedMilliseconds", "waitCompleted",
             "polls", "lastTerms", "seenTrueMask", "seenFalseMask", "state"}
-    require(isinstance(raw, dict) and set(raw) == keys)
+    require(isinstance(raw, dict) and set(raw) == keys, "ROOT_SHAPE")
     require(raw["schema"] == "cherri-workspace-presentation-observation/1"
             and raw["testId"] == active_test == WORKSPACE_OBSERVATION_TEST
-            and raw["diagnosticOnly"] is True)
-    require(isinstance(raw["stage"], str) and raw["stage"] in WORKSPACE_OBSERVATION_TERMS)
-    require(isinstance(raw["phase"], str) and raw["phase"] in {"before-event", "after-wait"})
-    require(type(raw["budgetMilliseconds"]) is int and raw["budgetMilliseconds"] == 3000)
-    require(type(raw["elapsedMilliseconds"]) is int and 0 <= raw["elapsedMilliseconds"] <= 120000)
+            and raw["diagnosticOnly"] is True, "IDENTITY_OR_CONTEXT")
+    require(isinstance(raw["stage"], str) and raw["stage"] in WORKSPACE_OBSERVATION_TERMS, "STAGE")
+    require(isinstance(raw["phase"], str) and raw["phase"] in {"before-event", "after-wait"}, "PHASE")
+    require(type(raw["budgetMilliseconds"]) is int and raw["budgetMilliseconds"] == 3000, "BUDGET")
+    require(type(raw["elapsedMilliseconds"]) is int and 0 <= raw["elapsedMilliseconds"] <= 120000, "ELAPSED")
     size = len(WORKSPACE_OBSERVATION_TERMS[raw["stage"]])
-    require(type(raw["polls"]) is int and 0 <= raw["polls"] <= 4096)
+    require(type(raw["polls"]) is int and 0 <= raw["polls"] <= 4096, "POLL_COUNT")
     last = raw["lastTerms"]
     require(isinstance(last, list) and len(last) == size
-            and all(type(value) is int and value in (-1, 0, 1) for value in last))
+            and all(type(value) is int and value in (-1, 0, 1) for value in last), "TERM_VECTOR")
     for key in ("seenTrueMask", "seenFalseMask"):
-        require(type(raw[key]) is int and 0 <= raw[key] < (1 << size))
+        require(type(raw[key]) is int and 0 <= raw[key] < (1 << size), "TERM_MASK")
     if raw["phase"] == "before-event":
         require(raw["waitCompleted"] is None and raw["polls"] == 0
-                and last == [-1] * size and raw["seenTrueMask"] == raw["seenFalseMask"] == 0)
+                and last == [-1] * size and raw["seenTrueMask"] == raw["seenFalseMask"] == 0, "BEFORE_EVENT_STATE")
     else:
-        require(type(raw["waitCompleted"]) is bool and raw["polls"] > 0)
+        require(type(raw["waitCompleted"]) is bool and raw["polls"] > 0, "AFTER_WAIT_STATE")
         # Each poll evaluates a true prefix, optionally one false, then nothing.
         require(last == [1] * size or any(
             last == [1] * index + [0] + [-1] * (size - index - 1)
-            for index in range(size)))
-        require(not raw["waitCompleted"] or last == [1] * size)
+            for index in range(size)), "TERM_ORDER")
+        require(not raw["waitCompleted"] or last == [1] * size, "COMPLETED_TERM_STATE")
         for index, value in enumerate(last):
             if value != -1:
                 mask = raw["seenTrueMask"] if value else raw["seenFalseMask"]
-                require(mask & (1 << index))
+                require(mask & (1 << index), "TERM_MASK_BINDING")
     state = raw["state"]
     booleans = {
         "mountedKey", "otherPresent", "otherKey", "editorFirstResponder",
@@ -480,40 +524,40 @@ def workspace_observation_row(raw, active_test):
     windows = {"selectorWindow", "editorWindow", "webWindow", "otherInputWindow"}
     responders = {"mountedResponderViews", "otherResponderViews"}
     require(isinstance(state, dict) and set(state) == booleans | windows | responders | {
-        "selectedSegment", "webProgressPermille"})
-    require(all(type(state[key]) is bool for key in booleans))
+        "selectedSegment", "webProgressPermille"}, "STATE_SHAPE")
+    require(all(type(state[key]) is bool for key in booleans), "STATE_BOOLEANS")
     require(isinstance(state["selectedSegment"], str)
-            and state["selectedSegment"] in {"NONE", "CODE", "PREVIEW", "OTHER"})
+            and state["selectedSegment"] in {"NONE", "CODE", "PREVIEW", "OTHER"}, "SEGMENT")
     require(all(isinstance(state[key], str)
-                and state[key] in {"NONE", "MOUNTED", "OTHER", "ELSEWHERE"} for key in windows))
-    require(type(state["webProgressPermille"]) is int and -1 <= state["webProgressPermille"] <= 1000)
+                and state[key] in {"NONE", "MOUNTED", "OTHER", "ELSEWHERE"} for key in windows), "WINDOW_RELATIONS")
+    require(type(state["webProgressPermille"]) is int and -1 <= state["webProgressPermille"] <= 1000, "WEB_PROGRESS")
     roles = {"NO_WINDOW", "NONE_OBSERVED", "EDITOR", "WEB", "WEB_DESCENDANT",
              "OTHER_INPUT", "OTHER_VIEW", "MULTIPLE", "TRUNCATED"}
     for key in responders:
         item = state[key]
-        require(isinstance(item, dict) and set(item) == {"role", "visited", "matches"})
-        require(isinstance(item["role"], str) and item["role"] in roles)
+        require(isinstance(item, dict) and set(item) == {"role", "visited", "matches"}, "RESPONDER_SHAPE")
+        require(isinstance(item["role"], str) and item["role"] in roles, "RESPONDER_ROLE")
         require(type(item["visited"]) is int and 0 <= item["visited"] <= 512
-                and type(item["matches"]) is int and 0 <= item["matches"] <= item["visited"])
+                and type(item["matches"]) is int and 0 <= item["matches"] <= item["visited"], "RESPONDER_COUNTS")
         if item["role"] == "NO_WINDOW":
-            require(item["visited"] == item["matches"] == 0)
+            require(item["visited"] == item["matches"] == 0, "NO_WINDOW_COUNTS")
         else:
-            require(item["visited"] > 0)
+            require(item["visited"] > 0, "WINDOW_VISIT_COUNT")
             if item["role"] == "TRUNCATED":
-                require(item["visited"] == 512)
+                require(item["visited"] == 512, "TRUNCATED_VISIT_COUNT")
             elif item["role"] == "MULTIPLE":
-                require(item["matches"] > 1)
+                require(item["matches"] > 1, "MULTIPLE_RESPONDER_COUNT")
             else:
-                require(item["matches"] == (0 if item["role"] == "NONE_OBSERVED" else 1))
-    require(state["mountedResponderViews"]["role"] != "NO_WINDOW")
-    require(state["otherPresent"] == raw["stage"].startswith("other-"))
+                require(item["matches"] == (0 if item["role"] == "NONE_OBSERVED" else 1), "RESPONDER_ROLE_COUNT")
+    require(state["mountedResponderViews"]["role"] != "NO_WINDOW", "MOUNTED_WINDOW_PRESENT")
+    require(state["otherPresent"] == raw["stage"].startswith("other-"), "OTHER_WINDOW_STAGE")
     if not state["otherPresent"]:
         require(not state["otherKey"] and not state["otherInputFirstResponder"]
                 and state["otherInputWindow"] == "NONE"
                 and state["otherResponderViews"]["role"] == "NO_WINDOW"
-                and all(state[key] != "OTHER" for key in windows))
+                and all(state[key] != "OTHER" for key in windows), "ABSENT_OTHER_WINDOW_STATE")
     else:
-        require(state["otherResponderViews"]["role"] != "NO_WINDOW")
+        require(state["otherResponderViews"]["role"] != "NO_WINDOW", "OTHER_WINDOW_PRESENT")
     return raw
 
 
@@ -528,33 +572,45 @@ class WorkspaceObservationGuard:
         if not line.startswith(WORKSPACE_OBSERVATION_PREFIX.rstrip()):
             return None
         try:
-            if self.blocked or len(raw_line.encode("utf-8")) > 4096:
-                raise ValueError("blocked or oversized")
+            if self.blocked:
+                raise ValueError("BLOCKED_AFTER_REJECTION")
+            if len(raw_line.encode("utf-8")) > 4096:
+                raise ValueError("RAW_SIZE")
 
             def unique(pairs):
                 value = {}
                 for key, item in pairs:
                     if key in value:
-                        raise ValueError("duplicate key")
+                        raise ValueError("JSON_DUPLICATE_KEY")
                     value[key] = item
                 return value
 
             if not line.startswith(WORKSPACE_OBSERVATION_PREFIX):
-                raise ValueError("prefix")
+                raise ValueError("PREFIX")
             raw = json.loads(line[len(WORKSPACE_OBSERVATION_PREFIX):], object_pairs_hook=unique)
             workspace_observation_row(raw, active_test)
             order = [(stage, phase) for stage in WORKSPACE_OBSERVATION_TERMS
                      for phase in ("before-event", "after-wait")]
             if self.position >= len(order) or (raw["stage"], raw["phase"]) != order[self.position]:
-                raise ValueError("duplicate or out-of-order stage")
+                raise ValueError("SEQUENCE")
             self.position += 1
             return raw_line
-        except (ValueError, TypeError, RecursionError):
+        except (ValueError, TypeError, RecursionError) as error:
             self.blocked = True
             if self.rejections >= 8:
                 return ""
             self.rejections += 1
-            return WORKSPACE_OBSERVATION_REJECTED + "INVALID_OBSERVATION"
+            if isinstance(error, json.JSONDecodeError):
+                reason = "JSON_SYNTAX"
+            elif isinstance(error, RecursionError):
+                reason = "JSON_DEPTH"
+            elif (type(error) is ValueError and len(error.args) == 1
+                  and type(error.args[0]) is str
+                  and error.args[0] in WORKSPACE_OBSERVATION_REASONS):
+                reason = error.args[0]
+            else:
+                reason = "UNKNOWN_VALIDATION"
+            return WORKSPACE_OBSERVATION_REJECTED + "INVALID_OBSERVATION:" + reason
 
 
 def bounded_log(raw_text):

@@ -1,0 +1,533 @@
+{
+  "acceptanceGranted": false,
+  "commands": [
+    {
+      "argv": [
+        "/usr/sbin/runuser",
+        "-u",
+        "ubuntu",
+        "--",
+        "/usr/bin/git",
+        "-C",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cancelSignal": null,
+      "cancelled": false,
+      "cleanup": {
+        "after": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "before": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "errors": [],
+        "groupSignalAuthorized": true,
+        "noLiveGroupMembers": true,
+        "parentReaped": true,
+        "signals": []
+      },
+      "commandSeconds": 10,
+      "effectiveCommandSeconds": 10.000002560205758,
+      "elapsedSeconds": 0.05160777736455202,
+      "error": null,
+      "exitCode": 0,
+      "finishedAt": "2026-11-26T21:38:57.247883+00:00",
+      "groupAtParentExit": {
+        "kernelGroupExists": false,
+        "live": false,
+        "members": [],
+        "state": "ABSENT"
+      },
+      "name": "head-before",
+      "ownerElapsedSeconds": 0.05167817883193493,
+      "pgid": 1816887,
+      "pid": 1816887,
+      "sid": 1816887,
+      "startedAt": "2026-11-26T21:38:57.196698+00:00",
+      "status": "PASS",
+      "stderr": {
+        "bytes": 0,
+        "complete": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 41,
+        "complete": true,
+        "sha256": "1d100e4196441595d63ab3c82cac86faa239c925547ed103473cce85de09d923"
+      },
+      "timedOut": false,
+      "wholeDeadlineExceeded": false,
+      "wholeOwnerSeconds": 120
+    },
+    {
+      "argv": [
+        "/usr/sbin/runuser",
+        "-u",
+        "ubuntu",
+        "--",
+        "/usr/bin/git",
+        "-C",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/source",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cancelSignal": null,
+      "cancelled": false,
+      "cleanup": {
+        "after": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "before": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "errors": [],
+        "groupSignalAuthorized": true,
+        "noLiveGroupMembers": true,
+        "parentReaped": true,
+        "signals": []
+      },
+      "commandSeconds": 10,
+      "effectiveCommandSeconds": 10.00000612065196,
+      "elapsedSeconds": 0.051159256137907505,
+      "error": null,
+      "exitCode": 0,
+      "finishedAt": "2026-11-26T21:38:57.299626+00:00",
+      "groupAtParentExit": {
+        "kernelGroupExists": false,
+        "live": false,
+        "members": [],
+        "state": "ABSENT"
+      },
+      "name": "status-before",
+      "ownerElapsedSeconds": 0.10321183688938618,
+      "pgid": 1816889,
+      "pid": 1816889,
+      "sid": 1816889,
+      "startedAt": "2026-11-26T21:38:57.248685+00:00",
+      "status": "PASS",
+      "stderr": {
+        "bytes": 0,
+        "complete": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "complete": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timedOut": false,
+      "wholeDeadlineExceeded": false,
+      "wholeOwnerSeconds": 120
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-controls-02/driver.original.py",
+        "RED",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-controls-02",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-controls-02/red/ios/scripts",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/source/ios/scripts"
+      ],
+      "cancelSignal": null,
+      "cancelled": false,
+      "cleanup": {
+        "after": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "before": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "errors": [],
+        "groupSignalAuthorized": true,
+        "noLiveGroupMembers": true,
+        "parentReaped": true,
+        "signals": []
+      },
+      "commandSeconds": 30,
+      "effectiveCommandSeconds": 30.000005200505257,
+      "elapsedSeconds": 0.15141863655298948,
+      "error": null,
+      "exitCode": 1,
+      "finishedAt": "2026-11-26T21:38:57.488002+00:00",
+      "groupAtParentExit": {
+        "kernelGroupExists": false,
+        "live": false,
+        "members": [],
+        "state": "ABSENT"
+      },
+      "name": "red",
+      "ownerElapsedSeconds": 0.2916537281125784,
+      "pgid": 1816906,
+      "pid": 1816906,
+      "sid": 1816906,
+      "startedAt": "2026-11-26T21:38:57.336867+00:00",
+      "status": "EXIT_NONZERO",
+      "stderr": {
+        "bytes": 1744,
+        "complete": true,
+        "sha256": "5fc54be5207e0c1f7f9c5b726130651b8fa6ce8926105f02fddb2f981dd06641"
+      },
+      "stdout": {
+        "bytes": 94,
+        "complete": true,
+        "sha256": "4e60c66e9a004188f8639eeb436153db2bffdf158507888a6184136fc6a06a4c"
+      },
+      "timedOut": false,
+      "wholeDeadlineExceeded": false,
+      "wholeOwnerSeconds": 120
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-controls-02/driver.original.py",
+        "GREEN",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-controls-02",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-controls-02/green/ios/scripts",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/source/ios/scripts"
+      ],
+      "cancelSignal": null,
+      "cancelled": false,
+      "cleanup": {
+        "after": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "before": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "errors": [],
+        "groupSignalAuthorized": true,
+        "noLiveGroupMembers": true,
+        "parentReaped": true,
+        "signals": []
+      },
+      "commandSeconds": 30,
+      "effectiveCommandSeconds": 30.000003879889846,
+      "elapsedSeconds": 0.45202037412673235,
+      "error": null,
+      "exitCode": 0,
+      "finishedAt": "2026-11-26T21:38:57.940512+00:00",
+      "groupAtParentExit": {
+        "kernelGroupExists": false,
+        "live": false,
+        "members": [],
+        "state": "ABSENT"
+      },
+      "name": "green",
+      "ownerElapsedSeconds": 0.7441371455788612,
+      "pgid": 1816907,
+      "pid": 1816907,
+      "sid": 1816907,
+      "startedAt": "2026-11-26T21:38:57.488746+00:00",
+      "status": "PASS",
+      "stderr": {
+        "bytes": 1784,
+        "complete": true,
+        "sha256": "ed450909f608f9570d9f9d47e62b1aa380bd2f98f5c72f1ae230a701ce36a1ce"
+      },
+      "stdout": {
+        "bytes": 95,
+        "complete": true,
+        "sha256": "5f2cb50b92d575f08b6d95d817987dc9ecf229d068fe79c44eecc34ed81ea8f0"
+      },
+      "timedOut": false,
+      "wholeDeadlineExceeded": false,
+      "wholeOwnerSeconds": 120
+    },
+    {
+      "argv": [
+        "/usr/sbin/runuser",
+        "-u",
+        "ubuntu",
+        "--",
+        "/usr/bin/git",
+        "-C",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cancelSignal": null,
+      "cancelled": false,
+      "cleanup": {
+        "after": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "before": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "errors": [],
+        "groupSignalAuthorized": true,
+        "noLiveGroupMembers": true,
+        "parentReaped": true,
+        "signals": []
+      },
+      "commandSeconds": 10,
+      "effectiveCommandSeconds": 10.000003799796104,
+      "elapsedSeconds": 0.051202695816755295,
+      "error": null,
+      "exitCode": 0,
+      "finishedAt": "2026-11-26T21:38:57.992049+00:00",
+      "groupAtParentExit": {
+        "kernelGroupExists": false,
+        "live": false,
+        "members": [],
+        "state": "ABSENT"
+      },
+      "name": "head-after",
+      "ownerElapsedSeconds": 0.7957339650020003,
+      "pgid": 1816917,
+      "pid": 1816917,
+      "sid": 1816917,
+      "startedAt": "2026-11-26T21:38:57.941160+00:00",
+      "status": "PASS",
+      "stderr": {
+        "bytes": 0,
+        "complete": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 41,
+        "complete": true,
+        "sha256": "1d100e4196441595d63ab3c82cac86faa239c925547ed103473cce85de09d923"
+      },
+      "timedOut": false,
+      "wholeDeadlineExceeded": false,
+      "wholeOwnerSeconds": 120
+    },
+    {
+      "argv": [
+        "/usr/sbin/runuser",
+        "-u",
+        "ubuntu",
+        "--",
+        "/usr/bin/git",
+        "-C",
+        "/var/cache/cherri-ios-ui-repair-p-20261126/source",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cancelSignal": null,
+      "cancelled": false,
+      "cleanup": {
+        "after": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "before": {
+          "kernelGroupExists": false,
+          "live": false,
+          "members": [],
+          "state": "ABSENT"
+        },
+        "errors": [],
+        "groupSignalAuthorized": true,
+        "noLiveGroupMembers": true,
+        "parentReaped": true,
+        "signals": []
+      },
+      "commandSeconds": 10,
+      "effectiveCommandSeconds": 10.000003759749234,
+      "elapsedSeconds": 0.05240902304649353,
+      "error": null,
+      "exitCode": 0,
+      "finishedAt": "2026-11-26T21:38:58.044885+00:00",
+      "groupAtParentExit": {
+        "kernelGroupExists": false,
+        "live": false,
+        "members": [],
+        "state": "ABSENT"
+      },
+      "name": "status-after",
+      "ownerElapsedSeconds": 0.8484637094661593,
+      "pgid": 1816930,
+      "pid": 1816930,
+      "sid": 1816930,
+      "startedAt": "2026-11-26T21:38:57.992683+00:00",
+      "status": "PASS",
+      "stderr": {
+        "bytes": 0,
+        "complete": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "complete": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timedOut": false,
+      "wholeDeadlineExceeded": false,
+      "wholeOwnerSeconds": 120
+    }
+  ],
+  "driverSHA256": "4043dda8ad4c1bdf559fd31f2b6f83464dd7aff68c66addae94a0b0f17105f72",
+  "finishedUTC": "2026-11-26T21:38:58.046041+00:00",
+  "goExecuted": false,
+  "green": {
+    "events": [
+      {
+        "status": "PASSED",
+        "testId": "workspace_rejection_controls.WorkspaceObservationTests.test_closed_rejection_reasons_never_publish_payload_or_exception"
+      },
+      {
+        "status": "PASSED",
+        "testId": "workspace_rejection_controls.WorkspaceObservationTests.test_complete_bounded_stream_retains_native_outcomes_without_credit"
+      },
+      {
+        "status": "PASSED",
+        "testId": "workspace_rejection_controls.WorkspaceObservationTests.test_exact_active_case_and_sequence_are_required"
+      },
+      {
+        "status": "PASSED",
+        "testId": "workspace_rejection_controls.WorkspaceObservationTests.test_first_rejection_reason_is_retained_before_followup_block"
+      },
+      {
+        "status": "PASSED",
+        "testId": "workspace_rejection_controls.WorkspaceObservationTests.test_parser_recursion_failure_preserves_original_terminal"
+      },
+      {
+        "status": "PASSED",
+        "testId": "workspace_rejection_controls.WorkspaceObservationTests.test_raw_utf8_bound_duplicate_keys_and_bounded_original_bytes"
+      },
+      {
+        "status": "PASSED",
+        "testId": "workspace_rejection_controls.WorkspaceObservationTests.test_schema_term_and_native_state_faults_are_rejected_without_payload"
+      },
+      {
+        "status": "PASSED",
+        "testId": "workspace_rejection_controls.WorkspaceObservationTests.test_short_circuit_and_deadline_edge_states_remain_distinct"
+      },
+      {
+        "status": "PASSED",
+        "testId": "workspace_rejection_controls.WorkspaceObservationTests.test_truncated_view_scan_and_nonfinite_progress_are_explicit"
+      }
+    ],
+    "path": "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-controls-02/green.result.original.json",
+    "sha256": "02baf4525c77ab5ca928516998e3c907a5acee5f87170945fb6945d5e168ce71",
+    "testsRun": 9
+  },
+  "inputs": [
+    {
+      "bytes": 57283,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-proposal-01/before/ios/scripts/collect_ios_test_evidence.py",
+      "sha256": "70936b4b4c0ba0450d6dc7cc95fd9392a139ec1c63211f26415cdb4d9e8b8366"
+    },
+    {
+      "bytes": 59374,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-proposal-01/files/ios/scripts/collect_ios_test_evidence.py",
+      "sha256": "b267a838bafb88c6432180b9911673369da3323e5fd2ab2bb99849643b86cc24"
+    },
+    {
+      "bytes": 105601,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-proposal-01/before/ios/scripts/test_collect_ios_test_evidence.py",
+      "sha256": "8ae7fde5efb66c8f4dfd87712575b48c097f298eaf9d7c6e8feebaa6847e53d6"
+    },
+    {
+      "bytes": 109181,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-proposal-01/files/ios/scripts/test_collect_ios_test_evidence.py",
+      "sha256": "48ece1f4052d29fc6783061fc67d56c4be8d84b94a0d542d2745717a2b5ee432"
+    },
+    {
+      "bytes": 11887,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/source/ios/scripts/documentation_evidence.py",
+      "sha256": "3649e54d66bf98672e7b7184162ba42dd47ee8b951ecfdaff097da589a63991d"
+    },
+    {
+      "bytes": 17990,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/source/ios/scripts/joined_editor_evidence.py",
+      "sha256": "5d8fd695d04d8a1fc765c55eb9ef6fbae769b9d23d13baa7fec486641d9c488d"
+    },
+    {
+      "bytes": 21722,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/source/ios/scripts/preview_native_evidence.py",
+      "sha256": "4fc71008b86bed429bf7124292844d825ab30500e7d105bc906dd7d456435eca"
+    },
+    {
+      "bytes": 6530,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/source/ios/scripts/e07_pane_observations.py",
+      "sha256": "a82191daf4783c9ab5ae7882198fbc0f083c0a49f2178f0633d56a0144776b34"
+    },
+    {
+      "bytes": 4900,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/source/ios/scripts/ui_readiness_observations.py",
+      "sha256": "5aa30072e3a878d1235a6073327543998f2fd9742933aa6655fdeb1bdf0f404c"
+    },
+    {
+      "bytes": 17548,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/source/ios/TestFixtures/joined-editor-contract.json",
+      "sha256": "8d28cbde2ad7ae1c967cb4c4e177a10cc12b10223e070b78ee44977725224474"
+    },
+    {
+      "bytes": 8736,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/source/ios/TestFixtures/preview-document-contract.json",
+      "sha256": "2233988245dde41e7e7b8d8b7e874bbc74008b46e6c54e19baa7d90778f3c845"
+    },
+    {
+      "bytes": 29212,
+      "path": "/var/cache/cherri-ios-ui-repair-p-20261126/source/tests/language-v2/backend-recovery-gates.json",
+      "sha256": "e7fbb3ad177c5142935f71a46ca7e89b84822061bfc0919eec59708811ab7e7c"
+    }
+  ],
+  "newNativeRun": false,
+  "originalNativeOutcomeReclassified": false,
+  "originalPredicateCount": 31,
+  "originalTestMethodCount": 97,
+  "preservedSetupError": {
+    "causalRed": false,
+    "path": "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-controls-01/result.original.json",
+    "sha256": "985d0ce1473fbe1b111ebf30103ed9d5fe818ce67de2b98835c71464da41a4b3"
+  },
+  "red": {
+    "events": [
+      {
+        "status": "FAILED",
+        "testId": "workspace_rejection_controls.WorkspaceObservationTests.test_first_rejection_reason_is_retained_before_followup_block"
+      }
+    ],
+    "path": "/var/cache/cherri-ios-ui-repair-p-20261126/workspace-observation-rejection-controls-02/red.result.original.json",
+    "sha256": "05cd6ff471fe1427dab7bc9722836171e7578008d9e5cb8fe01cf5228730aaa6",
+    "testsRun": 1
+  },
+  "schema": "cherri-workspace-rejection-controls/1",
+  "source": "65eab52553e8f760d99fded448f0268e7cb77abd",
+  "startedUTC": "2026-11-26T21:38:57.196495+00:00",
+  "status": "ACTUAL_CAUSAL_RED_AND_NINE_GREEN"
+}

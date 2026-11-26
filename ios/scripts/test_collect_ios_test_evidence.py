@@ -1677,6 +1677,76 @@ class WorkspaceObservationTests(unittest.TestCase):
                               if v["testId"].endswith(self.methods[0]))["observedStatus"], "failed")
         self.assertEqual(records, [])
 
+    def test_first_rejection_reason_is_retained_before_followup_block(self):
+        row = self.row()
+        row["state"]["mountedKey"] = 1
+        body = self.line(row) + "\n" + self.line(self.row())
+        log = self.transaction(status="failed", body=body) + "".join(
+            self.transaction(method) for method in self.methods[1:])
+        diagnostic, records, outputs = self.collect(log, 65)
+        rejected = [line for line in outputs["xcodetest.log"].splitlines()
+                    if line.startswith(self.rejected)]
+        self.assertEqual(rejected, [
+            self.rejected + "INVALID_OBSERVATION:STATE_BOOLEANS",
+            self.rejected + "INVALID_OBSERVATION:BLOCKED_AFTER_REJECTION",
+        ])
+        self.assertEqual(diagnostic["workspacePresentationObservations"], [])
+        self.assertEqual({entry["testId"]: entry["observedStatus"]
+                          for entry in diagnostic["testResults"]}, {
+            self.suite + "/" + self.methods[0]: "failed",
+            self.suite + "/" + self.methods[1]: "passed",
+            self.suite + "/" + self.methods[2]: "passed",
+        })
+        self.assertEqual(records, [])
+
+    def test_closed_rejection_reasons_never_publish_payload_or_exception(self):
+        from unittest import mock
+        row = self.row()
+        extra = self.row(); extra["PRIVATE_CANARY"] = "PRIVATE_CANARY"
+        phase = self.row(); phase["phase"] = "PRIVATE_CANARY"
+        malformed = self.prefix + '{"PRIVATE_CANARY":'
+        duplicate = self.line(row).replace('"polls": 0', '"polls": 0, "polls": 1')
+        cases = [
+            (self.line(extra), "ROOT_SHAPE"),
+            (self.line(phase), "PHASE"),
+            (malformed, "JSON_SYNTAX"),
+            (duplicate, "JSON_DUPLICATE_KEY"),
+            (self.line(self.row("code")), "SEQUENCE"),
+        ]
+        for raw, reason in cases:
+            with self.subTest(reason=reason):
+                diagnostic, records, outputs = self.collect(
+                    self.transaction(status="failed", body=raw), 65)
+                rejected = [line for line in outputs["xcodetest.log"].splitlines()
+                            if line.startswith(self.rejected)]
+                self.assertEqual(rejected, [self.rejected + "INVALID_OBSERVATION:" + reason])
+                self.assertEqual(diagnostic["workspacePresentationObservations"], [])
+                self.assertEqual(diagnostic["testResults"][0]["observedStatus"], "failed")
+                self.assertEqual(records, [])
+                self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+                self.assertIn(reason, collector.WORKSPACE_OBSERVATION_REASONS)
+
+        payload = self.line(row)[len(self.prefix):]
+        original = collector.json.loads
+        injections = []
+
+        def unknown_error(value, *args, **kwargs):
+            if value == payload:
+                injections.append(True)
+                raise ValueError("PRIVATE_CANARY")
+            return original(value, *args, **kwargs)
+
+        with mock.patch.object(collector.json, "loads", side_effect=unknown_error):
+            diagnostic, records, outputs = self.collect(
+                self.transaction(status="failed", body=self.line(row)), 65)
+        self.assertEqual(injections, [True])
+        self.assertIn(self.rejected + "INVALID_OBSERVATION:UNKNOWN_VALIDATION",
+                      outputs["xcodetest.log"])
+        self.assertNotIn("PRIVATE_CANARY", "".join(outputs.values()))
+        self.assertEqual(diagnostic["workspacePresentationObservations"], [])
+        self.assertEqual(records, [])
+
+
 
 if __name__ == "__main__":
     unittest.main()
