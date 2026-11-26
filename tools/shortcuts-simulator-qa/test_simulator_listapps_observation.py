@@ -2,6 +2,7 @@ import hashlib
 import json
 from pathlib import Path
 import tempfile
+import subprocess
 import unittest
 import zipfile
 from unittest import mock
@@ -25,26 +26,21 @@ class Runner:
     def __call__(self, argv, allowance, *, output, error_output, hard_deadline,
                  stream_limit, journal):
         self.commands.append(list(argv))
-        source = (("b" * 40 if self.changed_after and self.list_seen else SOURCE) + "\n").encode()
-        if "ls-tree" in argv:
-            rows = []
-            for name in app.observation.QA_SOURCE_FILES:
-                data = (self.repo / name).read_bytes()
-                blob = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
-                rows.append(("100644 blob " + blob + "\t" + name).encode() + b"\0")
-            raw = b"".join(rows)
-        else:
-            raw = source if argv[0] == "git" else ORIGINAL
-        if argv[0] != "git":
-            self.list_seen = True
+        if argv != ["xcrun", "simctl", "listapps", UDID]:
+            raise AssertionError("Only the native command is a synthetic double; Git is real")
+        raw = ORIGINAL
+        self.list_seen = True
+        if self.changed_after:
+            subprocess.run(["git", "-C", str(self.repo), "-c", "user.name=Synthetic control",
+                            "-c", "user.email=synthetic@invalid.example", "commit",
+                            "--allow-empty", "-qm", "Change actual fixture HEAD"],
+                           check=True, capture_output=True, timeout=5)
         detail = {"fixtureProcessControl": True, "pid": 123,
                   "startedAt": "2026-11-25T00:00:00+00:00"}
         journal("started", detail)
         output.write(raw)
         result, code = self.failure or "PASS", 0 if not self.failure else 37
-        if argv[0] == "git":
-            result, code = "PASS", 0
-        elif self.failure:
+        if self.failure:
             error_output.write(b"original private native failure\n")
         detail = {**detail, "finishedAt": "2026-11-25T00:00:00.001+00:00",
                   "returnCodeObserved": code, "cleanupParentReaped": True,
@@ -68,12 +64,21 @@ class ListAppsTests(unittest.TestCase):
         recipient = self.repo / app.RECIPIENT
         recipient.parent.mkdir(parents=True, exist_ok=True)
         recipient.write_bytes((Path(__file__).resolve().parents[2] / app.RECIPIENT).read_bytes())
+        for args in (["init", "-q"], ["add", "."],
+                     ["-c", "user.name=Synthetic control", "-c", "user.email=synthetic@invalid.example",
+                      "commit", "-qm", "Pin real source fixture"]):
+            subprocess.run(["git", "--no-replace-objects", "-C", str(self.repo), *args],
+                           check=True, capture_output=True, timeout=5)
+        self.source = subprocess.check_output(
+            ["git", "--no-replace-objects", "-C", str(self.repo), "rev-parse", "HEAD"],
+            timeout=5, text=True).strip()
+        self.identity = {**IDENTITY, "compilerCommitSha": self.source}
 
     def probe(self, runner=None, **kwargs):
         runner = runner or Runner(repo=self.repo)
         if isinstance(runner, Runner):
             runner.repo = self.repo
-        return app.ListAppsObservation(self.repo, self.root / "packet", UDID, IDENTITY,
+        return app.ListAppsObservation(self.repo, self.root / "packet", UDID, self.identity,
                                        runner=runner, **kwargs)
 
     def test_exact_stdout_only_released_after_source_checks_and_real_sealing(self):
@@ -85,9 +90,9 @@ class ListAppsTests(unittest.TestCase):
         summary = probe.seal()
         probe.release_stdout(self.root / "caller.plist")
         self.assertEqual((self.root / "caller.plist").read_bytes(), ORIGINAL)
-        self.assertEqual(runner.commands[2], ["xcrun", "simctl", "listapps", UDID])
+        self.assertEqual(runner.commands[0], ["xcrun", "simctl", "listapps", UDID])
         self.assertEqual([row["stage"] for row in probe.commands],
-                         ["source-before", "source-before", "listapps", "source-after", "source-after"])
+                         ["source-before", "listapps", "source-after"])
         self.assertEqual(summary["status"], "READY")
         self.assertFalse(summary["deviceMutated"])
         self.assertFalse(summary["shortcutExecuted"])
@@ -107,10 +112,10 @@ class ListAppsTests(unittest.TestCase):
         raw = (probe.private / "session-originals.zip").read_bytes()
         self.assertEqual(summary["plaintextArchive"]["sha256"], hashlib.sha256(raw).hexdigest())
         with zipfile.ZipFile(probe.private / "session-originals.zip") as archive:
-            self.assertEqual(archive.read("command-03.stdout"), ORIGINAL)
-            started = json.loads(archive.read("command-03.started.original.json"))
-            finished = json.loads(archive.read("command-03.finished.original.json"))
-            process = json.loads(archive.read("command-03.process.original.json"))
+            self.assertEqual(archive.read("command-02.stdout"), ORIGINAL)
+            started = json.loads(archive.read("command-02.started.original.json"))
+            finished = json.loads(archive.read("command-02.finished.original.json"))
+            process = json.loads(archive.read("command-02.process.original.json"))
             self.assertEqual(started["capture"]["pid"], 123)
             self.assertEqual(finished["capture"]["pid"], 123)
             self.assertEqual(process["stdout"]["sha256"], hashlib.sha256(ORIGINAL).hexdigest())
@@ -120,11 +125,11 @@ class ListAppsTests(unittest.TestCase):
         runner = Runner(failure="EXIT_NONZERO")
         probe = self.probe(runner)
         self.assertFalse(probe.observe())
-        self.assertEqual(len(runner.commands), 3)
+        self.assertEqual(len(runner.commands), 1)
         summary = probe.seal()
         self.assertEqual(summary["status"], "BLOCKED")
         self.assertEqual(probe.commands[-1]["exitCode"], 37)
-        self.assertEqual((probe.private / "command-03.stderr").read_bytes(),
+        self.assertEqual((probe.private / "command-02.stderr").read_bytes(),
                          b"original private native failure\n")
         with self.assertRaisesRegex(ValueError, "NOT_READY"):
             probe.release_stdout(self.root / "caller.plist")
@@ -134,7 +139,7 @@ class ListAppsTests(unittest.TestCase):
         for index, result in enumerate(sorted(app.RESULTS - {"PASS", "CAPTURE_INTERRUPTED"})):
             with self.subTest(result=result):
                 probe = app.ListAppsObservation(self.repo, self.root / ("packet-" + str(index)),
-                                               UDID, IDENTITY, runner=Runner(failure=result, repo=self.repo))
+                                               UDID, self.identity, runner=Runner(failure=result, repo=self.repo))
                 self.assertFalse(probe.observe())
                 self.assertIsNone(probe.stdout)
                 self.assertEqual(probe.commands[-1]["result"], result)
@@ -143,19 +148,15 @@ class ListAppsTests(unittest.TestCase):
         probe = self.probe(Runner(changed_after=True))
         self.assertFalse(probe.observe())
         self.assertIsNone(probe.stdout)
-        self.assertEqual(probe.source_before, SOURCE)
+        self.assertEqual(probe.source_before, self.source)
         self.assertIsNone(probe.source_after)
 
     def test_wrong_initial_source_stops_before_any_simulator_command(self):
         runner = Runner(repo=self.repo)
-        def wrong(argv, *args, **kwargs):
-            result, detail = runner(argv, *args, **kwargs)
-            kwargs["output"].seek(0)
-            kwargs["output"].write(("b" * 40 + "\n").encode())
-            return result, detail
-        probe = self.probe(wrong)
+        probe = app.ListAppsObservation(self.repo, self.root / "packet", UDID,
+                                       {**self.identity, "compilerCommitSha": "b" * 40}, runner=runner)
         self.assertFalse(probe.observe())
-        self.assertEqual(len(runner.commands), 1)
+        self.assertEqual(runner.commands, [])
 
     def test_late_zero_exit_cannot_claim_ready(self):
         probe = self.probe(Runner(late=True))
@@ -166,8 +167,6 @@ class ListAppsTests(unittest.TestCase):
     def test_interruption_retains_actual_journal_before_rejecting_capture(self):
         runner = Runner(repo=self.repo)
         def interrupted(argv, allowance, **kwargs):
-            if argv[0] == "git":
-                return runner(argv, allowance, **kwargs)
             runner(argv, allowance, **kwargs)
             raise TimeoutError("synthetic external interruption after process cleanup")
         probe = self.probe(interrupted)
@@ -176,9 +175,9 @@ class ListAppsTests(unittest.TestCase):
         self.assertEqual(probe.commands[-1]["capture"]["pid"], 123)
         summary = probe.seal()
         with zipfile.ZipFile(probe.private / "session-originals.zip") as archive:
-            self.assertIn("command-03.started.original.json", archive.namelist())
-            self.assertIn("command-03.finished.original.json", archive.namelist())
-            receipt = json.loads(archive.read("command-03.process.original.json"))
+            self.assertIn("command-02.started.original.json", archive.namelist())
+            self.assertIn("command-02.finished.original.json", archive.namelist())
+            receipt = json.loads(archive.read("command-02.process.original.json"))
             self.assertEqual(receipt["result"], "CAPTURE_INTERRUPTED")
         self.assertEqual(summary["status"], "BLOCKED")
 

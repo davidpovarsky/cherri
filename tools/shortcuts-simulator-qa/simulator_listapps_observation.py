@@ -18,6 +18,7 @@ import time
 import zipfile
 
 import project_prerequisite_observation as observation
+import git_source_batch as source_batch
 from simulator_session_recovery import require
 
 SCHEMA = "cherri-simulator-listapps-observation/1"
@@ -143,44 +144,59 @@ class ListAppsObservation:
         return result, stdout
 
     def source(self, stage):
-        deadline = min(self.started + PHASE_SECONDS, self.now() + STAGE_SECONDS[stage])
+        allowance = min(STAGE_SECONDS[stage], self.remaining())
+        started = self.now()
+        deadline = min(self.started + PHASE_SECONDS, started + allowance)
         expected = self.identity["compilerCommitSha"]
-        result, raw = self.run(stage, ["git", "--no-replace-objects", "-C",
-                                      str(self.repo), "rev-parse", "HEAD"], deadline=deadline)
-        require(result["result"] == "PASS" and raw == (expected + "\n").encode(), "SOURCE_CHANGED")
-        result, tree = self.run(
-            stage, ["git", "--no-replace-objects", "-C", str(self.repo),
-                    "ls-tree", "-rz", expected, "--", *observation.QA_SOURCE_FILES],
-            deadline=deadline)
-        require(result["result"] == "PASS", "SOURCE_TREE_PROCESS")
-        blobs = {}
-        for entry in tree.split(b"\0"):
-            if not entry:
-                continue
-            metadata, relative = entry.split(b"\t", 1)
-            mode, kind, digest = metadata.decode("ascii").split()
-            name = relative.decode("utf-8")
-            require(name not in blobs and kind == "blob" and mode in {"100644", "100755"},
-                    "SOURCE_INVENTORY")
-            blobs[name] = (mode, digest)
-        require(set(blobs) == set(observation.QA_SOURCE_FILES), "SOURCE_INVENTORY")
-        rows, matched = [], False
+        prefix = f"command-{len(self.commands) + 1:02d}"
+        originals = self.private / (prefix + "-git-batch")
+        originals.mkdir(mode=0o700)
+        argv = list(source_batch.COMMAND)
+        self.write(prefix + ".intent.original.json", {"stage": stage, "argv": argv,
+            "cwd": str(self.repo), "allowanceMs": round(allowance * 1000),
+            "phaseDeadlineIsMonotonic": True, "selectedFileCount": len(observation.QA_SOURCE_FILES)})
+        events, value, matched, caught = [], None, False, None
+        def journal(event, record):
+            require(event in {"started", "finished"} and event not in events, "JOURNAL_EVENT")
+            self.write(prefix + "." + event + ".original.json",
+                       {"stage": stage, "argv": argv, "cwd": str(self.repo), "event": event, "capture": record})
+            events.append(event)
         try:
-            for name in observation.QA_SOURCE_FILES:
-                require(self.now() < deadline, "SOURCE_DEADLINE")
-                data, identity = observation.bound_read(
-                    self.repo / name, observation.source_limit(name, qa=True))
-                actual = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
-                mode, expected_blob = blobs[name]
-                rows.append({"path": name, "mode": mode, "expectedBlob": expected_blob,
-                             "actualBlob": actual, "bytes": len(data), "sha256": sha(data),
-                             "physicalIdentity": identity})
-                require(actual == expected_blob, "SOURCE_BYTES")
+            require(allowance > 0, "SOURCE_DEADLINE")
+            value = source_batch.verify_raw_sources(self.repo, expected, observation.QA_SOURCE_FILES,
+                deadline=deadline, originals=originals, tree_inventory=True,
+                file_limits={name: observation.source_limit(name, qa=True) for name in observation.QA_SOURCE_FILES},
+                stdout_limit=LIMIT, journal=journal)
             require(self.now() < deadline, "SOURCE_DEADLINE")
             matched = True
+        except BaseException as error:
+            caught = error
         finally:
+            if value is None and (originals / "result.original.json").is_file():
+                value = json.loads((originals / "result.original.json").read_bytes())
+            process = value.get("process", {}) if value else {}
+            result = "PASS" if matched else ("DEADLINE_EXHAUSTED" if allowance <= 0 or self.now() >= deadline
+                else "CAPTURE_INTERRUPTED" if isinstance(caught, (source_batch.SourceInterrupted, KeyboardInterrupt))
+                else "CAPTURE_INCOMPLETE")
+            rows = [{"path": row["path"], "mode": row["gitMode"], "expectedBlob": row["gitBlob"],
+                     "actualBlob": row["actualGitBlob"], "bytes": row["bytes"], "sha256": row["sha256"],
+                     "physicalIdentity": row["physicalIdentity"], "physicalUid": row["physicalUid"]}
+                    for row in value.get("sourceFiles", [])] if value else []
             self.write(stage + ".source.original.json", {
-                "sourceCommit": expected, "workingBytesMatched": matched, "files": rows})
+                "sourceCommit": expected, "workingBytesMatched": matched, "files": rows,
+                "gitTreeModesVerified": matched, "sourceFormat": "raw-tree-git-blob-sha1",
+                "batchOriginal": prefix + "-git-batch/result.original.json" if value else None})
+            receipt = {"stage": stage, "argv": argv, "cwd": str(self.repo),
+                "allowanceMs": round(allowance * 1000), "result": result,
+                "exitCode": process.get("exitCode"), "elapsedMs": round((self.now() - started) * 1000),
+                "capture": process, "journalEvents": events, "sourceVerified": matched,
+                "sourceError": value.get("error") if value else type(caught).__name__ if caught else None}
+            self.write(prefix + ".process.original.json", receipt)
+            self.commands.append(receipt)
+        if caught is not None:
+            if isinstance(caught, source_batch.SourceInterrupted):
+                raise TimeoutError("SOURCE_BATCH_INTERRUPTED") from caught
+            raise caught
         return expected
 
     def observe(self):
