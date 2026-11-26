@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 /// Source-owned model of one current accessibility snapshot. Query matches are
 /// separate observations: UIKit may return hidden matches absent from this tree.
