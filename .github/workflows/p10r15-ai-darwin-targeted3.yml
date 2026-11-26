@@ -1,0 +1,65 @@
+name: P10R15 Original Three AI Darwin Controls
+
+on:
+  create:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-darwin-original-three-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-three:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-ai-darwin-targeted3-20261126' &&
+      github.run_attempt == 1
+    runs-on: macos-latest
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Check out the fixed qualified source component
+        uses: actions/checkout@v6
+        with:
+          ref: baf6b0357983aa77e6db7cb6db3ad38fe79257a5
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Check out the unchanged qualified capture helpers
+        uses: actions/checkout@v6
+        with:
+          ref: 7b1f85d9cea57773a9bb2a50abfb6056b4bce43b
+          path: capture-helpers
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up the original declared Python version
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run only the three still-failed original methods
+        timeout-minutes: 6
+        run: python3 -I -B controller/tools/ci/ai_darwin_targeted3/run.py
+
+      - name: Retain exact source, process and test originals
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cherri-ai-original-three-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-ai-darwin-targeted3-20261126
+          if-no-files-found: error
+          retention-days: 14
