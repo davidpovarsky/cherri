@@ -188,5 +188,59 @@ b4dc26752faa731c8885526f9758811a32c269adf633ec7f36321b2fbc3b8532.
 
 All receipt paths in this document are relative to
 /mnt/development/projects/evidence/cherri-p10r15-consumer-recovery-20261125.
-The qualified staged component still requires its recorded activation,
-rollback and reapply cycle before a live-installation claim.
+The fresh component was subsequently activated and independently verified as
+recorded below. This does not change the separate final-fork release gates.
+
+
+## Actual isolated activation and rollback, 25–26 November 2026
+
+The current wrapper was assembled from d58a55e81720b3396aa0c3cc868876eda22aea81.
+Its installation manifest is
+ccdc5ef66b0184a89ed62061e3e49ec1b36fe721d0b597fce6d65fd594d74e82.
+Five actual current-wrapper commands passed across two attempts: status,
+public compilation, the expected default-Pure rejection of a Pack call,
+explicit Pack compilation, and public HubSign signing. The original first
+attempt stopped at an incorrect new UUID assumption after its first two
+commands; both actual unconsumed Text graphs omit UUID and are exactly equal.
+The three remaining commands ran once in the separate continuation. Its
+21,925-byte AEA1 result remains format-only evidence.
+
+The live activation, rollback and reapply ran once in 25.65 seconds and
+executed ten CLI commands as the actual installed user. Canonical and preserved
+home-alias paths worked. The before-state contained 955 regular files, all with
+single links; ownership changes therefore could not alter another installation
+through shared inodes. Rollback restored the staged bytes, modes, owners and
+mtime values and the absent-live state. It archived the exact two new request
+trees without deleting their originals. Reapply restored the live installation
+and successfully compiled the public source again.
+
+The live location is
+/mnt/development/projects/agent-workspaces/cherri-remote/pure-upstream;
+the preserved home alias resolves to it. The independent intake checked all
+962 current regular files, every original CLI stream, actual process cleanup,
+three complete action graphs exactly equal to their qualified baselines,
+the generated Pack index and all 20 original module bytes. The original K18
+ten-file protection set plus both runtime binaries and the alias are unchanged.
+
+| Original receipt | SHA256 |
+| --- | --- |
+| pure-wrapper-1.0.1-actual-02/result.original.json | 0558d1cf9e691503bc122fe3a1df203e60bf6f55fb5c4fdc1122142436c98b19 |
+| pure-activation-cycle-01/result.original.json | b9120c29e72ff282b2d21d7a446ff1818d0472eb1647b3076706c71df3df32d5 |
+| pure-live-independent-intake-04/result.original.json | a853872a119e4b7d33ae4d664c516d18020517e00782c9018aaae4fca633fdbf |
+
+The live-intake attempts 01–03 remain preserved: their new input-inventory
+assumptions incorrectly treated a Pack request as one source, treated its
+generated index as a stored module, and omitted the digit in the original
+a11y category parser. Only those intake assumptions changed. No deployment,
+compiler run or original output was repeated to correct them.
+
+A byte-exact public evidence archive and manifest are retained under
+evidence/pure-cli-recovery-20261125/. It contains only this Pure component's
+public authored sources, process receipts, structural artifacts and operational
+evidence. The alias-control symlink is represented by metadata, not an active
+archive symlink. Private corpus inputs and other-agent history are excluded.
+
+The original tasks were updated in place: Pure 1220105430376487,
+Pack 1220105430376551 and RemoteBuilder 1219604454669950. The latter stays open
+for the new final compiler/docs/Skill tuple and fresh 39-entrypoint, 58-signing,
+package, usage, activation/rollback/reapply and D03 gates.
