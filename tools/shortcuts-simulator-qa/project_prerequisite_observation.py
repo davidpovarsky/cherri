@@ -5,6 +5,7 @@ This is a separate diagnostic transport, not a simulator or acceptance runner.
 The existing prepare implementation and its 180/60/240 second limits are inputs.
 """
 import argparse
+import contextlib
 import datetime
 import errno
 import hashlib
@@ -127,22 +128,111 @@ def file_identity(info):
             info.st_mtime_ns, info.st_ctime_ns)
 
 
-def read_regular(path, limit):
+class DirectoryReadContext:
+    """Reuse directory handles; every file and ancestor observation stays fresh.
+
+    Descriptor-relative lookups avoid resolving each full ancestor pathname on
+    every read. Open handles never substitute for checking the current links:
+    a replaced, moved or symlinked ancestor is rejected before/after each read.
+    """
+    def __init__(self):
+        self.handles = {}
+        self.identities = {}
+        self.closed = False
+
+    @staticmethod
+    def identity(info):
+        return (info.st_dev, info.st_ino, info.st_mode)
+
+    def directory(self, path):
+        path = Path(path)
+        require(path.is_absolute() and not self.closed, "ANCESTOR_CONTEXT")
+        if path in self.handles:
+            return self.handles[path]
+        parent_fd = None if path.parent == path else self.directory(path.parent)
+        name = str(path) if parent_fd is None else path.name
+        before = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        require(stat.S_ISDIR(before.st_mode), "ANCESTOR_NOT_DIRECTORY")
+        with defer_cancellation_signals():
+            fd = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+                         | getattr(os, "O_CLOEXEC", 0), dir_fd=parent_fd)
+            self.handles[path] = fd
+            opened = os.fstat(fd)
+            self.identities[path] = self.identity(opened)
+        require(self.identity(before) == self.identity(opened), "ANCESTOR_CHANGED")
+        return fd
+
+    def lstat(self, path):
+        path = Path(path)
+        return os.stat(path.name, dir_fd=self.directory(path.parent),
+                       follow_symlinks=False)
+
+    def ancestors(self, path):
+        result = []
+        for parent in Path(path).parents:
+            self.directory(parent)
+            if parent.parent == parent:
+                current = os.stat(str(parent), follow_symlinks=False)
+            else:
+                current = os.stat(parent.name, dir_fd=self.directory(parent.parent),
+                                  follow_symlinks=False)
+            require(stat.S_ISDIR(current.st_mode), "ANCESTOR_NOT_DIRECTORY")
+            require(self.identity(current) == self.identities[parent], "ANCESTOR_CHANGED")
+            result.append((str(parent), *self.identity(current)))
+        return result
+
+    @contextlib.contextmanager
+    def open(self, path):
+        descriptor, stream = None, None
+        try:
+            with defer_cancellation_signals():
+                descriptor = os.open(Path(path).name, os.O_RDONLY | os.O_NOFOLLOW
+                                     | getattr(os, "O_CLOEXEC", 0),
+                                     dir_fd=self.directory(Path(path).parent))
+                stream = os.fdopen(descriptor, "rb")
+            yield stream
+        finally:
+            with defer_cancellation_signals():
+                if stream is not None:
+                    stream.close()
+                elif descriptor is not None:
+                    os.close(descriptor)
+
+    def close(self):
+        error = None
+        with defer_cancellation_signals():
+            for descriptor in reversed(list(self.handles.values())):
+                try:
+                    os.close(descriptor)
+                except OSError as caught:
+                    if error is None:
+                        error = caught
+            self.handles.clear()
+            self.identities.clear()
+            self.closed = True
+        if error is not None:
+            raise error
+
+
+def read_regular(path, limit, *, directory_reads=None):
     """Fresh bounded read; no metadata, path, content or identity cache."""
     path = Path(path).absolute()
-    before = path.lstat()
+    current_stat = path.lstat if directory_reads is None else lambda: directory_reads.lstat(path)
+    current_parents = (lambda: fresh_ancestors(path)) if directory_reads is None else \
+        lambda: directory_reads.ancestors(path)
+    before = current_stat()
     require(stat.S_ISREG(before.st_mode), "FILE_NOT_REGULAR")
     require(0 <= before.st_size <= limit, "FILE_LIMIT")
-    parents = fresh_ancestors(path)
-    with path.open("rb") as stream:
+    parents = current_parents()
+    with (path.open("rb") if directory_reads is None else directory_reads.open(path)) as stream:
         opened = os.fstat(stream.fileno())
         require(file_identity(opened) == file_identity(before), "FILE_CHANGED_AT_OPEN")
         raw = stream.read(limit + 1)
         after_handle = os.fstat(stream.fileno())
     require(len(raw) <= limit and len(raw) == before.st_size, "FILE_LIMIT_OR_LENGTH")
     require(file_identity(before) == file_identity(after_handle) ==
-            file_identity(path.lstat()), "FILE_CHANGED_DURING_READ")
-    require(fresh_ancestors(path) == parents, "ANCESTOR_CHANGED")
+            file_identity(current_stat()), "FILE_CHANGED_DURING_READ")
+    require(current_parents() == parents, "ANCESTOR_CHANGED")
     return raw
 
 
@@ -357,10 +447,16 @@ class MonotonicClock:
         return value
 
 
-def bound_read(path, limit):
-    before = file_identity(Path(path).lstat())
-    raw = read_regular(path, limit)
-    require(file_identity(Path(path).lstat()) == before, "BOUND_IDENTITY_CHANGED")
+def bound_read(path, limit, *, directory_reads=None):
+    if directory_reads is None:
+        before = file_identity(Path(path).lstat())
+        raw = read_regular(path, limit)
+        require(file_identity(Path(path).lstat()) == before, "BOUND_IDENTITY_CHANGED")
+        return raw, list(before)
+    path = Path(path).absolute()
+    before = file_identity(directory_reads.lstat(path))
+    raw = read_regular(path, limit, directory_reads=directory_reads)
+    require(file_identity(directory_reads.lstat(path)) == before, "BOUND_IDENTITY_CHANGED")
     return raw, list(before)
 
 

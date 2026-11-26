@@ -9,6 +9,7 @@ import contextlib
 import datetime
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -26,6 +27,7 @@ FILE_LIMIT = 4 * 1024 * 1024
 COMMIT_LIMIT = 1024 * 1024
 TREE_LIMIT = 1024 * 1024
 STDERR_LIMIT = 64 * 1024
+FAILURE_REAP_SECONDS = 2
 PATH_PATTERN = re.compile(r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*")
 HEADER = re.compile(rb"([0-9a-f]{40}) (commit|tree|blob) (0|[1-9][0-9]{0,9})\n")
 REDIRECT_ENV = ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
@@ -146,6 +148,8 @@ class Batch:
         self.buffer = bytearray()
         self.eof = {"stdout": False, "stderr": False}
         self.process = None
+        self.failed = False
+        self.failure_cleanup_deadline = None
         self.journal = None
         self.selector = selectors.DefaultSelector()
         self.record = {"argv": list(COMMAND), "startedAt": None, "pid": None,
@@ -253,8 +257,15 @@ class Batch:
             from project_prerequisite_observation import group_observation, kill_group
             self.record["groupBeforeCleanup"] = group_observation(self.process.pid)
             self.record["cleanupSignal"] = kill_group(self.process)
+            reap_deadline = self.deadline
+            if self.failed and self.failure_cleanup_deadline is not None:
+                reap_deadline = min(self.failure_cleanup_deadline,
+                                    time.monotonic() + FAILURE_REAP_SECONDS)
+            self.record["failureCleanupAllowanceMs"] = (
+                max(0, round((reap_deadline - time.monotonic()) * 1000))
+                if self.failed and self.failure_cleanup_deadline is not None else 0)
             try:
-                self.process.wait(timeout=max(0, self.deadline - time.monotonic()))
+                self.process.wait(timeout=max(0, reap_deadline - time.monotonic()))
                 self.record["parentReaped"] = True
             except subprocess.TimeoutExpired:
                 self.record["parentReaped"] = False
@@ -335,13 +346,19 @@ def selected_tree_entry(batch, root_tree, relative, cache):
 
 
 def verify_raw_sources(repo, source, files, *, deadline, originals=None,
-                       tree_inventory=False, file_limits=None, stdout_limit=None, journal=None):
+                       tree_inventory=False, file_limits=None, stdout_limit=None, journal=None,
+                       failure_cleanup_deadline=None):
     root = Path(repo).resolve(strict=True)
     require(os.name == "posix", "SOURCE_POSIX_REQUIRED")
     require(isinstance(source, str) and re.fullmatch(r"[0-9a-f]{40}", source), "SOURCE_INVALID")
     require(isinstance(files, (tuple, list)) and 0 < len(files) <= 512
             and len(set(files)) == len(files), "SOURCE_PATH_SET")
     require(type(tree_inventory) is bool, "SOURCE_TREE_MODE")
+    require(failure_cleanup_deadline is None or
+            type(failure_cleanup_deadline) in {int, float}
+            and math.isfinite(failure_cleanup_deadline)
+            and failure_cleanup_deadline >= deadline, "SOURCE_CLEANUP_DEADLINE")
+    directory_reads = None
     require(stdout_limit is None or type(stdout_limit) is int and 0 < stdout_limit <= 4 * FILE_LIMIT,
             "SOURCE_BATCH_LIMIT")
     if tree_inventory:
@@ -349,12 +366,14 @@ def verify_raw_sources(repo, source, files, *, deadline, originals=None,
         require(type(file_limits) is dict and set(file_limits) == set(files)
                 and all(type(x) is int and 0 < x <= FILE_LIMIT for x in file_limits.values()), "SOURCE_FILE_LIMITS")
         # Preserve listapps' original strict ancestor/read and per-file limits.
-        from project_prerequisite_observation import bound_read
+        from project_prerequisite_observation import bound_read, DirectoryReadContext
+        directory_reads = DirectoryReadContext()
         def read_selected(relative):
             remaining(deadline)
             require(isinstance(relative, str) and len(relative) <= 4096 and PATH_PATTERN.fullmatch(relative)
                     and all(x not in {".", ".."} for x in relative.split("/")), "ORIGINAL_PATH_INVALID")
-            raw, identity = bound_read(root / relative, file_limits[relative])
+            raw, identity = bound_read(root / relative, file_limits[relative],
+                                       directory_reads=directory_reads)
             remaining(deadline)
             return raw, tuple(identity)
     else:
@@ -367,6 +386,7 @@ def verify_raw_sources(repo, source, files, *, deadline, originals=None,
     batch = Batch(root, deadline, stdout_limit if stdout_limit is not None else
                   len(files) * (FILE_LIMIT + 128) + 2 * (COMMIT_LIMIT + 128))
     batch.journal = journal
+    batch.failure_cleanup_deadline = failure_cleanup_deadline
     value = {"schema": "cherri-selected-git-batch/1", "sourceCommitSha": source,
              "status": "SOURCE_UNVERIFIED", "completeTrackedSource": False,
              "sourceFiles": [], "error": None, "cleanupError": None, "process": batch.record,
@@ -393,7 +413,7 @@ def verify_raw_sources(repo, source, files, *, deadline, originals=None,
                     value["sourceFiles"].append({"path": relative, "bytes": len(before),
                         "sha256": digest(before), "gitBlob": blob, "actualGitBlob": actual_blob,
                         "executable": bool(identity[2] & 0o111), "gitMode": mode,
-                        "physicalIdentity": list(identity), "physicalUid": (root / relative).lstat().st_uid})
+                        "physicalIdentity": list(identity), "physicalUid": directory_reads.lstat(root / relative).st_uid})
                     require(actual_blob == blob, "SOURCE_BYTES")
                     raw = before
                 else:
@@ -419,6 +439,18 @@ def verify_raw_sources(repo, source, files, *, deadline, originals=None,
             error = caught
             value["error"] = (str(caught) if isinstance(caught, ValueError) else type(caught).__name__)
         finally:
+            if directory_reads is not None:
+                try:
+                    directory_reads.close()
+                except BaseException as caught:
+                    value["cleanupError"] = (str(caught) if isinstance(caught, ValueError)
+                                             else type(caught).__name__)
+                    if error is None:
+                        error = caught
+                        value["error"] = value["cleanupError"]
+            # Only a failed source decision may use the caller's remaining
+            # outer phase to reap. This never extends acceptance's deadline.
+            batch.failed = error is not None
             try:
                 batch.finish()
             except BaseException as caught:

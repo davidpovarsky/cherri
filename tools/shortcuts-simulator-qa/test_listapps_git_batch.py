@@ -224,8 +224,8 @@ class ListAppsGitBatchTests(unittest.TestCase):
         self.git("update-ref", "HEAD", old, other)
         original = app.observation.bound_read
         seen = []
-        def change(path, limit):
-            result = original(path, limit)
+        def change(path, limit, **kwargs):
+            result = original(path, limit, **kwargs)
             seen.append(str(Path(path).relative_to(self.repo)))
             if len(seen) == len(self.files) * 2:
                 self.git("update-ref", "HEAD", other, old)
