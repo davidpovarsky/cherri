@@ -13,6 +13,7 @@ import (
 type ParseError struct {
 	Span    source.Span
 	Message string
+	code    string
 }
 
 func (e ParseError) String() string {
@@ -73,7 +74,11 @@ func (p *Parser) Errors() []ParseError {
 }
 
 func (p *Parser) errorAt(span source.Span, msg string) {
-	p.errors = append(p.errors, ParseError{Span: span, Message: msg})
+	p.errorCodeAt(span, CodeSyntax, msg)
+}
+
+func (p *Parser) errorCodeAt(span source.Span, code, msg string) {
+	p.errors = append(p.errors, ParseError{Span: span, Message: msg, code: code})
 }
 
 func (p *Parser) advance() Token {
@@ -945,7 +950,7 @@ func (p *Parser) parseStatement() Statement {
 		return nil
 	case TokenConst:
 		kwTok := p.advance()
-		p.errorAt(kwTok.Span, "Error [E_LEGACY_SYNTAX]: 'const' declaration is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate' or update to 'let'.")
+		p.errorCodeAt(kwTok.Span, CodeLegacySyntax, "Error [E_LEGACY_SYNTAX]: 'const' declaration is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate' or update to 'let'.")
 		for p.curr.Type != TokenSemicolon && p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF && !p.currHasLeadingNewline() {
 			p.advance()
 		}
@@ -953,7 +958,7 @@ func (p *Parser) parseStatement() Statement {
 		return nil
 	case TokenAtIdent:
 		nameTok := p.advance()
-		p.errorAt(nameTok.Span, fmt.Sprintf("Error [E_LEGACY_SYNTAX]: '%s' variable syntax is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate' or update to 'var' / 'let'.", nameTok.Text))
+		p.errorCodeAt(nameTok.Span, CodeLegacySyntax, fmt.Sprintf("Error [E_LEGACY_SYNTAX]: '%s' variable syntax is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate' or update to 'var' / 'let'.", nameTok.Text))
 		for p.curr.Type != TokenSemicolon && p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF && !p.currHasLeadingNewline() {
 			p.advance()
 		}
@@ -961,7 +966,7 @@ func (p *Parser) parseStatement() Statement {
 		return nil
 	case TokenDirective:
 		dirTok := p.advance()
-		p.errorAt(dirTok.Span, fmt.Sprintf("Error [E_LEGACY_SYNTAX]: '%s' preprocessor directive is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate'.", dirTok.Text))
+		p.errorCodeAt(dirTok.Span, CodeLegacySyntax, fmt.Sprintf("Error [E_LEGACY_SYNTAX]: '%s' preprocessor directive is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate'.", dirTok.Text))
 		for p.curr.Type != TokenSemicolon && p.curr.Type != TokenRBrace && p.curr.Type != TokenEOF && !p.currHasLeadingNewline() {
 			p.advance()
 		}
@@ -1490,7 +1495,7 @@ func (p *Parser) parsePrefix() Expression {
 
 	case TokenAtIdent:
 		p.advance()
-		p.errorAt(tok.Span, fmt.Sprintf("Error [E_LEGACY_SYNTAX]: '%s' variable syntax is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate' or update to variable reference.", tok.Text))
+		p.errorCodeAt(tok.Span, CodeLegacySyntax, fmt.Sprintf("Error [E_LEGACY_SYNTAX]: '%s' variable syntax is legacy Cherri syntax. Please migrate to Cherri v2.0 using 'cherri-migrate' or update to variable reference.", tok.Text))
 		return &IdentExpr{
 			Span: tok.Span,
 			Name: tok.Text,

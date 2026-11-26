@@ -2,7 +2,7 @@
 
 > **Purpose:** Canonical, continuously maintained project briefing for the owner, future ChatGPT Project conversations, and coding agents. This is a **living execution plan**, not an assertion that v2 is finished. Keep its source-controlled copy updated after every meaningful development milestone.
 >
-> **Plan version:** 2.9.17 | **Current audit:** 2026-11-26 | **Status:** P10R15 IN_PROGRESS. Latest complete historical K476 report remains **111/179 PASSED, 4 FAILED, 28 NOT_RUN, 36 PENDING_EXTERNAL**, **closure_complete=false**. Chapter 38 records integration M, qualified root CI repairs on **88c6fe0**, the actual complete structured cohort, and outstanding integration/native/provider/release work. The new full179 attempt on M stopped on capacity before producing a report. Earlier chapters retain their historical cutoffs.
+> **Plan version:** 2.9.18 | **Current audit:** 2026-11-26 | **Status:** P10R15 IN_PROGRESS. Latest complete local A report is **117/179 PASSED, 2 FAILED, 16 NOT_RUN, 43 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN**, **closure_complete=false**. Chapter39 records its actual source, five private S4 passes on Q and remaining external boundaries. Chapter 38 records integration M, qualified root CI repairs on **88c6fe0**, the actual complete structured cohort, and outstanding integration/native/provider/release work. The new full179 attempt on M stopped on capacity before producing a report. Earlier chapters retain their historical cutoffs.
 >
 > **Canonical repository location after adoption:** `docs/language-v2/CHERRI-V2-LIVING-MASTER-PLAN.md`. This downloadable copy is a snapshot. A separate ChatGPT Project upload does **not** automatically update when GitHub changes: re-upload the updated copy or retrieve the canonical GitHub version in later conversations.
 
@@ -2864,3 +2864,32 @@ when credit is available, final S/D/Skill alignment, RemoteBuilder39/58/usage/
 package/promotion/rollback/reapply, consumer installations, main/release and
 Apple archive/TestFlight with their actual evidence. Existing signing resources
 are prepared; no app archive or TestFlight upload is claimed.
+
+## 39. Current local179, private S4 and diagnostic repair — 2026-11-26
+
+The complete local acceptance run [45885760708](https://github.com/davidpovarsky/cherri/actions/runs/45885760708)
+executed all179 original IDs on implementation `baf6b0357983aa77e6db7cb6db3ad38fe79257a5`:
+**117 PASSED, 2 FAILED, 16 NOT_RUN, 43 PENDING_EXTERNAL, 1 AI_EVAL_NOT_RUN**.
+This supersedes the earlier historical report as the latest complete local run;
+it does not grant final or external acceptance. F04, T05, L01 and RP20 passed
+their complete local producers, with the original330 test identities retained.
+RP46 and BRG29 failed one of95 documentation examples: compile added generic
+E_SYNTAX to the intended E_LEGACY_SYNTAX rejection. The strict collector and
+all original example texts remain unchanged. A shared typed parser diagnostic
+repair is under qualification on the compiler-diagnostic-codes branch.
+
+All five original private S4 methods executed and passed on clean compiler
+`44707350fb6e52dd0d947256bced105ac762a1ac`. The independent9,793-check intake
+SHA is `70acb52897a0324de18a690d5ad8ebccbc0dea0b65a5dddf4c5fb9e3b22b29ca`.
+All38 private inputs are unchanged. Four historical aggregate comparisons
+remain failed in their original records; an actual Q CLI import plan attributes
+the four newly natural actions to the shared statistics Input repair, with
+zero demotions. This evidence is not relabeled to a later compiler source.
+
+The existing-authorized Anthropic count-only probe at20:11:33UTC still returned
+HTTP400 low credit. One count call, zero generation or evaluation outcomes,
+zero purchases. AI01/RP50 live evaluation remains blocked. Apple F01 is being
+re-executed with the existing compatible Python3.12 after the unchanged receipt
+helper proved the Python3.9 cross-process clock-order failure. The failed
+native attempt remains retained. UI/runtime, final source-bound CI and179,
+consumer promotion, main/release, physical iPad and TestFlight remain open.

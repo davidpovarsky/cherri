@@ -174,12 +174,8 @@ func (s *Service) analyzeDocumentSnapshotLocked(uri string) ([]analysis.Diagnost
 
 	// 1. Add parse errors
 	for _, pe := range doc.ParseErrors {
-		code := analysis.CodeSyntax
-		if strings.Contains(pe.Message, analysis.CodeLegacySyntax) {
-			code = analysis.CodeLegacySyntax
-		}
 		diags = append(diags, analysis.Diagnostic{
-			Code:     code,
+			Code:     pe.DiagnosticCode(),
 			Severity: analysis.SeverityError,
 			Span:     pe.Span,
 			Message:  pe.Message,

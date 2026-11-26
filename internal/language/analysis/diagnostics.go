@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/electrikmilk/cherri/internal/language/source"
+	"github.com/electrikmilk/cherri/internal/language/syntax"
 )
 
 // Severity indicates diagnostic seriousness.
@@ -33,7 +34,7 @@ func (s Severity) String() string {
 
 // Stable diagnostic codes from §16.2
 const (
-	CodeSyntax                  = "E_SYNTAX"
+	CodeSyntax                  = syntax.CodeSyntax
 	CodeUnterminatedLit         = "E_UNTERMINATED_LITERAL"
 	CodeUnknownName             = "E_UNKNOWN_NAME"
 	CodeDuplicateName           = "E_DUPLICATE_NAME"
@@ -61,7 +62,7 @@ const (
 	CodeWorkspaceAccess         = "E_WORKSPACE_ACCESS"
 	CodeSetupBinding            = "E_SETUP_BINDING"
 	CodeSchemaMismatch          = "E_SCHEMA_MISMATCH"
-	CodeLegacySyntax            = "E_LEGACY_SYNTAX"
+	CodeLegacySyntax            = syntax.CodeLegacySyntax
 
 	// Warnings
 	CodeShadowing                 = "W_SHADOWING"

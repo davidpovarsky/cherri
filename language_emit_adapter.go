@@ -308,7 +308,7 @@ func collectV2CompileErrorLines(filePath string, content string) ([]int, error) 
 				linesOut = append(linesOut, pe.Span.Start.Line)
 			}
 		}
-		return linesOut, fmt.Errorf("syntax error: [%s] %s", analysis.CodeSyntax, errs[0])
+		return linesOut, fmt.Errorf("syntax error: [%s] %s", errs[0].DiagnosticCode(), errs[0])
 	}
 	reg := schema.DefaultRegistry()
 	graph, issue := modules.Resolve(prog, filePath, nil, reg, migrate.MigrateModuleSource)
@@ -349,7 +349,7 @@ func compileSourceToPlistWithSession(filePath string, content string, options Co
 	parser := syntax.NewParser(file)
 	prog := parser.ParseProgram()
 	if len(parser.Errors()) > 0 {
-		return nil, fmt.Errorf("syntax error: [%s] %s", analysis.CodeSyntax, parser.Errors()[0])
+		return nil, fmt.Errorf("syntax error: [%s] %s", parser.Errors()[0].DiagnosticCode(), parser.Errors()[0])
 	}
 
 	reg := schema.DefaultRegistry()

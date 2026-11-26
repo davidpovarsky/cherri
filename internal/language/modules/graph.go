@@ -264,13 +264,13 @@ func (r *resolver) parse(key, path, text string, info os.FileInfo, span source.S
 	program := parser.ParseProgram()
 	if len(parser.Errors()) != 0 {
 		if r.migrateSource == nil {
-			return nil, &Issue{"E_SYNTAX", fmt.Sprintf("syntax error in imported module %q: %v", path, parser.Errors()[0]), span}
+			return nil, &Issue{parser.Errors()[0].DiagnosticCode(), fmt.Sprintf("syntax error in imported module %q: %v", path, parser.Errors()[0]), span}
 		}
 		file = source.NewFile(source.DocumentID(path), path, 1, r.migrateSource(text))
 		parser = syntax.NewParser(file)
 		program = parser.ParseProgram()
 		if len(parser.Errors()) != 0 {
-			return nil, &Issue{"E_SYNTAX", fmt.Sprintf("syntax error in imported module %q: %v", path, parser.Errors()[0]), span}
+			return nil, &Issue{parser.Errors()[0].DiagnosticCode(), fmt.Sprintf("syntax error in imported module %q: %v", path, parser.Errors()[0]), span}
 		}
 	}
 	module := &Module{
