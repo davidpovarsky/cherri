@@ -6,27 +6,13 @@ import (
 	"strings"
 )
 
-// Arguments were analyzed once by the ordinary call binder before this hook.
-func (a *Analyzer) requireOutputType(call *syntax.CallExpr) types.Type {
-	value := call.PrimaryArg
-	kind := ""
-	nonEmpty := false
-	for _, arg := range call.NamedArgs {
-		switch arg.Label {
-		case "value":
-			if value == nil {
-				value = arg.Value
-			}
-		case "type":
-			if lit, ok := arg.Value.(*syntax.LiteralExpr); ok {
-				kind = strings.ToLower(strings.TrimSpace(lit.Value))
-			}
-		case "nonEmpty":
-			if lit, ok := arg.Value.(*syntax.LiteralExpr); ok {
-				nonEmpty = lit.Type == syntax.TokenTrue
-			}
-		}
-	}
+// Reuse the canonical binder's exact expressions: named and positional options
+// have the same literal rules, without analyzing or evaluating any argument twice.
+func (a *Analyzer) requireOutputType(call *syntax.CallExpr, arguments map[string]syntax.Expression) types.Type {
+	value := arguments["WFInput"]
+	kind, _ := literalTextValue(arguments["WFRequireType"])
+	kind = strings.ToLower(strings.TrimSpace(kind))
+	nonEmpty, _ := literalBoolValue(arguments["WFRequireNonEmpty"])
 	if value == nil {
 		return types.Unknown
 	}
