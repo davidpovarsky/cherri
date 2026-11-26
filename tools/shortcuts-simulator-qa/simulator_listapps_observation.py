@@ -166,7 +166,8 @@ class ListAppsObservation:
             value = source_batch.verify_raw_sources(self.repo, expected, observation.QA_SOURCE_FILES,
                 deadline=deadline, originals=originals, tree_inventory=True,
                 file_limits={name: observation.source_limit(name, qa=True) for name in observation.QA_SOURCE_FILES},
-                stdout_limit=LIMIT, journal=journal)
+                stdout_limit=LIMIT, journal=journal,
+                failure_cleanup_deadline=self.started + PHASE_SECONDS)
             require(self.now() < deadline, "SOURCE_DEADLINE")
             matched = True
         except BaseException as error:
