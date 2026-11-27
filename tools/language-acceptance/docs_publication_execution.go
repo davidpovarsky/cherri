@@ -12,6 +12,19 @@ import (
 // convert them to docs-main-push/1 or infer an unrecorded attempt counter.
 const docsProcessPublicationFormat = "docs-original-process-push/1"
 
+// SentinelX may append one non-authoritative continuity reminder after its
+// result. This closed grammar cannot carry another publication result.
+var docsPublicationContinuityPattern = regexp.MustCompile("^SentinelX continuity: checkpoint recommended\\. Call sentinel_context_save\\(context_id='sentinelx_context_[A-Za-z0-9_]{1,128}', base_revision=(0|[1-9][0-9]{0,9}), data=<compact updated operational state>\\)\\.$")
+
+func docsPublicationContinuityAnnotation(value any) bool {
+	note, ok := value.(map[string]any)
+	if !ok || len(note) != 2 || finalProvenanceString(note, "type") != "text" {
+		return false
+	}
+	text, ok := note["text"].(string)
+	return ok && len(text) <= 512 && docsPublicationContinuityPattern.MatchString(text)
+}
+
 var docsPublicationPostNames = []string{
 	"post-head", "post-tree", "post-ref", "post-status", "post-diff",
 	"post-origin", "post-push-origin", "post-base", "post-index", "post-replace",
@@ -129,8 +142,11 @@ func finalProvenanceDocsProcessPublication(in *finalProvenanceInputs, p finalPro
 		return fail("original provider response did not succeed")
 	}
 	content := finalProvenanceArray(provider, "content")
-	if len(content) != 1 {
+	if len(content) < 1 || len(content) > 2 {
 		return fail("provider response content is ambiguous")
+	}
+	if len(content) == 2 && !docsPublicationContinuityAnnotation(content[1]) {
+		return fail("provider response has an unrecognized annotation or second result")
 	}
 	block, ok := content[0].(map[string]any)
 	if !ok || finalProvenanceString(block, "type") != "text" {
