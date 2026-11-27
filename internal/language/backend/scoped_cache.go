@@ -23,8 +23,8 @@ func EmitScopedCache(config ScopedCacheConfig, prefix string, nextID func() stri
 	if math.IsNaN(config.TTL) || math.IsInf(config.TTL, 0) || config.TTL < 0 {
 		return nil, fmt.Errorf("E_CACHE_TTL: invalid native lifecycle TTL")
 	}
-	if config.Kind != "text" && config.Kind != "number" && config.Kind != "bool" {
-		return nil, fmt.Errorf("E_CACHE_VALUE_TYPE: unsupported scalar archive type")
+	if config.Kind != "text" && config.Kind != "number" && config.Kind != "bool" && config.Kind != "date" {
+		return nil, fmt.Errorf("E_CACHE_VALUE_TYPE: unsupported archive type")
 	}
 	b := &scopedCacheEmitter{config: config, prefix: prefix, nextID: nextID, emit: emit}
 	if config.TTL == 0 {
@@ -50,6 +50,9 @@ func EmitScopedCache(config ScopedCacheConfig, prefix string, nextID func() stri
 	dictionary := b.produce("dictionary", map[string]any{"WFItems": SemanticValue{Kind: ValDict, DictVal: []DictEntry{{Key: "witness", Value: SemanticValue{Kind: ValBool, BoolVal: true}}}}})
 	b.dictionaryType = b.produce("getitemtype", map[string]any{"WFInput": cacheReference(dictionary)})
 	b.epoch = b.produce("date", map[string]any{"WFDateActionMode": "Specified Date", "WFDateActionDate": "1970-01-01T00:00:00Z"})
+	if config.Kind == "date" {
+		b.dateType = b.produce("getitemtype", map[string]any{"WFInput": cacheReference(b.epoch)})
+	}
 	now := b.now()
 	stored := b.produce("getstoredcontent", map[string]any{"WFStoredContentKey": config.Namespace, "WFStoredContentGlobalValue": config.Global})
 	b.when(b.count(stored), 4, 1, OperandNumber, func() {
@@ -88,12 +91,12 @@ func EmitScopedCache(config ScopedCacheConfig, prefix string, nextID func() stri
 }
 
 type scopedCacheEmitter struct {
-	config                                                 ScopedCacheConfig
-	prefix                                                 string
-	nextID                                                 func() string
-	emit                                                   ScopedCacheEmitter
-	err                                                    error
-	zero, one, textType, numberType, dictionaryType, epoch *Reference
+	config                                                           ScopedCacheConfig
+	prefix                                                           string
+	nextID                                                           func() string
+	emit                                                             ScopedCacheEmitter
+	err                                                              error
+	zero, one, textType, numberType, dictionaryType, dateType, epoch *Reference
 }
 
 func cacheReference(value *Reference) SemanticValue {
@@ -253,6 +256,8 @@ func (b *scopedCacheEmitter) readKnownEnvelope(envelope, now *Reference) {
 							b.set("hit", b.one)
 						})
 					})
+				} else if b.config.Kind == "date" {
+					b.readDatePayload(value)
 				} else {
 					b.set("result", value)
 					b.set("hit", b.one)
@@ -267,14 +272,21 @@ func (b *scopedCacheEmitter) storeEnvelope(value *Reference) {
 	if b.config.Kind != "text" {
 		b.failIf(b.count(value), 5, 1, OperandNumber)
 		actual := b.produce("getitemtype", map[string]any{"WFInput": cacheReference(value)})
-		b.failIf(actual, 5, cacheText(b.numberType), OperandString)
+		witness := b.numberType
+		if b.config.Kind == "date" {
+			witness = b.dateType
+		}
+		b.failIf(actual, 5, cacheText(witness), OperandString)
 		if b.config.Kind == "bool" {
 			b.when(value, 5, 0, OperandNumber, func() { b.failIf(value, 5, 1, OperandNumber) })
 		}
 	}
+	payload := value
+	if b.config.Kind == "date" {
+		payload = b.writeDatePayload(value)
+	}
 	created := b.now()
 	expires := b.math(created, "+", b.config.TTL)
-	payload := value
 	if b.config.Kind == "text" {
 		// Native empty Text may expose zero content items. Source type/presence is
 		// already checked; archive that precise empty value without a required-input

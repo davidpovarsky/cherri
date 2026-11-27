@@ -1,0 +1,41 @@
+#define name P15 Cache Date native probe
+#define version 27
+#include 'actions/calendar'
+#include 'actions/storage'
+storeValue("cherri.cache.v1.local.date.7c7dbac925cdd72b1b8eccb7d51c1b490ea97ac6f5bd70a24c09f1b87d2def18", "{}")
+@calls0 = 0
+const original0 = date("1969-12-31T23:59:59.875Z")
+const first0 = cache("p15.cache.date.native.0", 300) {
+@calls0 += 1
+yield original0
+}
+const hit0 = cache("p15.cache.date.native.0", 300) {
+@calls0 += 1
+yield date("2000-01-01T00:00:00Z")
+}
+const original0Stamp = formatDate(original0, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+const original0Type = getType(original0)
+const first0Stamp = formatDate(first0, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+const first0Type = getType(first0)
+const hit0Stamp = formatDate(hit0, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+const hit0Type = getType(hit0)
+deleteStoredValue("cherri.cache.v1.local.date.7c7dbac925cdd72b1b8eccb7d51c1b490ea97ac6f5bd70a24c09f1b87d2def18")
+storeValue("cherri.cache.v1.local.date.5e78de66f7afaa7b9b24c78e106ab1b6627ebc85949d234945011ba381d18cd5", "{}")
+@calls1 = 0
+const original1 = date("2026-11-27T14:00:00.125Z")
+const first1 = cache("p15.cache.date.native.1", 300) {
+@calls1 += 1
+yield original1
+}
+const hit1 = cache("p15.cache.date.native.1", 300) {
+@calls1 += 1
+yield date("2000-01-01T00:00:00Z")
+}
+const original1Stamp = formatDate(original1, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+const original1Type = getType(original1)
+const first1Stamp = formatDate(first1, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+const first1Type = getType(first1)
+const hit1Stamp = formatDate(hit1, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+const hit1Type = getType(hit1)
+deleteStoredValue("cherri.cache.v1.local.date.5e78de66f7afaa7b9b24c78e106ab1b6627ebc85949d234945011ba381d18cd5")
+text("P15_CACHE_DATE_NATIVE|case0:calls={@calls0};expected={original0Stamp};first={first0Stamp};hit={hit0Stamp};types={original0Type}/{first0Type}/{hit0Type}|case1:calls={@calls1};expected={original1Stamp};first={first1Stamp};hit={hit1Stamp};types={original1Type}/{first1Type}/{hit1Type}")

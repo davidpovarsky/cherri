@@ -90,7 +90,6 @@ func TestP15CacheRejectsUnqualifiedPersistence(t *testing.T) {
 		{"dictionary", "yield {\"x\":1}", "yield {\"x\":1}", "", ""},
 		{"optional_absence", "yield none", "yield nil", "", ""},
 		{"json_null", "yield null", "yield nil", "", ""},
-		{"date", "yield CurrentDate", "yield CurrentDate", "", ""},
 		{"native_file", "yield getType(text(\"file\"),\"public.data\")", "yield getType(text(\"file\"),\"public.data\")", "", ""},
 		{"void", "wait(1)", "wait(1)", "", ""},
 		{"negative_ttl", "yield 1", "yield 1", "key:\"key\",ttl:-1", "\"key\",-1"},
