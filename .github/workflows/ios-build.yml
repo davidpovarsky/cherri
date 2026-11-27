@@ -123,7 +123,7 @@ jobs:
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
           JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only || false }}
           RP39_DIAGNOSTIC_ONLY: ${{ inputs.rp39_diagnostic_only || false }}
-        run: python3 -I -B ios/scripts/record_workspace_presentation_source.py before
+        run: python3 -I -B ios/scripts/record_workspace_presentation_source.py before ${{ inputs.rp39_diagnostic_only == true && runner.arch == 'ARM64' && '--verified-homebrew-git' || '' }}
 
       - name: Test bounded iOS evidence collector
         run: |
@@ -131,6 +131,7 @@ jobs:
           python3 -m unittest discover -s ios/scripts -p 'test_ios_evidence_upload_contract.py' -v
           python3 -I -B -m unittest discover -s ios/scripts -p 'test_record_workspace_presentation_source.py' -v
           python3 -I -B -m unittest discover -s ios/scripts -p 'test_rp39_diagnostic_transport.py' -v
+          python3 -I -B -m unittest discover -s ios/scripts -p 'test_rp39_source_git_failure_retention.py' -v
 
       - name: Verify bounded xcresult summary protocol
         run: python3 -I -B -m unittest discover -s ios/scripts -p 'test_ios_xcresult_summary.py' -v
@@ -382,6 +383,9 @@ jobs:
           OWNED_GIT_ARGS=()
           if [ "$RP39_DIAGNOSTIC_ONLY" = "true" ]; then
             OWNED_GIT_ARGS=(--owned-git-diagnostic)
+            if [ "${{ runner.arch }}" = "ARM64" ]; then
+              OWNED_GIT_ARGS+=(--verified-homebrew-git)
+            fi
           fi
           python3 -I -B scripts/collect_ios_xcresult_summary.py prepare --repo .. "${OWNED_GIT_ARGS[@]}"
 
@@ -414,7 +418,7 @@ jobs:
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
           JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only || false }}
           RP39_DIAGNOSTIC_ONLY: ${{ inputs.rp39_diagnostic_only || false }}
-        run: python3 -I -B ios/scripts/record_workspace_presentation_source.py after
+        run: python3 -I -B ios/scripts/record_workspace_presentation_source.py after ${{ inputs.rp39_diagnostic_only == true && runner.arch == 'ARM64' && '--verified-homebrew-git' || '' }}
 
       - name: Upload presentation component source receipts
         if: always() && (inputs.workspace_presentation_only == true || inputs.joined_editor_component_only == true || inputs.rp39_diagnostic_only == true) && steps.workspace_component_source.outcome == 'success'
@@ -442,6 +446,9 @@ jobs:
           OWNED_GIT_ARGS=()
           if [ "$RP39_DIAGNOSTIC_ONLY" = "true" ]; then
             OWNED_GIT_ARGS=(--owned-git-diagnostic)
+            if [ "${{ runner.arch }}" = "ARM64" ]; then
+              OWNED_GIT_ARGS+=(--verified-homebrew-git)
+            fi
           fi
           python3 -I -B scripts/collect_ios_xcresult_summary.py collect --repo .. \
             --reservation-sha "$IOS_XCRESULT_RESERVATION_SHA" "${OWNED_GIT_ARGS[@]}"
@@ -462,7 +469,7 @@ jobs:
         working-directory: ios
         env:
           RP39_DIAGNOSTIC_ONLY: "true"
-        run: python3 -I -B scripts/seal_rp39_diagnostic.py --repo ..
+        run: python3 -I -B scripts/seal_rp39_diagnostic.py --repo .. --retain-source-failure
 
       - name: Upload encrypted RP39 original diagnostics
         if: always() && inputs.rp39_diagnostic_only == true

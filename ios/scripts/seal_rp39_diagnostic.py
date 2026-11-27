@@ -23,8 +23,8 @@ def load(name):
 
 
 base = load("collect_ios_xcresult_summary")
-profile = load("record_workspace_presentation_source")
 SCHEMA = "cherri-rp39-original-diagnostics/1"
+FAILURE_SCHEMA = "cherri-rp39-source-failure-diagnostics/1"
 WHOLE_SECONDS = 300
 ENCRYPT_SECONDS = 20
 LOGICAL_LIMIT = 512 * 1024 * 1024
@@ -61,12 +61,12 @@ def file_record(path, maximum=LOGICAL_LIMIT):
             "uid": before.st_uid, "gid": before.st_gid, "mtimeNs": before.st_mtime_ns}
 
 
-def source_receipts(repo, context):
+def checked_before_source(repo, context):
+    profile = load("record_workspace_presentation_source")
     directory = repo / "ios/.build/rp39-diagnostic-source"
-    before_path, after_path = directory / "before.original.json", directory / "after.original.json"
+    before_path = directory / "before.original.json"
     before_raw = base.read_regular(before_path, 65536)
-    after_raw = base.read_regular(after_path, 65536)
-    before, after = base.json_value(before_raw), base.json_value(after_raw)
+    before = base.json_value(before_raw)
     base.exact_keys(before, {"schema", "context", "source", "methods", "scope", "nativeAcceptanceGranted", "phase"})
     base.exact_keys(before["source"], {"tree", "files"})
     expected_context = profile.context_from_environment(os.environ)
@@ -76,7 +76,6 @@ def source_receipts(repo, context):
                  and before.get("nativeAcceptanceGranted") is False
                  and before.get("scope") == "declared-rp39-diagnostic-source-only"
                  and base.HEX40.fullmatch(before["source"]["tree"]), "SOURCE_CHANGED")
-    base.require(after == dict(before, phase="after", beforeSHA256=base.sha(before_raw)), "SOURCE_CHANGED")
     files = before["source"]["files"]
     base.require(set(files) == set(profile.RP39_SOURCE_FILES), "SOURCE_CHANGED")
     for name, recorded in files.items():
@@ -86,8 +85,58 @@ def source_receipts(repo, context):
         mode = "100755" if info.st_mode & 0o111 else "100644"
         base.require(recorded == {"gitBlob": blob, "sha256": base.sha(raw),
                                   "bytes": len(raw), "mode": mode}, "SOURCE_CHANGED")
+    return before, before_raw, before_path
+
+
+def source_receipts(repo, context):
+    before, before_raw, before_path = checked_before_source(repo, context)
+    after_path = before_path.with_name("after.original.json")
+    after_raw = base.read_regular(after_path, 65536)
+    after = base.json_value(after_raw)
+    base.require(after == dict(before, phase="after", beforeSHA256=base.sha(before_raw)), "SOURCE_CHANGED")
     return {"before": base.digest_record(before_raw), "after": base.digest_record(after_raw),
             "source": before["source"], "paths": (before_path, after_path)}
+
+
+def failed_source_receipts(repo, context):
+    """Authenticate available originals without claiming the missing source closure."""
+    profile = load("record_workspace_presentation_source")
+    before, before_raw, before_path = checked_before_source(repo, context)
+    after_path = before_path.with_name("after.original.json")
+    base.require(not after_path.exists() and not after_path.is_symlink(), "SOURCE_CHANGED")
+    failure_path = before_path.with_name("after-failure.original.json")
+    raw = base.read_regular(failure_path, 256 * 1024)
+    value = base.json_value(raw)
+    base.exact_keys(value, {"schema", "context", "phase", "sourceVerification",
+                            "formalAcceptanceGranted", "beforeSHA256", "exception"})
+    base.require(value["schema"] == profile.FAILURE_SCHEMA and value["context"] == before["context"]
+                 and value["phase"] == "after" and value["sourceVerification"] == "FAILED"
+                 and value["formalAcceptanceGranted"] is False
+                 and value["beforeSHA256"] == base.sha(before_raw), "SOURCE_CHANGED")
+    error = value["exception"]
+    base.exact_keys(error, {"type", "message", "messageTruncated", "argv", "timeoutSeconds",
+                            "returnCode", "stdout", "stderr"})
+    base.require(type(error["type"]) is str and error["type"].isidentifier()
+                 and len(error["type"]) <= 64 and type(error["message"]) is str
+                 and len(error["message"]) <= 4096 and type(error["messageTruncated"]) is bool,
+                 "RESULT_INVALID")
+    argv = error["argv"]
+    base.require(argv is None or (type(argv) is list and len(argv) <= 80 and
+                 all(type(item) is str and len(item.encode()) <= 4096 for item in argv)), "RESULT_INVALID")
+    base.require(error["timeoutSeconds"] is None or (type(error["timeoutSeconds"]) in (int, float)
+                 and 0 < error["timeoutSeconds"] <= 10), "RESULT_INVALID")
+    base.require(error["returnCode"] is None or base.integer(error["returnCode"], -255, 255),
+                 "RESULT_INVALID")
+    for name in ("stdout", "stderr"):
+        stream = error[name]
+        if stream is not None:
+            base.exact_keys(stream, {"encoding", "bytes", "data"})
+            base.require(stream["encoding"] == "hex" and base.integer(stream["bytes"], 0, 32768)
+                         and type(stream["data"]) is str and len(stream["data"]) == 2 * stream["bytes"]
+                         and bytes.fromhex(stream["data"]).hex() == stream["data"], "RESULT_INVALID")
+    return {"before": base.digest_record(before_raw), "after": None,
+            "failure": base.digest_record(raw), "source": before["source"],
+            "paths": (before_path, failure_path), "pathPhases": ("before", "after-failure")}
 
 
 def member_inventory(repo, root, receipts, directories=None):
@@ -118,7 +167,7 @@ def member_inventory(repo, root, receipts, directories=None):
                 path = current / name
                 add(prefix + "/" + path.relative_to(directory).as_posix(), path)
 
-    for phase, path in zip(("before", "after"), receipts["paths"]):
+    for phase, path in zip(receipts.get("pathPhases", ("before", "after")), receipts["paths"]):
         add("sources/" + phase + ".original.json", path)
     for name in ("xcodetest.log", "xcodetest.exitcode"):
         path = repo / "ios" / name
@@ -140,7 +189,7 @@ def member_inventory(repo, root, receipts, directories=None):
 
 
 def make_archive(archive, members, identity, *, guard=lambda: None, manifest_schema=SCHEMA):
-    base.require(manifest_schema in (SCHEMA, "cherri-native-original-diagnostics/1"), "SCHEMA_REJECTED")
+    base.require(manifest_schema in (SCHEMA, FAILURE_SCHEMA, "cherri-native-original-diagnostics/1"), "SCHEMA_REJECTED")
     manifest = {"schema": manifest_schema, "identity": identity,
                 "members": [{"name": name, **row["original"]} for name, row in sorted(members.items())]}
     manifest_raw = base.canonical(manifest)
@@ -217,9 +266,12 @@ def encrypt_archive(private, stage, archive, archive_record, recipient, helper, 
     return cipher_record, {"observed": observed, "capture": detail}
 
 
-def seal(repo, context, root, output, *, started):
+def seal(repo, context, root, output, *, started, failure_only=False):
+    profile = load("record_workspace_presentation_source")
     deadline = started + WHOLE_SECONDS
-    receipts = source_receipts(repo, context)
+    base.require(type(failure_only) is bool, "RESULT_INVALID")
+    read_receipts = failed_source_receipts if failure_only else source_receipts
+    receipts = read_receipts(repo, context)
     helper = base.load_primitives(repo, None)
     output.mkdir(mode=0o700)
     private = output / "private"
@@ -252,18 +304,22 @@ def seal(repo, context, root, output, *, started):
     identity = {"context": context, "directories": directories, "sourceReceipts": {key: receipts[key] for key in ("before", "after", "source")},
                 "methods": list(profile.RP39_METHODS), "nativeExitCode": native,
                 "finishedXCResultPresent": complete, "formalAcceptanceGranted": False}
+    if failure_only:
+        identity.update(disposition="SOURCE_AFTER_FAILED", sourceClosureVerified=False)
+        identity["sourceReceipts"]["failure"] = receipts["failure"]
     archive = private / "rp39-originals.zip"
-    archive_record, manifest = make_archive(archive, members, identity, guard=guard)
+    schema = FAILURE_SCHEMA if failure_only else SCHEMA
+    archive_record, manifest = make_archive(archive, members, identity, guard=guard, manifest_schema=schema)
     stage = private / "public-stage"
     stage.mkdir(mode=0o700)
     cipher_record, encryption = encrypt_archive(private, stage, archive, archive_record,
         repo / base.RECIPIENT, helper, deadline)
     guard()
     after_directories = {}
-    base.require(source_receipts(repo, context) == receipts and
+    base.require(read_receipts(repo, context) == receipts and
                  member_inventory(repo, root, receipts, after_directories) == members and
                  after_directories == directories, "SOURCE_CHANGED")
-    receipt = {"schema": SCHEMA, "context": context, "methods": list(profile.RP39_METHODS),
+    receipt = {"schema": schema, "context": context, "methods": list(profile.RP39_METHODS),
                "finishedXCResultPresent": complete, "nativeExitCode": native,
                "formalAcceptanceGranted": False, "memberCount": len(members) + 1,
                "encryptionProcess": encryption,
@@ -277,6 +333,9 @@ def seal(repo, context, root, output, *, started):
                            "logicalBytes": LOGICAL_LIMIT, "archiveBytes": ARCHIVE_LIMIT,
                            "members": MEMBER_LIMIT, "liveFloorBytes": LIVE_FLOOR,
                            "overheadBytes": OVERHEAD_BYTES}}
+    if failure_only:
+        receipt.update(disposition="SOURCE_AFTER_FAILED", sourceClosureVerified=False)
+        receipt["sourceReceipts"]["failure"] = receipts["failure"]
     base.write_json(stage / "receipt.json", receipt)
     base.require({path.name for path in stage.iterdir()} == PUBLIC and time.monotonic() < deadline,
                  "DIAGNOSTIC_DEADLINE")
@@ -287,6 +346,7 @@ def seal(repo, context, root, output, *, started):
 def main():
     parser = base.FixedParser()
     parser.add_argument("--repo", required=True)
+    parser.add_argument("--retain-source-failure", action="store_true")
     args = parser.parse_args()
     base.require(sys.flags.isolated == 1 and os.environ.get("RP39_DIAGNOSTIC_ONLY") == "true",
                  "CONTEXT_REJECTED")
@@ -296,14 +356,20 @@ def main():
     base.require(repo == Path(os.environ["GITHUB_WORKSPACE"]).resolve(strict=True), "SOURCE_CHANGED")
     root = base.owned_root(context)
     output = root.parent / (root.name + "-rp39")
+    after = repo / "ios/.build/rp39-diagnostic-source/after.original.json"
+    failure_only = args.retain_source_failure and not after.exists() and not after.is_symlink()
     with base.envelope(WHOLE_SECONDS):
-        value = seal(repo, context, root, output, started=time.monotonic())
+        value = seal(repo, context, root, output, started=time.monotonic(), failure_only=failure_only)
+    if failure_only:
+        print("RP39_DIAGNOSTIC_RETAINED_SOURCE_FAILURE")
+        return 70
     print("RP39_DIAGNOSTIC_SEALED_FINISHED" if value["finishedXCResultPresent"] else "RP39_DIAGNOSTIC_SEALED_NO_FINISHED_RESULT")
+    return 0
 
 
 if __name__ == "__main__":
     try:
-        main()
+        raise SystemExit(main())
     except (Exception, base.EnvelopeExpired):
         print("RP39_DIAGNOSTIC_REJECTED", file=sys.stderr)
         raise SystemExit(70)
