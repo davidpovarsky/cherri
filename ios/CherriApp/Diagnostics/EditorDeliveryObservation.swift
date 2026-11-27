@@ -236,6 +236,27 @@ struct CherriRP39NativeEditorWitness: UIViewRepresentable {
                 "utf16Length": length, "selectionLocation": selected.location,
                 "selectionLength": selected.length, "firstResponder": editor.isFirstResponder,
             ]
+            // Observe the current collapsed caret so XCTest can begin the real
+            // press-and-drag at that caret. This never sets a text selection.
+            if selected.length == 0,
+               let currentPosition = editor.position(from: editor.beginningOfDocument, offset: selected.location) {
+                let localCaret = editor.caretRect(for: currentPosition)
+                let rect = editor.convert(localCaret, to: window)
+                let frame = editor.convert(editor.bounds, to: window)
+                let dx = (rect.midX - frame.minX) / frame.width
+                let dy = (rect.midY - frame.minY) / frame.height
+                let geometry = [localCaret.midX, localCaret.midY, rect.midX, rect.midY,
+                                frame.minX, frame.minY, frame.width, frame.height, dx, dy]
+                if frame.width > 0, frame.height > 0,
+                   geometry.allSatisfy({ $0.isFinite }),
+                   (0...1).contains(dx), (0...1).contains(dy) {
+                    value["currentCaretOffset"] = selected.location
+                    value["currentCaretDX"] = Double(dx)
+                    value["currentCaretDY"] = Double(dy)
+                    value["currentCaretEditorPoint"] = [Double(localCaret.midX), Double(localCaret.midY)]
+                    value["currentCaretWindowPoint"] = [Double(rect.midX), Double(rect.midY)]
+                }
+            }
             if let target = CherriEditorDeliveryObservation.shared?.configuration.caretTargets[digest],
                target <= length,
                let position = editor.position(from: editor.beginningOfDocument, offset: target) {
