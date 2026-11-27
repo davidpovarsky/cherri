@@ -206,7 +206,9 @@ func p15BRG26StaleState(t *testing.T, mode string) (a, b []byte, directory, inpu
 		signFailed, signingServiceFailed, backoff = oldFailed, oldServiceFailed, oldBackoff
 	})
 	a = p15BRG26Unsigned(t, mode, "BRG26 A earlier", p15BRG26Earlier)
-	earlierShortcut := shortcut
+	// Decode A into a fresh struct. Seeding from the current workflow can
+	// append duplicate actions when the plist decoder restores slice fields.
+	var earlierShortcut Shortcut
 	if _, err := plist.Unmarshal(a, &earlierShortcut); err != nil {
 		t.Fatal("cannot restore the actual earlier A workflow", err)
 	}
