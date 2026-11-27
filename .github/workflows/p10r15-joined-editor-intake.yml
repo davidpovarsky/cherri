@@ -1,0 +1,57 @@
+name: RP39 and RP41 Native Intake Controls
+
+"on": create
+
+permissions:
+  contents: read
+
+concurrency:
+  group: joined-editor-intake-b475205-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  actual-distinct-producers:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-rp39-rp41-intake-20261127' &&
+      github.run_attempt == '1'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - name: Check out the exact controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the fixed compiler source
+        uses: actions/checkout@v6
+        with:
+          ref: b47520503099ce44c7f918d6540ecd4c11a8c20a
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select the existing qualified Go version
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.13'
+          cache-dependency-path: source/go.sum
+
+      - name: Execute the two dedicated native intake control parents
+        timeout-minutes: 5
+        run: /usr/bin/python3 -I -B controller/tools/ci/joined_editor_intake/run.py
+
+      - name: Retain exact component source and original Go events
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: joined-editor-intake-b475205-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-joined-editor-intake-b475205
+          if-no-files-found: error
+          retention-days: 30
+          include-hidden-files: true
