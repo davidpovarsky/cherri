@@ -23,7 +23,6 @@ def load(name):
 
 
 base = load("collect_ios_xcresult_summary")
-profile = load("record_workspace_presentation_source")
 SCHEMA = "cherri-rp39-original-diagnostics/1"
 WHOLE_SECONDS = 300
 ENCRYPT_SECONDS = 20
@@ -62,6 +61,7 @@ def file_record(path, maximum=LOGICAL_LIMIT):
 
 
 def source_receipts(repo, context):
+    profile = load("record_workspace_presentation_source")
     directory = repo / "ios/.build/rp39-diagnostic-source"
     before_path, after_path = directory / "before.original.json", directory / "after.original.json"
     before_raw = base.read_regular(before_path, 65536)
@@ -218,6 +218,7 @@ def encrypt_archive(private, stage, archive, archive_record, recipient, helper, 
 
 
 def seal(repo, context, root, output, *, started):
+    profile = load("record_workspace_presentation_source")
     deadline = started + WHOLE_SECONDS
     receipts = source_receipts(repo, context)
     helper = base.load_primitives(repo, None)
