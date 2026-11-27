@@ -1,0 +1,417 @@
+{
+  "acceptance": {
+    "diagnosticDetailsValidated": true,
+    "formalAcceptanceGranted": false,
+    "fullDebugExportAccepted": false,
+    "iOSDeviceExercised": false,
+    "nativeCarrierAccepted": false,
+    "nativeFileAccepted": false,
+    "noMacAccessByReviewer": true,
+    "noProductOrNativeReplayByReviewer": true,
+    "originalGuardedCandidateAccepted": false,
+    "originalObserverRunAccepted": false,
+    "signedImportExercised": false,
+    "sourceOrFixtureChangedByReviewer": false
+  },
+  "actualExecution": {
+    "completedActionIndices": [
+      0,
+      1
+    ],
+    "engineElapsedMs": 84.09041666891426,
+    "engineRunInvocations": 1,
+    "errorMeaningInferred": false,
+    "eventCount": 21,
+    "failedAction": {
+      "callbackUUID": null,
+      "diagnostic": {
+        "allTextUTF8Limit": 4096,
+        "fields": {
+          "localizedDescription": {
+            "status": "OBSERVED",
+            "utf8Bytes": 56,
+            "value": "The operation couldn’t be completed. Access was denied"
+          },
+          "localizedFailureReason": {
+            "status": "OBSERVED",
+            "utf8Bytes": 17,
+            "value": "Access was denied"
+          },
+          "localizedRecoverySuggestion": {
+            "status": "NIL"
+          }
+        },
+        "observedTextUTF8Bytes": 73,
+        "status": "BOUNDED_DIAGNOSTIC_ONLY",
+        "textUTF16Limit": 512,
+        "textUTF8Limit": 2048,
+        "underlyingDepthLimit": 1,
+        "underlyingError": {
+          "status": "NIL"
+        }
+      },
+      "error": {
+        "code": 1011,
+        "domain": "VCVoiceShortcutsErrorDomain",
+        "nativeClass": "NSError"
+      },
+      "eventSequence": 19,
+      "identifier": "is.workflow.actions.makezip",
+      "index": 1,
+      "modelUUID": "CD9AAA6A-8CF5-58EF-9791-B9D0BD5ED90F",
+      "nativeClass": "WFMakeArchiveAction",
+      "outputCardinality": 0,
+      "uuidBindingPassed": false
+    },
+    "initialText": {
+      "actionIndex": 0,
+      "actionUUID": "DC7BC9B1-0AC7-560D-8CF2-0B15619E9DCF",
+      "bytes": 83,
+      "error": null,
+      "nativeClass": "WFStringContentItem",
+      "sha256": "539a079afd9ef25a7e6c893494300f86f9f8db22c9dc4b58bbb433d4e492c365",
+      "strictStoredTextHelper": "PASS"
+    },
+    "missingCompletionIndices": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "missingRoles": [
+      "extracted",
+      "extractedCount",
+      "named",
+      "namedBytes64",
+      "namedCount",
+      "namedExtension",
+      "namedStem",
+      "namedType",
+      "terminal"
+    ],
+    "terminal": {
+      "actionOutputsAtFinish": {
+        "kind": "NIL",
+        "nativeClass": null,
+        "present": false
+      },
+      "cancelled": false,
+      "diagnostic": {
+        "allTextUTF8Limit": 4096,
+        "fields": {
+          "localizedDescription": {
+            "status": "OBSERVED",
+            "utf8Bytes": 56,
+            "value": "The operation couldn’t be completed. Access was denied"
+          },
+          "localizedFailureReason": {
+            "status": "OBSERVED",
+            "utf8Bytes": 17,
+            "value": "Access was denied"
+          },
+          "localizedRecoverySuggestion": {
+            "status": "NIL"
+          }
+        },
+        "observedTextUTF8Bytes": 73,
+        "status": "BOUNDED_DIAGNOSTIC_ONLY",
+        "textUTF16Limit": 512,
+        "textUTF8Limit": 2048,
+        "underlyingDepthLimit": 1,
+        "underlyingError": {
+          "status": "NIL"
+        }
+      },
+      "error": {
+        "code": 1011,
+        "domain": "VCVoiceShortcutsErrorDomain",
+        "nativeClass": "NSError"
+      },
+      "eventSequence": 20,
+      "output": {
+        "kind": "NIL",
+        "nativeClass": null,
+        "present": false
+      }
+    },
+    "uuidChangeCauseInferred": false
+  },
+  "archive": {
+    "bytes": 195561,
+    "extractedBytesVerified": true,
+    "members": 77,
+    "path": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/export-evidence/native-file-archive-error-acquisition-01/originals.mac.zip",
+    "sha256": "1b49de707db64636b80fc291fcd70674120543b83db505cfb8e5dbf7b5c61197",
+    "transferManifestSHA256": "b53503e469f8520612289f97163fae567b3c73becbd82a8f8ed15506b0af83f0",
+    "transferPinsVerified": 76
+  },
+  "boundedErrorObservation": {
+    "addedMetadataUTF8BytesPerError": 464,
+    "allObservedMetadataWithinVariantBounds": true,
+    "bothErrorObjectsIdentical": true,
+    "entitlementOrPolicyCauseIdentified": false,
+    "errorCode": 1011,
+    "errorDomain": "VCVoiceShortcutsErrorDomain",
+    "errorNativeClass": "NSError",
+    "errorRecordCount": 2,
+    "errorSequences": [
+      19,
+      20
+    ],
+    "localizedRecoverySuggestion": {
+      "status": "NIL"
+    },
+    "maximumAddedMetadataUTF8Bytes": 8192,
+    "maximumUTF16CodeUnitsPerMessage": 512,
+    "maximumUTF8BytesAllTextPerError": 4096,
+    "maximumUTF8BytesPerMessage": 2048,
+    "observedFields": {
+      "localizedDescription": {
+        "utf16CodeUnits": 54,
+        "utf8Bytes": 56,
+        "value": "The operation couldn’t be completed. Access was denied"
+      },
+      "localizedFailureReason": {
+        "utf16CodeUnits": 17,
+        "utf8Bytes": 17,
+        "value": "Access was denied"
+      }
+    },
+    "observedTextUTF8BytesPerError": 73,
+    "permissionRemedyEstablished": false,
+    "rawDiagnostic": {
+      "allTextUTF8Limit": 4096,
+      "fields": {
+        "localizedDescription": {
+          "status": "OBSERVED",
+          "utf8Bytes": 56,
+          "value": "The operation couldn’t be completed. Access was denied"
+        },
+        "localizedFailureReason": {
+          "status": "OBSERVED",
+          "utf8Bytes": 17,
+          "value": "Access was denied"
+        },
+        "localizedRecoverySuggestion": {
+          "status": "NIL"
+        }
+      },
+      "observedTextUTF8Bytes": 73,
+      "status": "BOUNDED_DIAGNOSTIC_ONLY",
+      "textUTF16Limit": 512,
+      "textUTF8Limit": 2048,
+      "underlyingDepthLimit": 1,
+      "underlyingError": {
+        "status": "NIL"
+      }
+    },
+    "secondUnderlyingErrorRead": false,
+    "specificDeniedResourceOrPermissionIdentified": false,
+    "underlyingDepthLimit": 1,
+    "underlyingError": {
+      "status": "NIL"
+    },
+    "userInfoEnumeratedOrDumped": false
+  },
+  "conclusion": "The diagnostic variant model constructed all 11 original actions and invoked the engine once. Initial Text matched the independent 83-byte oracle. The next MakeArchive callback reported NSError VCVoiceShortcutsErrorDomain/1011, empty output, and a null actualUUID despite the bound model UUID. The workflow finished with the same error. Extraction, counts, naming and carrier diagnostics were not observed. Original-stream validation rejects ACTION_MODEL_BINDING; no File/carrier acceptance follows from owner exit zero or callbacks-retained status. This was a separately pinned bounded-error observer variant on the exact existing zip source/plist. Callback and terminal both observed access-denied description/failure-reason text, with NIL recovery suggestion and NIL NSUnderlyingError. Both records used 73 text bytes and remained within all metadata bounds. The denied resource, particular permission/entitlement/policy and appropriate remedy were not identified. No permission change, successful original-observer run or File acceptance follows.",
+  "model": {
+    "actions": [
+      {
+        "actualClass": "WFTextAction",
+        "actualUUID": "DC7BC9B1-0AC7-560D-8CF2-0B15619E9DCF",
+        "identifier": "is.workflow.actions.gettext",
+        "index": 0,
+        "originalUUID": "DC7BC9B1-0AC7-560D-8CF2-0B15619E9DCF"
+      },
+      {
+        "actualClass": "WFMakeArchiveAction",
+        "actualUUID": "CD9AAA6A-8CF5-58EF-9791-B9D0BD5ED90F",
+        "identifier": "is.workflow.actions.makezip",
+        "index": 1,
+        "originalUUID": "CD9AAA6A-8CF5-58EF-9791-B9D0BD5ED90F"
+      },
+      {
+        "actualClass": "WFExtractArchiveAction",
+        "actualUUID": "6E2D1B81-5DC9-522A-AFF1-CD4C34B4B4C7",
+        "identifier": "is.workflow.actions.unzip",
+        "index": 2,
+        "originalUUID": "6E2D1B81-5DC9-522A-AFF1-CD4C34B4B4C7"
+      },
+      {
+        "actualClass": "WFCountAction",
+        "actualUUID": "3DB977FE-AD5B-5166-95B4-B1B973D675E0",
+        "identifier": "is.workflow.actions.count",
+        "index": 3,
+        "originalUUID": "3DB977FE-AD5B-5166-95B4-B1B973D675E0"
+      },
+      {
+        "actualClass": "WFSetItemNameAction",
+        "actualUUID": "F971A35F-A5DD-5AD8-9EEC-F979DF70CE07",
+        "identifier": "is.workflow.actions.setitemname",
+        "index": 4,
+        "originalUUID": "F971A35F-A5DD-5AD8-9EEC-F979DF70CE07"
+      },
+      {
+        "actualClass": "WFCountAction",
+        "actualUUID": "2DF20171-FECA-58C5-9A20-35D023FA1E7F",
+        "identifier": "is.workflow.actions.count",
+        "index": 5,
+        "originalUUID": "2DF20171-FECA-58C5-9A20-35D023FA1E7F"
+      },
+      {
+        "actualClass": "WFGetItemTypeAction",
+        "actualUUID": "9387B13B-89F9-57E5-9D45-CF9A35AE1F5C",
+        "identifier": "is.workflow.actions.getitemtype",
+        "index": 6,
+        "originalUUID": "9387B13B-89F9-57E5-9D45-CF9A35AE1F5C"
+      },
+      {
+        "actualClass": "WFBase64EncodingAction",
+        "actualUUID": "E7C7B461-46D8-5855-9B32-36C921C7B5F7",
+        "identifier": "is.workflow.actions.base64encode",
+        "index": 7,
+        "originalUUID": "E7C7B461-46D8-5855-9B32-36C921C7B5F7"
+      },
+      {
+        "actualClass": "WFGetItemNameAction",
+        "actualUUID": "68053837-03EB-5663-9D75-E8FA59C4A1EF",
+        "identifier": "is.workflow.actions.getitemname",
+        "index": 8,
+        "originalUUID": "68053837-03EB-5663-9D75-E8FA59C4A1EF"
+      },
+      {
+        "actualClass": "WFContentItemPropertiesAction",
+        "actualUUID": "F443D0B6-69B5-57B2-9A0B-F75621B893F0",
+        "identifier": "is.workflow.actions.properties.files",
+        "index": 9,
+        "originalUUID": "F443D0B6-69B5-57B2-9A0B-F75621B893F0"
+      },
+      {
+        "actualClass": "WFNothingAction",
+        "actualUUID": "82B7EE82-8502-4167-8F11-E1B8D603B765",
+        "identifier": "is.workflow.actions.nothing",
+        "index": 10,
+        "originalUUID": null
+      }
+    ],
+    "allElevenOriginalActionsBound": true,
+    "originalFlagsPreserved": true,
+    "originalUUIDAbsentAtIndex": [
+      10
+    ]
+  },
+  "observerScope": {
+    "addedHelperSHA256": "4fbe7258692638df64a60425141d6976606076270be0d3d1b4033e615cec529d",
+    "diagnosticBodySHA256": "9329502f261d2df757a3755ca4108812ee2af8790655407991a2581546ac968d",
+    "executedDiagnosticProbeSHA256": "f785e8e3c2bb568277b80f550093ad8f16477fc511e91c61a2469e716f9ce29e",
+    "executionContextAndPermissionsChanged": false,
+    "identityUUIDGuardsAndCallbackControlPreserved": true,
+    "onlyAddedDiagnosticObservation": true,
+    "originalBareErrorFieldsPreserved": true,
+    "originalObserverBytesRetained": true,
+    "originalObserverExecuted": false,
+    "sourceOrPlistRecompiled": false,
+    "successfulOriginalObserverRunClaimed": false,
+    "variantName": "bounded NSError diagnostic"
+  },
+  "originalReceipts": {
+    "engineRunInvocations": 1,
+    "eventsSHA256": "1d40697c0dd6ff412e71861e5dd58386bbaa771105abb2329d3c2e330081600d",
+    "fullJSONLMatchesPilot": true,
+    "ownerAndPilotStatus": "ENGINE_CALLBACKS_RETAINED_VALIDATION_PENDING",
+    "pilotDone": true,
+    "pilotSHA256": "7a5df3e3b07224bb58b9f19cff14df737734f3d1e29bcacc368037afc0253366",
+    "resultSHA256": "c00ba4af749a3180358ecd8c0a9c94d51048ff24cc9e00bd3bf0c6fc90b601c1",
+    "statusIsNotSemanticAcceptance": true,
+    "unchangedOriginalStreamValidator": "REJECTED",
+    "unchangedOriginalStreamValidatorReason": "ACTION_MODEL_BINDING"
+  },
+  "preservedPriorEvidence": {
+    "constructionIdentityReport": {
+      "path": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/export-evidence/native-file-identity-intake-01/independent-intake.original.json",
+      "sha256": "fb416d32d11c9883e957d1fee0fbc96baff79a85201dc7b77568e3e80c900d0e"
+    },
+    "guardedFourteenActionCandidateStillNotRun": true,
+    "originalBaselineStillNegativeFileClass": true,
+    "priorWitnessesOrBaselineRerun": false,
+    "witnessAndNegativeBaselineReport": {
+      "path": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/export-evidence/native-file-original-intake-01/independent-intake.original.json",
+      "sha256": "0a2a63d4873f6f5a761d614822280ca351a9c8f74333bc3314012a3544347b6c"
+    },
+    "zipOriginalObserverIntake": {
+      "path": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/export-evidence/native-file-archive-zip-intake-01/independent-intake.original.json",
+      "sha256": "c8204b0010d3e50c9b339b38e2e00f28a31d49954fe63f4f6dbdc01471371046"
+    }
+  },
+  "processClosure": {
+    "admissionHashBound": true,
+    "capacityPolicyReinterpreted": false,
+    "captureElapsedMs": 1636,
+    "captureExitCode": 0,
+    "captureResult": "PASS",
+    "cleanupParentReaped": true,
+    "groupAfterCleanup": {
+      "errno": null,
+      "present": false,
+      "state": "ABSENT"
+    },
+    "nativeWorkflowSucceeded": false,
+    "ownedTemporaryMetadata": [],
+    "ownerElapsedMs": 1799,
+    "pid": 79311,
+    "rootAdmissionSHA256": "63a33ef9807c7252e495112d43bc8d9bf891fd0c7ecd6e6eff226e51d11beae9",
+    "sourceSnapshotsVerified": true,
+    "stderr": {
+      "bytes": 0,
+      "eof": true,
+      "overflow": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 7976,
+      "eof": true,
+      "overflow": false,
+      "sha256": "7a5df3e3b07224bb58b9f19cff14df737734f3d1e29bcacc368037afc0253366"
+    },
+    "temporaryObservationScope": "Only this owner's native-tmp directory; not an assertion of no OS temporary writes"
+  },
+  "requiredCarrierObservations": {
+    "extractedCollectionCount": "NOT_OBSERVED",
+    "extractedCountAction": "NOT_OBSERVED",
+    "extractedNativeFileClass": "NOT_OBSERVED",
+    "initialTextIsNotFileOutputProof": true,
+    "namedCollectionCount": "NOT_OBSERVED",
+    "namedCountAction": "NOT_OBSERVED",
+    "namedExact83Bytes": "NOT_OBSERVED",
+    "namedExtension": "NOT_OBSERVED",
+    "namedNativeFileClassBeforeConsumers": "NOT_OBSERVED",
+    "namedStem": "NOT_OBSERVED",
+    "namedTypeFile": "NOT_OBSERVED"
+  },
+  "reviewedUTC": "2026-11-27T17:39:45.767788+00:00",
+  "reviewer": "ChatGPT /root/cache_completion",
+  "schema": "cherri-native-file-bounded-error-independent-intake/1",
+  "sourceBinding": {
+    "allSourceBeforeAfterEqual": true,
+    "compilerSHA256": "278834c032c2ec3a246b2909b607b907b79d33ce5c19be05dfc853299464278a",
+    "frozenInputsVerified": 61,
+    "manifestSHA256": "382defa3fd571421d6c0b588de8c0b0d8412cc81d058bbd4dea0b8212ffab9df",
+    "ownerSHA256": "fb6470720724b39d7080910a5ea061dd54386fadd2e33db27cfde561efbdf7ee",
+    "sourceCommit": "5bc62d057e4bfa8bdd895e7228ca59eedac20b40",
+    "unchangedJoinedObserverSHA256": "9cb1d58914a8d262cd48fef48207ef74c0def7f89674afc3e75de69eb04959d5",
+    "zipPlistPin": {
+      "bytes": 9648,
+      "sha256": "5b6b8f92736dc77ef865a26322592cfa436a224572cff2d962d2cacb24481168"
+    },
+    "zipSourcePin": {
+      "bytes": 743,
+      "sha256": "73fb0b7b090d7a404e4c58124997d6fbd26699cca99aa03c281cb7aaf80ff6d0"
+    }
+  },
+  "status": "ACTUAL_BOUNDED_ACCESS_DENIED_DIAGNOSTIC_VALIDATED_NO_CARRIER_ACCEPTANCE"
+}

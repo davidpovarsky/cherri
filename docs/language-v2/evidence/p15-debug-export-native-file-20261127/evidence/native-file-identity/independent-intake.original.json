@@ -1,0 +1,221 @@
+{
+  "archive": {
+    "bytes": 162298,
+    "extractedBytesVerified": true,
+    "members": 74,
+    "path": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/export-evidence/native-file-identity-acquisition-01/originals.mac.zip",
+    "sha256": "424043d691d9a098e5aadabfcc89bf4db01077a3018cd73328ba23f46b7f1632",
+    "transferPinsVerified": 73
+  },
+  "conclusion": "The first observed mismatch is the action at original array index 5 reporting actual index 6. Its identifier and UUID match. Original indices 0 through 4 match; subsequent original action identities were not observed. The unchanged identity guard rejected construction before engine execution. This observation provides no File/carrier semantic verdict.",
+  "executionScope": {
+    "actionCallbacks": 0,
+    "diagnosticExplicitStopReached": false,
+    "engineEvents": 0,
+    "engineRunInvocations": 0,
+    "formalAcceptanceGranted": false,
+    "fullMacroAccepted": false,
+    "iOSDeviceExercised": false,
+    "nativeCarrierSemanticsObserved": false,
+    "noMacAccessByReviewer": true,
+    "noProductOrNativeReplayByReviewer": true,
+    "original14ActionCandidateRemainsNotRun": true,
+    "originalIdentityGuardRetained": true,
+    "originalNegativeBaselineRetained": true,
+    "originalUUIDGuardRetained": true,
+    "signedImportExercised": false
+  },
+  "observations": {
+    "actualIndex": 6,
+    "allSixObservedIdentifiersMatch": true,
+    "allSixObservedUUIDsMatch": true,
+    "causeOfIndexDifferenceEstablished": false,
+    "conditionalAtIndex4UUID": {
+      "actual": null,
+      "original": null
+    },
+    "constructedActionCount": 14,
+    "firstMismatch": {
+      "actualClass": "WFGetItemFromListAction",
+      "actualIdentifier": "is.workflow.actions.getitemfromlist",
+      "actualIndex": 6,
+      "actualUUID": "052D79F3-4DE7-5039-A7B1-7A4C2E61354C",
+      "kind": "original-action-identity-observed",
+      "originalIdentifier": "is.workflow.actions.getitemfromlist",
+      "originalIndex": 5,
+      "originalUUID": "052D79F3-4DE7-5039-A7B1-7A4C2E61354C",
+      "sequence": 20,
+      "uptime": 281593.07052358333
+    },
+    "guardErrorImmediatelyAfterObservation": true,
+    "identityEvents": [
+      {
+        "actualClass": "WFTextAction",
+        "actualIdentifier": "is.workflow.actions.gettext",
+        "actualIndex": 0,
+        "actualUUID": "B1B4EE00-9205-5B85-81B2-4844DA55FD52",
+        "kind": "original-action-identity-observed",
+        "originalIdentifier": "is.workflow.actions.gettext",
+        "originalIndex": 0,
+        "originalUUID": "B1B4EE00-9205-5B85-81B2-4844DA55FD52",
+        "sequence": 15,
+        "uptime": 281593.0667641667
+      },
+      {
+        "actualClass": "WFMakeArchiveAction",
+        "actualIdentifier": "is.workflow.actions.makezip",
+        "actualIndex": 1,
+        "actualUUID": "450D88DB-A7B5-525A-A2AC-AF6F21C6D8D3",
+        "kind": "original-action-identity-observed",
+        "originalIdentifier": "is.workflow.actions.makezip",
+        "originalIndex": 1,
+        "originalUUID": "450D88DB-A7B5-525A-A2AC-AF6F21C6D8D3",
+        "sequence": 16,
+        "uptime": 281593.06743920833
+      },
+      {
+        "actualClass": "WFExtractArchiveAction",
+        "actualIdentifier": "is.workflow.actions.unzip",
+        "actualIndex": 2,
+        "actualUUID": "5A833D83-14CE-5195-A350-A654B52EEC4E",
+        "kind": "original-action-identity-observed",
+        "originalIdentifier": "is.workflow.actions.unzip",
+        "originalIndex": 2,
+        "originalUUID": "5A833D83-14CE-5195-A350-A654B52EEC4E",
+        "sequence": 17,
+        "uptime": 281593.06805787503
+      },
+      {
+        "actualClass": "WFCountAction",
+        "actualIdentifier": "is.workflow.actions.count",
+        "actualIndex": 3,
+        "actualUUID": "7C963AE4-3FD4-5C5F-B69E-48A6AF159AF7",
+        "kind": "original-action-identity-observed",
+        "originalIdentifier": "is.workflow.actions.count",
+        "originalIndex": 3,
+        "originalUUID": "7C963AE4-3FD4-5C5F-B69E-48A6AF159AF7",
+        "sequence": 18,
+        "uptime": 281593.06906245835
+      },
+      {
+        "actualClass": "WFConditionalAction",
+        "actualIdentifier": "is.workflow.actions.conditional",
+        "actualIndex": 4,
+        "actualUUID": null,
+        "kind": "original-action-identity-observed",
+        "originalIdentifier": "is.workflow.actions.conditional",
+        "originalIndex": 4,
+        "originalUUID": null,
+        "sequence": 19,
+        "uptime": 281593.06991025
+      },
+      {
+        "actualClass": "WFGetItemFromListAction",
+        "actualIdentifier": "is.workflow.actions.getitemfromlist",
+        "actualIndex": 6,
+        "actualUUID": "052D79F3-4DE7-5039-A7B1-7A4C2E61354C",
+        "kind": "original-action-identity-observed",
+        "originalIdentifier": "is.workflow.actions.getitemfromlist",
+        "originalIndex": 5,
+        "originalUUID": "052D79F3-4DE7-5039-A7B1-7A4C2E61354C",
+        "sequence": 20,
+        "uptime": 281593.07052358333
+      }
+    ],
+    "laterActionIdentitiesInferred": false,
+    "matchingPriorOriginalIndices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "mismatchField": "index",
+    "missingActionIdentityInferred": false,
+    "observedOriginalPrefix": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "originalIndex": 5,
+    "sameIdentifier": "is.workflow.actions.getitemfromlist",
+    "sameUUID": "052D79F3-4DE7-5039-A7B1-7A4C2E61354C",
+    "unobservedOriginalIndices": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ]
+  },
+  "originalReceipts": {
+    "eventsSHA256": "9535d6884d2a32dbd4014d96dd5a20b770fa836bd8ca043088401fcccdfc0caf",
+    "fullJSONLMatchesPilot": true,
+    "originalStreamValidatorRejection": "ACTUAL_TERMINAL_PILOT",
+    "pilotDone": false,
+    "pilotError": {
+      "message": "ORIGINAL_ACTION_IDENTITY",
+      "name": "Error"
+    },
+    "pilotSHA256": "939b079a2bb6e9f44d52cc8d49fbb8b263c38314f1a5ff329490647941affcc5",
+    "resultSHA256": "bc677f7b66d7f0613902590e1918cefb2f69f5766be4a1313d76c54a4bc3e8fd",
+    "resultStatus": "FAILED"
+  },
+  "processClosure": {
+    "admissionHashBound": true,
+    "capacityPolicyReinterpreted": false,
+    "captureElapsedMs": 433,
+    "cleanupParentReaped": true,
+    "exitCode": 0,
+    "groupAfterCleanup": {
+      "errno": null,
+      "present": false,
+      "state": "ABSENT"
+    },
+    "ownerElapsedMs": 496,
+    "pid": 55900,
+    "rootAdmissionSHA256": "efcb62f0de361fe28846ab3ae1a555fa806a2f0d9f07b9cccb2eca485f082da1",
+    "sourceSnapshotsVerified": true,
+    "stderr": {
+      "bytes": 0,
+      "eof": true,
+      "overflow": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 4377,
+      "eof": true,
+      "overflow": false,
+      "sha256": "939b079a2bb6e9f44d52cc8d49fbb8b263c38314f1a5ff329490647941affcc5"
+    },
+    "temporaryMetadataFromTransfer": {
+      "candidate": []
+    }
+  },
+  "reviewedUTC": "2026-11-27T16:47:10.085986+00:00",
+  "reviewer": "ChatGPT /root/cache_completion",
+  "schema": "cherri-native-file-identity-independent-intake/1",
+  "sourceBinding": {
+    "allSourceBeforeAfterEqual": true,
+    "candidatePlistPin": {
+      "bytes": 12059,
+      "sha256": "2ade0947e1349a7d30bbb14e1bb6d8ce8caed544ade8bd6683c69bc8ff804b23"
+    },
+    "candidateSourcePin": {
+      "bytes": 739,
+      "sha256": "1057daa8005d76d6695c917383d6c8a65141f136669de60de2d2a353625b95e2"
+    },
+    "frozenInputsVerified": 58,
+    "joinedDiagnosticSHA256": "892754b31726b71a4354b984111eacb85813a6ad01584516d097e6ce5b45c901",
+    "manifestSHA256": "dc11a2f716b26ea0b2342cd7b3d49219b5e7fafcf09893634ee3ffd452906dd7",
+    "ownerSHA256": "f47b48777e7693bbad7b85a26fb30d1b6473fe8645b684101564bd9c5ab95217",
+    "sourceCommit": "5bc62d057e4bfa8bdd895e7228ca59eedac20b40"
+  },
+  "status": "ACTUAL_CONSTRUCTION_INDEX_MISMATCH_VALIDATED_ENGINE_NOT_RUN"
+}

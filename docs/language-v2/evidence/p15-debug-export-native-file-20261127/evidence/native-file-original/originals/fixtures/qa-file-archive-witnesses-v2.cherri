@@ -1,0 +1,12 @@
+// Independent public binary/Text/Dictionary witnesses; native labels remain observed data.
+let binaryWitness = base64Decode("AQ==")
+let binaryType = typeOf(binaryWitness)
+let binaryBytes64 = base64Encode(binaryWitness, lineBreakMode: "None")
+let binaryCount = count(binaryWitness, "Items")
+let textWitness = text("ARCHIVE_FILE_TEXT_WITNESS")
+let textType = typeOf(textWitness)
+let textBytes64 = base64Encode(textWitness, lineBreakMode: "None")
+let textCount = count(textWitness, "Items")
+let dictionaryWitness = {"probe": "ARCHIVE_FILE_DICTIONARY_WITNESS"}
+let dictionaryType = typeOf(dictionaryWitness)
+let dictionaryCount = count(dictionaryWitness, "Items")

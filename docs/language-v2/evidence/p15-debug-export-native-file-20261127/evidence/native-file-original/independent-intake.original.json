@@ -1,0 +1,728 @@
+{
+  "acceptance": {
+    "candidatePreEngineRejectionPreserved": true,
+    "formalAcceptanceGranted": false,
+    "fullMacroAccepted": false,
+    "iOSDeviceExercised": false,
+    "nativeExecutionRepeatedByReview": false,
+    "nativeFileAccepted": false,
+    "originalMacroTaskRemainsOpen": true,
+    "originalNegativeBaselinePreserved": true,
+    "signedImportExercised": false,
+    "sourceCodeOrFixturesChangedByReview": false
+  },
+  "archive": {
+    "bytes": 173429,
+    "everyExtractedMemberEqualsArchive": true,
+    "memberCount": 89,
+    "path": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/export-evidence/native-file-original-acquisition-01/originals.mac.zip",
+    "sha256": "4ac9ff036b6838c45f20ba4d377150cb87296246f545e9ff8d9e6feb97186272",
+    "transferMemberPinsVerified": 88,
+    "unsafeDuplicateOrSymlinkMembers": false
+  },
+  "caps": {
+    "allObservedRunsWithinCaps": true,
+    "commandSeconds": 20,
+    "engineSeconds": 8,
+    "maxInputBytes": 2097152,
+    "maxOriginalActions": 16,
+    "originalIncrementalBytes": 4194304,
+    "originalOSMarginBytes": 67108864,
+    "ownerSeconds": 60,
+    "streamLimitBytes": 1048576
+  },
+  "cases": {
+    "baseline": {
+      "completedActionOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "engineElapsedMs": 131.17324997438118,
+      "engineRunInvocations": 1,
+      "eventKinds": [
+        "engine-loaded",
+        "stored-representation-getter-bound",
+        "stored-representation-getter-bound",
+        "registry-capability",
+        "before-registry-instance",
+        "after-registry-instance",
+        "direct-bridge-binding-control-passed",
+        "before-original-data-read",
+        "after-original-data-read",
+        "before-original-plist-decode",
+        "after-original-plist-decode",
+        "before-original-actions-construction",
+        "after-original-actions-construction",
+        "before-transient-workflow-construction",
+        "after-transient-workflow-construction",
+        "model-created",
+        "engine-run-invoked",
+        "workflow-will-run",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "workflow-finished"
+      ],
+      "eventsSHA256": "4ab7ed18c3c3bef4c863cfc7a5b3760d29bebb69260e10343ada779732c429ee",
+      "fullJSONLEqualsPilotEvents": true,
+      "models": [
+        {
+          "actualClass": "WFTextAction",
+          "actualUUID": "E6623352-18C9-56DE-BA31-F3AFB1E2D718",
+          "identifier": "is.workflow.actions.gettext",
+          "index": 0,
+          "originalUUID": "E6623352-18C9-56DE-BA31-F3AFB1E2D718"
+        },
+        {
+          "actualClass": "WFBase64EncodingAction",
+          "actualUUID": "4FEE72F7-3150-59F2-B378-FEE2B8B23F50",
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 1,
+          "originalUUID": "4FEE72F7-3150-59F2-B378-FEE2B8B23F50"
+        },
+        {
+          "actualClass": "WFBase64EncodingAction",
+          "actualUUID": "E836C4A6-F22F-5277-9637-A9453ADD052F",
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 2,
+          "originalUUID": "E836C4A6-F22F-5277-9637-A9453ADD052F"
+        },
+        {
+          "actualClass": "WFSetItemNameAction",
+          "actualUUID": "F6BD6A04-4FDF-5D63-A0D7-EECA88C2814A",
+          "identifier": "is.workflow.actions.setitemname",
+          "index": 3,
+          "originalUUID": "F6BD6A04-4FDF-5D63-A0D7-EECA88C2814A"
+        },
+        {
+          "actualClass": "WFCountAction",
+          "actualUUID": "CD8CFB8E-4E72-57D2-95CD-0750341C7EA1",
+          "identifier": "is.workflow.actions.count",
+          "index": 4,
+          "originalUUID": "CD8CFB8E-4E72-57D2-95CD-0750341C7EA1"
+        },
+        {
+          "actualClass": "WFGetItemTypeAction",
+          "actualUUID": "A56FFCCE-C4B6-554F-8659-CDD5781704D1",
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 5,
+          "originalUUID": "A56FFCCE-C4B6-554F-8659-CDD5781704D1"
+        },
+        {
+          "actualClass": "WFBase64EncodingAction",
+          "actualUUID": "FBAA6778-7BFB-5DF9-B4D6-CBD3E7992EE2",
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 6,
+          "originalUUID": "FBAA6778-7BFB-5DF9-B4D6-CBD3E7992EE2"
+        },
+        {
+          "actualClass": "WFGetItemNameAction",
+          "actualUUID": "78DAF9A1-A895-5CD6-A94E-722DF0DA96DA",
+          "identifier": "is.workflow.actions.getitemname",
+          "index": 7,
+          "originalUUID": "78DAF9A1-A895-5CD6-A94E-722DF0DA96DA"
+        },
+        {
+          "actualClass": "WFContentItemPropertiesAction",
+          "actualUUID": "C1D45973-2801-5B5A-96A9-CAD7751A0589",
+          "identifier": "is.workflow.actions.properties.files",
+          "index": 8,
+          "originalUUID": "C1D45973-2801-5B5A-96A9-CAD7751A0589"
+        },
+        {
+          "actualClass": "WFNothingAction",
+          "actualUUID": "FA7C8EE9-ED2E-44E1-9DE5-E636F69352A6",
+          "identifier": "is.workflow.actions.nothing",
+          "index": 9,
+          "originalUUID": null
+        }
+      ],
+      "originalStreamValidator": "PASS",
+      "pilotSHA256": "25890a82bfb03818bc7bbc43fdc5d61147e70d2da0ad0a276a0a897d27f1d84b",
+      "process": {
+        "cleanupParentReaped": true,
+        "elapsedMs": 275,
+        "exitCode": 0,
+        "groupAfterCleanup": {
+          "errno": null,
+          "present": false,
+          "state": "ABSENT"
+        },
+        "pid": 49033,
+        "stderrBytes": 0,
+        "stdoutBytes": 16495
+      },
+      "resultSHA256": "ebe923be0153546aeabb98d56d0f74f3d9d6c480990ab68d7ac9b049262e8bb4",
+      "semantics": {
+        "actualClassBeforeConsumers": "WFDictionaryContentItem",
+        "bytesRequirementPassed": true,
+        "countRequirementPassed": true,
+        "exactBytes": 83,
+        "exactSHA256": "539a079afd9ef25a7e6c893494300f86f9f8db22c9dc4b58bbb433d4e492c365",
+        "fileClassRequirementPassed": false,
+        "fullNameFromNativeStemAndExtension": "cherri-debug.json",
+        "nameRequirementPassed": true,
+        "observations": {
+          "decoded": {
+            "actionIndex": 2,
+            "actionUUID": "E836C4A6-F22F-5277-9637-A9453ADD052F",
+            "collectionCount": 1,
+            "eventSequence": 20,
+            "kind": "WFDICTIONARYCONTENTITEM",
+            "nativeClass": "WFDictionaryContentItem",
+            "observationPhase": "producer-action-completion",
+            "representationSource": "stored-representationsByType"
+          },
+          "encoded": {
+            "actionIndex": 1,
+            "actionUUID": "4FEE72F7-3150-59F2-B378-FEE2B8B23F50",
+            "eventSequence": 19,
+            "kind": "NSSTRING",
+            "nativeClass": "__NSCFString",
+            "nativeRepresentationConverted": false,
+            "observationSource": "stored-object-getter",
+            "unchangedStrictStoredTextHelper": "PASS",
+            "value": "ewogICJ6IjogMS4wLCAiYSI6IDFlMCwKICAidGV4dCI6ICLXqda414HXnNeV1rnXnSDwn42SIiwKICAiZXNjYXBlZCI6ICJcdTA1RTlcbiIKfQo="
+          },
+          "named": {
+            "actionIndex": 3,
+            "actionUUID": "F6BD6A04-4FDF-5D63-A0D7-EECA88C2814A",
+            "collectionCount": 1,
+            "eventSequence": 21,
+            "kind": "WFDICTIONARYCONTENTITEM",
+            "nativeClass": "WFDictionaryContentItem",
+            "observationPhase": "producer-action-completion",
+            "representationSource": "stored-representationsByType"
+          },
+          "namedBytes64": {
+            "actionIndex": 6,
+            "actionUUID": "FBAA6778-7BFB-5DF9-B4D6-CBD3E7992EE2",
+            "eventSequence": 24,
+            "kind": "NSSTRING",
+            "nativeClass": "__NSCFString",
+            "nativeRepresentationConverted": false,
+            "observationSource": "stored-object-getter",
+            "unchangedStrictStoredTextHelper": "PASS",
+            "value": "ewogICJ6IjogMS4wLCAiYSI6IDFlMCwKICAidGV4dCI6ICLXqda414HXnNeV1rnXnSDwn42SIiwKICAiZXNjYXBlZCI6ICJcdTA1RTlcbiIKfQo="
+          },
+          "namedCount": {
+            "actionIndex": 4,
+            "actionUUID": "CD8CFB8E-4E72-57D2-95CD-0750341C7EA1",
+            "cfBooleanTypeId": 21,
+            "cfTypeId": 22,
+            "eventSequence": 22,
+            "nativeClass": "WFNumberContentItem",
+            "numberClass": "NSDecimalNumber",
+            "value": 1
+          },
+          "namedExtension": {
+            "actionIndex": 8,
+            "actionUUID": "C1D45973-2801-5B5A-96A9-CAD7751A0589",
+            "eventSequence": 26,
+            "kind": "NSSTRING",
+            "nativeClass": "__NSCFString",
+            "nativeRepresentationConverted": false,
+            "observationSource": "stored-object-getter",
+            "unchangedStrictStoredTextHelper": "PASS",
+            "value": "json"
+          },
+          "namedStem": {
+            "actionIndex": 7,
+            "actionUUID": "78DAF9A1-A895-5CD6-A94E-722DF0DA96DA",
+            "eventSequence": 25,
+            "kind": "NSSTRING",
+            "nativeClass": "NSPathStore2",
+            "nativeRepresentationConverted": false,
+            "observationSource": "stored-object-getter",
+            "unchangedStrictStoredTextHelper": "REJECTED:ACTUAL_STORED_STRING_TYPE",
+            "value": "cherri-debug"
+          },
+          "namedType": {
+            "actionIndex": 5,
+            "actionUUID": "A56FFCCE-C4B6-554F-8659-CDD5781704D1",
+            "eventSequence": 23,
+            "kind": "NSSTRING",
+            "nativeClass": "__NSCFConstantString",
+            "nativeRepresentationConverted": false,
+            "observationSource": "stored-object-getter",
+            "unchangedStrictStoredTextHelper": "REJECTED:ACTUAL_STORED_STRING_TYPE",
+            "value": "Dictionary"
+          },
+          "original": {
+            "actionIndex": 0,
+            "actionUUID": "E6623352-18C9-56DE-BA31-F3AFB1E2D718",
+            "eventSequence": 18,
+            "kind": "NSSTRING",
+            "nativeClass": "__NSCFString",
+            "nativeRepresentationConverted": false,
+            "observationSource": "stored-object-getter",
+            "unchangedStrictStoredTextHelper": "PASS",
+            "value": "{\n  \"z\": 1.0, \"a\": 1e0,\n  \"text\": \"שָׁלוֹם 🍒\",\n  \"escaped\": \"\\u05E9\\n\"\n}\n"
+          }
+        },
+        "requiredFileClass": "WFGenericFileContentItem",
+        "status": "NEGATIVE_FILE_CLASS_OBSERVED_WITH_EXACT_BYTES_NAME_COUNT"
+      },
+      "sourceBeforeAfterEqual": true,
+      "status": "ENGINE_CALLBACKS_RETAINED_VALIDATION_PENDING"
+    },
+    "candidate": {
+      "engineRunInvocations": 0,
+      "eventKinds": [
+        "engine-loaded",
+        "stored-representation-getter-bound",
+        "stored-representation-getter-bound",
+        "registry-capability",
+        "before-registry-instance",
+        "after-registry-instance",
+        "direct-bridge-binding-control-passed",
+        "before-original-data-read",
+        "after-original-data-read",
+        "before-original-plist-decode",
+        "after-original-plist-decode",
+        "before-original-actions-construction",
+        "after-original-actions-construction",
+        "before-transient-workflow-construction",
+        "after-transient-workflow-construction",
+        "pilot-error"
+      ],
+      "eventsSHA256": "890e5085e902c7653a877444ce73882d4b25f64dae925afd0e493ebde78441f3",
+      "fullJSONLEqualsPilotEvents": true,
+      "originalStreamValidatorRejected": "ACTUAL_TERMINAL_PILOT",
+      "pilotSHA256": "ef46dd08f66f27a7dc38cc0c1ed71da9f2127df92e333db8deee4149d19d56d1",
+      "process": {
+        "cleanupParentReaped": true,
+        "elapsedMs": 151,
+        "exitCode": 0,
+        "groupAfterCleanup": {
+          "errno": null,
+          "present": false,
+          "state": "ABSENT"
+        },
+        "pid": 49619,
+        "stderrBytes": 0,
+        "stdoutBytes": 2268
+      },
+      "resultSHA256": "a55904dc917249168d2535b818b490b3bdcba76067142abd417ffcddecd681f4",
+      "semantics": {
+        "candidateFileObligationRemainsOpen": true,
+        "completedActions": 0,
+        "constructedActionCount": 14,
+        "done": false,
+        "engineRunInvocations": 0,
+        "eventCount": 16,
+        "failureLocalizedToIndexOrIdentifier": false,
+        "failureOperandsRecorded": false,
+        "lastEvents": [
+          {
+            "count": 14,
+            "kind": "after-original-actions-construction",
+            "nativeClass": "__NSArrayM",
+            "sequence": 12,
+            "uptime": 280938.4243956667
+          },
+          {
+            "kind": "before-transient-workflow-construction",
+            "sequence": 13,
+            "uptime": 280938.42459891667
+          },
+          {
+            "kind": "after-transient-workflow-construction",
+            "nativeClass": "WFWorkflow",
+            "sequence": 14,
+            "uptime": 280938.44086583337
+          },
+          {
+            "kind": "pilot-error",
+            "message": "ORIGINAL_ACTION_IDENTITY",
+            "name": "Error",
+            "sequence": 15,
+            "uptime": 280938.4510644167
+          }
+        ],
+        "modelCreated": false,
+        "nativeFileClassObserved": false,
+        "status": "PRE_ENGINE_ORIGINAL_ACTION_IDENTITY_REJECTION_PRESERVED",
+        "unchangedOriginalStreamValidatorRejected": "ACTUAL_TERMINAL_PILOT"
+      },
+      "sourceBeforeAfterEqual": true,
+      "status": "FAILED"
+    },
+    "witnesses": {
+      "completedActionOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "engineElapsedMs": 164.79420836549252,
+      "engineRunInvocations": 1,
+      "eventKinds": [
+        "engine-loaded",
+        "stored-representation-getter-bound",
+        "stored-representation-getter-bound",
+        "registry-capability",
+        "before-registry-instance",
+        "after-registry-instance",
+        "direct-bridge-binding-control-passed",
+        "before-original-data-read",
+        "after-original-data-read",
+        "before-original-plist-decode",
+        "after-original-plist-decode",
+        "before-original-actions-construction",
+        "after-original-actions-construction",
+        "before-transient-workflow-construction",
+        "after-transient-workflow-construction",
+        "model-created",
+        "engine-run-invoked",
+        "workflow-will-run",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "action-completed",
+        "workflow-finished"
+      ],
+      "eventsSHA256": "83e7574568b3dadbae2324e5fc7a137839162cb5631d354a5878248d1926d5a3",
+      "fullJSONLEqualsPilotEvents": true,
+      "models": [
+        {
+          "actualClass": "WFTextAction",
+          "actualUUID": "ED1B66A9-3AF8-5F7D-9927-D32E0D8F6FCF",
+          "identifier": "is.workflow.actions.gettext",
+          "index": 0,
+          "originalUUID": "ED1B66A9-3AF8-5F7D-9927-D32E0D8F6FCF"
+        },
+        {
+          "actualClass": "WFBase64EncodingAction",
+          "actualUUID": "0D2F94EF-B709-5DC8-980C-787984FD74DC",
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 1,
+          "originalUUID": "0D2F94EF-B709-5DC8-980C-787984FD74DC"
+        },
+        {
+          "actualClass": "WFGetItemTypeAction",
+          "actualUUID": "8FA4F363-6282-59E2-A272-A8A88822CAD4",
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 2,
+          "originalUUID": "8FA4F363-6282-59E2-A272-A8A88822CAD4"
+        },
+        {
+          "actualClass": "WFBase64EncodingAction",
+          "actualUUID": "80C8FA84-A6AB-5BC1-9C78-F0D359F055B5",
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 3,
+          "originalUUID": "80C8FA84-A6AB-5BC1-9C78-F0D359F055B5"
+        },
+        {
+          "actualClass": "WFCountAction",
+          "actualUUID": "38E77746-FF4F-59CA-BBB7-4CC487974446",
+          "identifier": "is.workflow.actions.count",
+          "index": 4,
+          "originalUUID": "38E77746-FF4F-59CA-BBB7-4CC487974446"
+        },
+        {
+          "actualClass": "WFTextAction",
+          "actualUUID": "27D51A33-3057-5634-AA85-B73141273A1E",
+          "identifier": "is.workflow.actions.gettext",
+          "index": 5,
+          "originalUUID": "27D51A33-3057-5634-AA85-B73141273A1E"
+        },
+        {
+          "actualClass": "WFGetItemTypeAction",
+          "actualUUID": "69BF132C-7A5E-597E-BFC6-C520758DF943",
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 6,
+          "originalUUID": "69BF132C-7A5E-597E-BFC6-C520758DF943"
+        },
+        {
+          "actualClass": "WFBase64EncodingAction",
+          "actualUUID": "85ED5100-0B5D-5753-A6E1-F892CCB33CCA",
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 7,
+          "originalUUID": "85ED5100-0B5D-5753-A6E1-F892CCB33CCA"
+        },
+        {
+          "actualClass": "WFCountAction",
+          "actualUUID": "24D3C19E-C5CD-533A-BDDC-97C98BF50617",
+          "identifier": "is.workflow.actions.count",
+          "index": 8,
+          "originalUUID": "24D3C19E-C5CD-533A-BDDC-97C98BF50617"
+        },
+        {
+          "actualClass": "WFDictionaryAction",
+          "actualUUID": "FFF26124-2AC7-5ED4-A9B8-07AA2168B449",
+          "identifier": "is.workflow.actions.dictionary",
+          "index": 9,
+          "originalUUID": "FFF26124-2AC7-5ED4-A9B8-07AA2168B449"
+        },
+        {
+          "actualClass": "WFGetItemTypeAction",
+          "actualUUID": "A71B4A9C-D2F4-59A8-8BB0-5E260597C20A",
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 10,
+          "originalUUID": "A71B4A9C-D2F4-59A8-8BB0-5E260597C20A"
+        },
+        {
+          "actualClass": "WFCountAction",
+          "actualUUID": "28BC8E78-8E13-5CA4-9DE3-CFE475A10E0C",
+          "identifier": "is.workflow.actions.count",
+          "index": 11,
+          "originalUUID": "28BC8E78-8E13-5CA4-9DE3-CFE475A10E0C"
+        },
+        {
+          "actualClass": "WFNothingAction",
+          "actualUUID": "68910455-B2E8-4394-AACD-42DB33E6D065",
+          "identifier": "is.workflow.actions.nothing",
+          "index": 12,
+          "originalUUID": null
+        }
+      ],
+      "originalStreamValidator": "PASS",
+      "pilotSHA256": "d65b82e3c6bbf2fc1b1ea41ba63e8982c71eec6ea27410a6993a90ba2df2909c",
+      "process": {
+        "cleanupParentReaped": true,
+        "elapsedMs": 632,
+        "exitCode": 0,
+        "groupAfterCleanup": {
+          "errno": null,
+          "present": false,
+          "state": "ABSENT"
+        },
+        "pid": 48693,
+        "stderrBytes": 0,
+        "stdoutBytes": 20084
+      },
+      "resultSHA256": "d24470ccf0cc6894005291c1288685ac231de5360d3c3d171ec6f34ae0f21a32",
+      "semantics": {
+        "status": "ACTUAL_BINARY_FILE_TEXT_DICTIONARY_WITNESSES_VALIDATED",
+        "witnesses": {
+          "binary": {
+            "base64": {
+              "actionIndex": 3,
+              "actionUUID": "80C8FA84-A6AB-5BC1-9C78-F0D359F055B5",
+              "eventSequence": 21,
+              "kind": "NSSTRING",
+              "nativeClass": "NSTaggedPointerString",
+              "nativeRepresentationConverted": false,
+              "observationSource": "stored-object-getter",
+              "unchangedStrictStoredTextHelper": "REJECTED:ACTUAL_STORED_STRING_TYPE",
+              "value": "AQ=="
+            },
+            "count": {
+              "actionIndex": 4,
+              "actionUUID": "38E77746-FF4F-59CA-BBB7-4CC487974446",
+              "cfBooleanTypeId": 21,
+              "cfTypeId": 22,
+              "eventSequence": 22,
+              "nativeClass": "WFNumberContentItem",
+              "numberClass": "NSDecimalNumber",
+              "value": 1
+            },
+            "decodedBytes": 1,
+            "decodedSHA256": "4bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459a",
+            "native": {
+              "actionIndex": 1,
+              "actionUUID": "0D2F94EF-B709-5DC8-980C-787984FD74DC",
+              "collectionCount": 1,
+              "eventSequence": 19,
+              "kind": "WFCONTENTITEM",
+              "nativeClass": "WFGenericFileContentItem",
+              "observationPhase": "producer-action-completion",
+              "representationSource": "stored-representationsByType"
+            },
+            "type": {
+              "actionIndex": 2,
+              "actionUUID": "8FA4F363-6282-59E2-A272-A8A88822CAD4",
+              "eventSequence": 20,
+              "kind": "NSSTRING",
+              "nativeClass": "NSTaggedPointerString",
+              "nativeRepresentationConverted": false,
+              "observationSource": "stored-object-getter",
+              "unchangedStrictStoredTextHelper": "REJECTED:ACTUAL_STORED_STRING_TYPE",
+              "value": "File"
+            }
+          },
+          "dictionary": {
+            "count": {
+              "actionIndex": 11,
+              "actionUUID": "28BC8E78-8E13-5CA4-9DE3-CFE475A10E0C",
+              "cfBooleanTypeId": 21,
+              "cfTypeId": 22,
+              "eventSequence": 29,
+              "nativeClass": "WFNumberContentItem",
+              "numberClass": "NSDecimalNumber",
+              "value": 1
+            },
+            "native": {
+              "actionIndex": 9,
+              "actionUUID": "FFF26124-2AC7-5ED4-A9B8-07AA2168B449",
+              "collectionCount": 1,
+              "eventSequence": 27,
+              "kind": "WFDICTIONARYCONTENTITEM",
+              "nativeClass": "WFDictionaryContentItem",
+              "observationPhase": "producer-action-completion",
+              "representationSource": "stored-representationsByType"
+            },
+            "storedDictionary": {
+              "cardinality": 1,
+              "nativeClass": "WFOrderedDictionary",
+              "observationSource": "stored-object-getter",
+              "value": {
+                "probe": "ARCHIVE_FILE_DICTIONARY_WITNESS"
+              }
+            },
+            "type": {
+              "actionIndex": 10,
+              "actionUUID": "A71B4A9C-D2F4-59A8-8BB0-5E260597C20A",
+              "eventSequence": 28,
+              "kind": "NSSTRING",
+              "nativeClass": "__NSCFConstantString",
+              "nativeRepresentationConverted": false,
+              "observationSource": "stored-object-getter",
+              "unchangedStrictStoredTextHelper": "REJECTED:ACTUAL_STORED_STRING_TYPE",
+              "value": "Dictionary"
+            }
+          },
+          "text": {
+            "base64": {
+              "actionIndex": 7,
+              "actionUUID": "85ED5100-0B5D-5753-A6E1-F892CCB33CCA",
+              "eventSequence": 25,
+              "kind": "NSSTRING",
+              "nativeClass": "__NSCFString",
+              "nativeRepresentationConverted": false,
+              "observationSource": "stored-object-getter",
+              "unchangedStrictStoredTextHelper": "PASS",
+              "value": "QVJDSElWRV9GSUxFX1RFWFRfV0lUTkVTUw=="
+            },
+            "count": {
+              "actionIndex": 8,
+              "actionUUID": "24D3C19E-C5CD-533A-BDDC-97C98BF50617",
+              "cfBooleanTypeId": 21,
+              "cfTypeId": 22,
+              "eventSequence": 26,
+              "nativeClass": "WFNumberContentItem",
+              "numberClass": "NSDecimalNumber",
+              "value": 1
+            },
+            "decodedBytes": 25,
+            "decodedSHA256": "9a0f4c9801eb493e060b82f498d65ac27873221ee519bce8387035392cacd9c8",
+            "native": {
+              "actionIndex": 5,
+              "actionUUID": "27D51A33-3057-5634-AA85-B73141273A1E",
+              "collectionCount": 1,
+              "eventSequence": 23,
+              "kind": "WFSTRINGCONTENTITEM",
+              "nativeClass": "WFStringContentItem",
+              "observationPhase": "producer-action-completion",
+              "representationSource": "stored-representationsByType"
+            },
+            "storedText": {
+              "actionIndex": 5,
+              "actionUUID": "27D51A33-3057-5634-AA85-B73141273A1E",
+              "eventSequence": 23,
+              "kind": "NSSTRING",
+              "nativeClass": "__NSCFString",
+              "nativeRepresentationConverted": false,
+              "observationSource": "stored-object-getter",
+              "unchangedStrictStoredTextHelper": "PASS",
+              "value": "ARCHIVE_FILE_TEXT_WITNESS"
+            },
+            "type": {
+              "actionIndex": 6,
+              "actionUUID": "69BF132C-7A5E-597E-BFC6-C520758DF943",
+              "eventSequence": 24,
+              "kind": "NSSTRING",
+              "nativeClass": "NSTaggedPointerString",
+              "nativeRepresentationConverted": false,
+              "observationSource": "stored-object-getter",
+              "unchangedStrictStoredTextHelper": "REJECTED:ACTUAL_STORED_STRING_TYPE",
+              "value": "Text"
+            }
+          }
+        }
+      },
+      "sourceBeforeAfterEqual": true,
+      "status": "ENGINE_CALLBACKS_RETAINED_VALIDATION_PENDING"
+    }
+  },
+  "frozenPackage": {
+    "all47PinnedInputsVerified": true,
+    "allCaseSourceSnapshotsEqualBeforeAfter": true,
+    "graphContractSHA256": "8692465cad7bd757b148aa9e35d81810000271fef075d0c4b860a56a1fbe5cd1",
+    "manifestSHA256": "b5a53179595e9b18adf20b86f6933e22bc9861ac001f23d4b36686e6de30d9e6",
+    "originalStreamValidatorSHA256": "c62df8f4146ce7145a8e5dcd681587fb72a15d25206ae390fd8cf0ca89ce0ca8",
+    "ownerSHA256": "5d15854a4c2af6d1c12fa9a700c55ce5e794ed61e8c1d3803f7b97f49db07850",
+    "sourceCommit": "5bc62d057e4bfa8bdd895e7228ca59eedac20b40"
+  },
+  "methods": {
+    "allSuccessfulActionErrorsNull": true,
+    "allSuccessfulCaseOriginalActionsCheckedOnceInOrder": true,
+    "allSuccessfulTerminalCancelledFalseErrorNull": true,
+    "candidateRejectionPreserved": true,
+    "fullJSONLJoinedToFullPilot": true,
+    "jsonDuplicateKeysAndNonfiniteConstantsRejected": true,
+    "nativeClassObservedAtProducerBeforeConsumers": true,
+    "nativeUUIDsBoundToOriginals": true,
+    "originalStreamValidatorCases": [
+      "witnesses",
+      "baseline"
+    ],
+    "originalStreamValidatorUnchanged": true,
+    "reviewImplementationCorrection": "One initial review-only assertion counted snapshot identity fields as nine; source snapshot tuple contains eight. Corrected to eight before report. No native/product execution occurred.",
+    "strictStoredTextHelperBoundary": "The unchanged M02-specific stored_text helper requires __NSCFString. It rejects real captured NSTaggedPointerString, __NSCFConstantString and NSPathStore2. Each rejection is recorded. Case-specific observations read already validated NSSTRING stored objects and preserve their actual subclasses; no coercion or synthetic subclass rewriting is used.",
+    "strictStoredTextHelperNotModified": true
+  },
+  "processClosure": {
+    "allOwnedProcessGroupsABSENT": true,
+    "allParentProcessesReaped": true,
+    "allStderrEmpty": true,
+    "allStdoutStderrHashesAndEOFVerified": true,
+    "allThreeCaptureResultsPASSAndExit0": true,
+    "ownerAdmissionCapacityPolicyReinterpreted": false,
+    "perCaseFreshAdmissionHashesBound": true,
+    "temporaryMetadataFromOriginalTransferReceipt": {
+      "baseline": [],
+      "candidate": [],
+      "witnesses": []
+    }
+  },
+  "reviewedUTC": "2026-11-27T16:39:31.013828+00:00",
+  "reviewer": "ChatGPT /root/cache_completion",
+  "schema": "cherri-native-file-independent-intake/1",
+  "scope": "Read-only independent intake of acquired original macOS diagnostic receipts; no native execution, source changes, fixture changes or product tests. Report is not formal acceptance.",
+  "status": "ORIGINAL_EVIDENCE_VALIDATED_NATIVE_FILE_OBLIGATION_OPEN"
+}

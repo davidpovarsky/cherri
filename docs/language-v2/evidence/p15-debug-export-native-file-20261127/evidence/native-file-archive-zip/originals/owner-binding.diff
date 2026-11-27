@@ -1,0 +1,20 @@
+--- reference/direct/owner.py
++++ owner.py
+@@ -5,7 +5,7 @@
+ import argparse,datetime,hashlib,json,os,platform,stat,time,traceback,types
+ from pathlib import Path
+ 
+-ROOT=Path("/Users/m1/sentinelx/uploads/cherri-debug-export-archive-direct-20261127-01")
++ROOT=Path("/Users/m1/sentinelx/uploads/cherri-debug-export-archive-zip-20261127-01")
+ SOURCE="5bc62d057e4bfa8bdd895e7228ca59eedac20b40"
+ WHOLE_SECONDS,COMMAND_SECONDS,STREAM_BYTES=60,20,1024**2
+ INCREMENTAL_BYTES,OS_MARGIN_BYTES=4*1024**2,64*1024**2
+@@ -33,7 +33,7 @@
+ def main():
+  start=time.monotonic();hard=start+WHOLE_SECONDS
+  parser=argparse.ArgumentParser()
+- parser.add_argument("--case",choices=("direct",),required=True)
++ parser.add_argument("--case",choices=("zip",),required=True)
+  parser.add_argument("--manifest-sha256",required=True)
+  parser.add_argument("--admission-sha256",required=True)
+  args=parser.parse_args()

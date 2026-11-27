@@ -1,0 +1,20 @@
+--- reference/zip/owner.py
++++ owner.py
+@@ -5,7 +5,7 @@
+ import argparse,datetime,hashlib,json,os,platform,stat,time,traceback,types
+ from pathlib import Path
+ 
+-ROOT=Path("/Users/m1/sentinelx/uploads/cherri-debug-export-archive-zip-20261127-01")
++ROOT=Path("/Users/m1/sentinelx/uploads/cherri-debug-export-archive-error-20261127-01")
+ SOURCE="5bc62d057e4bfa8bdd895e7228ca59eedac20b40"
+ WHOLE_SECONDS,COMMAND_SECONDS,STREAM_BYTES=60,20,1024**2
+ INCREMENTAL_BYTES,OS_MARGIN_BYTES=4*1024**2,64*1024**2
+@@ -87,7 +87,7 @@
+    with events.open("xb"):pass
+    temporary=folder/"native-tmp";temporary.mkdir(mode=0o700)
+    os.environ["TMPDIR"]=str(temporary)+"/";os.chdir(temporary)
+-   argv=["/usr/bin/osascript","-l","JavaScript",str(ROOT/"source/probe.original.js"),
++   argv=["/usr/bin/osascript","-l","JavaScript",str(ROOT/"source/probe.error-diagnostic.js"),
+          str(ROOT/case["plistPath"]),str(events)]
+    record(folder,"intent.original.json",{"argv":argv,"seconds":COMMAND_SECONDS,
+         "hardDeadlineMonotonic":hard-15,"operation":"separate-file-archive-"+args.case,

@@ -1,0 +1,364 @@
+{
+  "cases": {
+    "zip": {
+      "actionCount": 11,
+      "conditionalOrItemSelectionActions": 0,
+      "extraItemsRejectCarrierEvidence": true,
+      "noNonlocalAction": true,
+      "plistPath": "compiled/qa-file-archive-zip-v2.shortcut",
+      "plistPin": {
+        "bytes": 9648,
+        "sha256": "5b6b8f92736dc77ef865a26322592cfa436a224572cff2d962d2cacb24481168"
+      },
+      "requiredExtractedCount": 1,
+      "requiredNamedCount": 1,
+      "roles": {
+        "archive": {
+          "identifier": "is.workflow.actions.makezip",
+          "index": 1,
+          "uuid": "CD9AAA6A-8CF5-58EF-9791-B9D0BD5ED90F"
+        },
+        "extracted": {
+          "identifier": "is.workflow.actions.unzip",
+          "index": 2,
+          "uuid": "6E2D1B81-5DC9-522A-AFF1-CD4C34B4B4C7"
+        },
+        "extractedCount": {
+          "identifier": "is.workflow.actions.count",
+          "index": 3,
+          "uuid": "3DB977FE-AD5B-5166-95B4-B1B973D675E0"
+        },
+        "named": {
+          "identifier": "is.workflow.actions.setitemname",
+          "index": 4,
+          "uuid": "F971A35F-A5DD-5AD8-9EEC-F979DF70CE07"
+        },
+        "namedBytes64": {
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 7,
+          "uuid": "E7C7B461-46D8-5855-9B32-36C921C7B5F7"
+        },
+        "namedCount": {
+          "identifier": "is.workflow.actions.count",
+          "index": 5,
+          "uuid": "2DF20171-FECA-58C5-9A20-35D023FA1E7F"
+        },
+        "namedExtension": {
+          "identifier": "is.workflow.actions.properties.files",
+          "index": 9,
+          "uuid": "F443D0B6-69B5-57B2-9A0B-F75621B893F0"
+        },
+        "namedStem": {
+          "identifier": "is.workflow.actions.getitemname",
+          "index": 8,
+          "uuid": "68053837-03EB-5663-9D75-E8FA59C4A1EF"
+        },
+        "namedType": {
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 6,
+          "uuid": "9387B13B-89F9-57E5-9D45-CF9A35AE1F5C"
+        },
+        "original": {
+          "identifier": "is.workflow.actions.gettext",
+          "index": 0,
+          "uuid": "DC7BC9B1-0AC7-560D-8CF2-0B15619E9DCF"
+        },
+        "terminal": {
+          "identifier": "is.workflow.actions.nothing",
+          "index": 10,
+          "uuid": null
+        }
+      },
+      "sourcePath": "fixtures/qa-file-archive-zip-v2.cherri",
+      "sourcePin": {
+        "bytes": 743,
+        "sha256": "73fb0b7b090d7a404e4c58124997d6fbd26699cca99aa03c281cb7aaf80ff6d0"
+      },
+      "wholeExtractedCollectionPassedToName": true
+    }
+  },
+  "comparisonWithDirect": {
+    "differences": [
+      {
+        "direct": ".zip",
+        "path": [
+          "WFWorkflowActions",
+          1,
+          "WFWorkflowActionParameters",
+          "WFArchiveFormat"
+        ],
+        "zip": "zip"
+      }
+    ],
+    "directPlistPin": {
+      "bytes": 9649,
+      "sha256": "e0f08e38a88be8dfc1ca307368e679fedf750fabb82994dbc2e30e817c3af487"
+    },
+    "directSourcePin": {
+      "bytes": 642,
+      "sha256": "2611430bb28a10d4c0d1571ef8517d862128f049c8384bb8cd1188c98ebb9362"
+    },
+    "extraActions": 0,
+    "extraCoercions": 0,
+    "nativeExecuted": false,
+    "normalizationScope": "Only each declared producer UUID and its exact WFTextTokenAttachment ActionOutput OutputUUID; no names, literal strings, header fields or other parameters ignored.",
+    "normalizedDirectPin": {
+      "bytes": 5996,
+      "sha256": "b6151d29c5d946fbf466bc806f4b8dcb3136b3b062c1de0e6aee34226380da12"
+    },
+    "normalizedZipPin": {
+      "bytes": 5995,
+      "sha256": "aaf3b87529e8304124ba376c7e2d24acd477e9c158dd5eb9ae26d799ba759850"
+    },
+    "outputNamesChanged": false,
+    "producerMappings": [
+      {
+        "directOutputName": "original",
+        "directUUID": "EF0D62F2-5F4A-55F6-8420-6FD07DEA9877",
+        "identifier": "is.workflow.actions.gettext",
+        "index": 0,
+        "role": "original",
+        "zipOutputName": "original",
+        "zipUUID": "DC7BC9B1-0AC7-560D-8CF2-0B15619E9DCF"
+      },
+      {
+        "directOutputName": "archive",
+        "directUUID": "AB865229-0169-5E38-B6E2-5757E767E280",
+        "identifier": "is.workflow.actions.makezip",
+        "index": 1,
+        "role": "archive",
+        "zipOutputName": "archive",
+        "zipUUID": "CD9AAA6A-8CF5-58EF-9791-B9D0BD5ED90F"
+      },
+      {
+        "directOutputName": "extracted",
+        "directUUID": "063EA21B-1DA1-5C72-A29F-99A9D3DC5239",
+        "identifier": "is.workflow.actions.unzip",
+        "index": 2,
+        "role": "extracted",
+        "zipOutputName": "extracted",
+        "zipUUID": "6E2D1B81-5DC9-522A-AFF1-CD4C34B4B4C7"
+      },
+      {
+        "directOutputName": "extractedCount",
+        "directUUID": "20DC73FA-381E-5B65-9D8B-46426E1390B3",
+        "identifier": "is.workflow.actions.count",
+        "index": 3,
+        "role": "extractedCount",
+        "zipOutputName": "extractedCount",
+        "zipUUID": "3DB977FE-AD5B-5166-95B4-B1B973D675E0"
+      },
+      {
+        "directOutputName": "named",
+        "directUUID": "4B99342E-95CE-54F7-9E3B-C4B00F5358D4",
+        "identifier": "is.workflow.actions.setitemname",
+        "index": 4,
+        "role": "named",
+        "zipOutputName": "named",
+        "zipUUID": "F971A35F-A5DD-5AD8-9EEC-F979DF70CE07"
+      },
+      {
+        "directOutputName": "namedCount",
+        "directUUID": "B55AC546-13D0-5B65-BDC5-2A5500688A1E",
+        "identifier": "is.workflow.actions.count",
+        "index": 5,
+        "role": "namedCount",
+        "zipOutputName": "namedCount",
+        "zipUUID": "2DF20171-FECA-58C5-9A20-35D023FA1E7F"
+      },
+      {
+        "directOutputName": "namedType",
+        "directUUID": "E3B37B81-6D12-578D-844D-2275BB5EE86A",
+        "identifier": "is.workflow.actions.getitemtype",
+        "index": 6,
+        "role": "namedType",
+        "zipOutputName": "namedType",
+        "zipUUID": "9387B13B-89F9-57E5-9D45-CF9A35AE1F5C"
+      },
+      {
+        "directOutputName": "namedBytes64",
+        "directUUID": "1B897E79-0339-509D-A9F6-784DD8E8D72D",
+        "identifier": "is.workflow.actions.base64encode",
+        "index": 7,
+        "role": "namedBytes64",
+        "zipOutputName": "namedBytes64",
+        "zipUUID": "E7C7B461-46D8-5855-9B32-36C921C7B5F7"
+      },
+      {
+        "directOutputName": "namedStem",
+        "directUUID": "C383E817-7A05-53A2-A8C3-168BF8C208C1",
+        "identifier": "is.workflow.actions.getitemname",
+        "index": 8,
+        "role": "namedStem",
+        "zipOutputName": "namedStem",
+        "zipUUID": "68053837-03EB-5663-9D75-E8FA59C4A1EF"
+      },
+      {
+        "directOutputName": "namedExtension",
+        "directUUID": "E3B15747-935D-59E7-8A5A-DDFD3E4E0560",
+        "identifier": "is.workflow.actions.properties.files",
+        "index": 9,
+        "role": "namedExtension",
+        "zipOutputName": "namedExtension",
+        "zipUUID": "F443D0B6-69B5-57B2-9A0B-F75621B893F0"
+      }
+    ],
+    "referenceEdges": [
+      {
+        "outputName": "original",
+        "path": [
+          "WFWorkflowActions",
+          1,
+          "WFWorkflowActionParameters",
+          "WFInput",
+          "Value",
+          "OutputUUID"
+        ],
+        "role": "original"
+      },
+      {
+        "outputName": "archive",
+        "path": [
+          "WFWorkflowActions",
+          2,
+          "WFWorkflowActionParameters",
+          "WFArchive",
+          "Value",
+          "OutputUUID"
+        ],
+        "role": "archive"
+      },
+      {
+        "outputName": "extracted",
+        "path": [
+          "WFWorkflowActions",
+          3,
+          "WFWorkflowActionParameters",
+          "Input",
+          "Value",
+          "OutputUUID"
+        ],
+        "role": "extracted"
+      },
+      {
+        "outputName": "extracted",
+        "path": [
+          "WFWorkflowActions",
+          4,
+          "WFWorkflowActionParameters",
+          "WFInput",
+          "Value",
+          "OutputUUID"
+        ],
+        "role": "extracted"
+      },
+      {
+        "outputName": "named",
+        "path": [
+          "WFWorkflowActions",
+          5,
+          "WFWorkflowActionParameters",
+          "Input",
+          "Value",
+          "OutputUUID"
+        ],
+        "role": "named"
+      },
+      {
+        "outputName": "named",
+        "path": [
+          "WFWorkflowActions",
+          6,
+          "WFWorkflowActionParameters",
+          "WFInput",
+          "Value",
+          "OutputUUID"
+        ],
+        "role": "named"
+      },
+      {
+        "outputName": "named",
+        "path": [
+          "WFWorkflowActions",
+          7,
+          "WFWorkflowActionParameters",
+          "WFInput",
+          "Value",
+          "OutputUUID"
+        ],
+        "role": "named"
+      },
+      {
+        "outputName": "named",
+        "path": [
+          "WFWorkflowActions",
+          8,
+          "WFWorkflowActionParameters",
+          "WFInput",
+          "Value",
+          "OutputUUID"
+        ],
+        "role": "named"
+      },
+      {
+        "outputName": "named",
+        "path": [
+          "WFWorkflowActions",
+          9,
+          "WFWorkflowActionParameters",
+          "WFInput",
+          "Value",
+          "OutputUUID"
+        ],
+        "role": "named"
+      }
+    ],
+    "sameOriginalPlist": false,
+    "sameOriginalSource": false,
+    "sourceChange": "makeArchive call replaced by existing native.action/native.ref",
+    "status": "ONLY_WFArchiveFormat_CHANGED_AFTER_EXPLICIT_UUID_MAPPING",
+    "zipPlistPin": {
+      "bytes": 9648,
+      "sha256": "5b6b8f92736dc77ef865a26322592cfa436a224572cff2d962d2cacb24481168"
+    },
+    "zipSourcePin": {
+      "bytes": 743,
+      "sha256": "73fb0b7b090d7a404e4c58124997d6fbd26699cca99aa03c281cb7aaf80ff6d0"
+    }
+  },
+  "errorDiagnostic": {
+    "allTextUTF8Limit": 4096,
+    "executionAndIdentityGuardsChanged": false,
+    "insertionPin": {
+      "bytes": 4043,
+      "sha256": "4fbe7258692638df64a60425141d6976606076270be0d3d1b4033e615cec529d"
+    },
+    "metadataUTF8Limit": 8192,
+    "nativeAcceptanceGranted": false,
+    "originalErrorSites": 2,
+    "originalObserverByteExactAfterReversal": true,
+    "originalObserverPin": {
+      "bytes": 17694,
+      "sha256": "c1239494a12ebe7bb9f3efb4067b4203baaacf700ee9c626283e90ebbfc0480b"
+    },
+    "scope": "Bounded NSError descriptions and one underlying NSError only",
+    "sourceAndPlistUnchangedFromZip": true,
+    "textUTF16Limit": 512,
+    "textUTF8Limit": 2048,
+    "underlyingDepthLimit": 1,
+    "userInfoEnumeratedOrDumped": false,
+    "variantJoinedPin": {
+      "bytes": 28247,
+      "sha256": "f785e8e3c2bb568277b80f550093ad8f16477fc511e91c61a2469e716f9ce29e"
+    },
+    "variantObserverPin": {
+      "bytes": 21650,
+      "sha256": "9329502f261d2df757a3755ca4108812ee2af8790655407991a2581546ac968d"
+    }
+  },
+  "formalAcceptanceGranted": false,
+  "nativeExecuted": false,
+  "schema": "cherri-native-file-archive-graph-contract/1",
+  "sourceAuditPassed": true,
+  "sourceCommit": "5bc62d057e4bfa8bdd895e7228ca59eedac20b40"
+}

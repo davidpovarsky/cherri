@@ -1,0 +1,10 @@
+--- reference/direct/fixtures/qa-file-archive-direct-v2.cherri
++++ fixtures/qa-file-archive-zip-v2.cherri
+@@ -1,6 +1,6 @@
+ // Distinct linear carrier experiment: preserve the complete extracted collection.
+ let original = text("{\n  \"z\": 1.0, \"a\": 1e0,\n  \"text\": \"שָׁלוֹם 🍒\",\n  \"escaped\": \"\\u05E9\\n\"\n}\n")
+-let archive = makeArchive(original, ".zip", "cherri-file-probe")
++let archive = native.action("is.workflow.actions.makezip", parameters: {"WFInput": native.ref(original), "WFArchiveFormat": "zip", "WFZIPName": "cherri-file-probe"})
+ let extracted = extractArchive(archive)
+ let extractedCount = count(extracted, "Items")
+ let named = setName(extracted, "cherri-debug.json", false)

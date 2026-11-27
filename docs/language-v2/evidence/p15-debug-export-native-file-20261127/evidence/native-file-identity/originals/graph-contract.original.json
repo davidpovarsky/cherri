@@ -1,0 +1,242 @@
+{
+  "cases": {
+    "baseline": {
+      "actionCount": 10,
+      "noNonlocalAction": true,
+      "plistPath": "compiled/qa-file-archive-baseline-v2.shortcut",
+      "plistPin": {
+        "bytes": 8989,
+        "sha256": "a3e93769d4c81db2de21f1c81775b4f2bca9bb13581e4b2199cd2dd2ea54b075"
+      },
+      "roles": {
+        "decoded": {
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 2,
+          "uuid": "E836C4A6-F22F-5277-9637-A9453ADD052F"
+        },
+        "encoded": {
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 1,
+          "uuid": "4FEE72F7-3150-59F2-B378-FEE2B8B23F50"
+        },
+        "named": {
+          "identifier": "is.workflow.actions.setitemname",
+          "index": 3,
+          "uuid": "F6BD6A04-4FDF-5D63-A0D7-EECA88C2814A"
+        },
+        "namedBytes64": {
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 6,
+          "uuid": "FBAA6778-7BFB-5DF9-B4D6-CBD3E7992EE2"
+        },
+        "namedCount": {
+          "identifier": "is.workflow.actions.count",
+          "index": 4,
+          "uuid": "CD8CFB8E-4E72-57D2-95CD-0750341C7EA1"
+        },
+        "namedExtension": {
+          "identifier": "is.workflow.actions.properties.files",
+          "index": 8,
+          "uuid": "C1D45973-2801-5B5A-96A9-CAD7751A0589"
+        },
+        "namedStem": {
+          "identifier": "is.workflow.actions.getitemname",
+          "index": 7,
+          "uuid": "78DAF9A1-A895-5CD6-A94E-722DF0DA96DA"
+        },
+        "namedType": {
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 5,
+          "uuid": "A56FFCCE-C4B6-554F-8659-CDD5781704D1"
+        },
+        "original": {
+          "identifier": "is.workflow.actions.gettext",
+          "index": 0,
+          "uuid": "E6623352-18C9-56DE-BA31-F3AFB1E2D718"
+        },
+        "terminal": {
+          "identifier": "is.workflow.actions.nothing",
+          "index": 9,
+          "uuid": null
+        }
+      },
+      "sourcePath": "fixtures/qa-file-archive-baseline-v2.cherri",
+      "sourcePin": {
+        "bytes": 576,
+        "sha256": "99909941124c70416a9f2c6a9141cd022de0102d2fa377f71a0b1a4d4c33a093"
+      }
+    },
+    "candidate": {
+      "actionCount": 14,
+      "noNonlocalAction": true,
+      "plistPath": "compiled/qa-file-archive-candidate-v2.shortcut",
+      "plistPin": {
+        "bytes": 12059,
+        "sha256": "2ade0947e1349a7d30bbb14e1bb6d8ce8caed544ade8bd6683c69bc8ff804b23"
+      },
+      "roles": {
+        "archive": {
+          "identifier": "is.workflow.actions.makezip",
+          "index": 1,
+          "uuid": "450D88DB-A7B5-525A-A2AC-AF6F21C6D8D3"
+        },
+        "countGuardEnd": {
+          "identifier": "is.workflow.actions.conditional",
+          "index": 12,
+          "uuid": null
+        },
+        "countGuardStart": {
+          "identifier": "is.workflow.actions.conditional",
+          "index": 4,
+          "uuid": null
+        },
+        "extracted": {
+          "identifier": "is.workflow.actions.unzip",
+          "index": 2,
+          "uuid": "5A833D83-14CE-5195-A350-A654B52EEC4E"
+        },
+        "extractedCount": {
+          "identifier": "is.workflow.actions.count",
+          "index": 3,
+          "uuid": "7C963AE4-3FD4-5C5F-B69E-48A6AF159AF7"
+        },
+        "item": {
+          "identifier": "is.workflow.actions.getitemfromlist",
+          "index": 5,
+          "uuid": "052D79F3-4DE7-5039-A7B1-7A4C2E61354C"
+        },
+        "named": {
+          "identifier": "is.workflow.actions.setitemname",
+          "index": 6,
+          "uuid": "0C87A7E3-B627-5038-A531-AB7CBD6BEBDA"
+        },
+        "namedBytes64": {
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 9,
+          "uuid": "690DADB7-0596-5E45-AAE7-12B43FE61EC9"
+        },
+        "namedCount": {
+          "identifier": "is.workflow.actions.count",
+          "index": 7,
+          "uuid": "0242B4D7-2CEA-5C1F-A57A-E29C380C8CD6"
+        },
+        "namedExtension": {
+          "identifier": "is.workflow.actions.properties.files",
+          "index": 11,
+          "uuid": "7B5E7B58-C4DD-5A90-88D6-87F8D780BB8A"
+        },
+        "namedStem": {
+          "identifier": "is.workflow.actions.getitemname",
+          "index": 10,
+          "uuid": "885368C6-0C81-5494-868E-43F500027DDA"
+        },
+        "namedType": {
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 8,
+          "uuid": "256B763F-B888-505A-81A5-E17A0732DB63"
+        },
+        "original": {
+          "identifier": "is.workflow.actions.gettext",
+          "index": 0,
+          "uuid": "B1B4EE00-9205-5B85-81B2-4844DA55FD52"
+        },
+        "terminal": {
+          "identifier": "is.workflow.actions.nothing",
+          "index": 13,
+          "uuid": null
+        }
+      },
+      "sourcePath": "fixtures/qa-file-archive-candidate-v2.cherri",
+      "sourcePin": {
+        "bytes": 739,
+        "sha256": "1057daa8005d76d6695c917383d6c8a65141f136669de60de2d2a353625b95e2"
+      }
+    },
+    "witnesses": {
+      "actionCount": 13,
+      "noNonlocalAction": true,
+      "plistPath": "compiled/qa-file-archive-witnesses-v2.shortcut",
+      "plistPin": {
+        "bytes": 11183,
+        "sha256": "fc24c8eeac4c687b0e0810d80af5bba02f58d23d002f0f2b749162c41ed7fa01"
+      },
+      "roles": {
+        "binaryBytes64": {
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 3,
+          "uuid": "80C8FA84-A6AB-5BC1-9C78-F0D359F055B5"
+        },
+        "binaryCount": {
+          "identifier": "is.workflow.actions.count",
+          "index": 4,
+          "uuid": "38E77746-FF4F-59CA-BBB7-4CC487974446"
+        },
+        "binaryInput": {
+          "identifier": "is.workflow.actions.gettext",
+          "index": 0,
+          "uuid": "ED1B66A9-3AF8-5F7D-9927-D32E0D8F6FCF"
+        },
+        "binaryType": {
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 2,
+          "uuid": "8FA4F363-6282-59E2-A272-A8A88822CAD4"
+        },
+        "binaryWitness": {
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 1,
+          "uuid": "0D2F94EF-B709-5DC8-980C-787984FD74DC"
+        },
+        "dictionaryCount": {
+          "identifier": "is.workflow.actions.count",
+          "index": 11,
+          "uuid": "28BC8E78-8E13-5CA4-9DE3-CFE475A10E0C"
+        },
+        "dictionaryType": {
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 10,
+          "uuid": "A71B4A9C-D2F4-59A8-8BB0-5E260597C20A"
+        },
+        "dictionaryWitness": {
+          "identifier": "is.workflow.actions.dictionary",
+          "index": 9,
+          "uuid": "FFF26124-2AC7-5ED4-A9B8-07AA2168B449"
+        },
+        "terminal": {
+          "identifier": "is.workflow.actions.nothing",
+          "index": 12,
+          "uuid": null
+        },
+        "textBytes64": {
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 7,
+          "uuid": "85ED5100-0B5D-5753-A6E1-F892CCB33CCA"
+        },
+        "textCount": {
+          "identifier": "is.workflow.actions.count",
+          "index": 8,
+          "uuid": "24D3C19E-C5CD-533A-BDDC-97C98BF50617"
+        },
+        "textType": {
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 6,
+          "uuid": "69BF132C-7A5E-597E-BFC6-C520758DF943"
+        },
+        "textWitness": {
+          "identifier": "is.workflow.actions.gettext",
+          "index": 5,
+          "uuid": "27D51A33-3057-5634-AA85-B73141273A1E"
+        }
+      },
+      "sourcePath": "fixtures/qa-file-archive-witnesses-v2.cherri",
+      "sourcePin": {
+        "bytes": 661,
+        "sha256": "6f3ff565dd88d50d27df64002de116ee48735a677cc52aa482183f46f39a646f"
+      }
+    }
+  },
+  "formalAcceptanceGranted": false,
+  "nativeExecuted": false,
+  "schema": "cherri-native-file-archive-graph-contract/1",
+  "sourceAuditPassed": true,
+  "sourceCommit": "5bc62d057e4bfa8bdd895e7228ca59eedac20b40"
+}

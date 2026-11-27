@@ -1,0 +1,277 @@
+{
+  "acceptance": {
+    "formalAcceptanceGranted": false,
+    "fullDebugExportAccepted": false,
+    "iOSDeviceExercised": false,
+    "nativeCarrierAccepted": false,
+    "nativeFileAccepted": false,
+    "noMacAccessByReviewer": true,
+    "noProductOrNativeReplayByReviewer": true,
+    "originalGuardedCandidateAccepted": false,
+    "signedImportExercised": false,
+    "sourceOrFixtureChangedByReviewer": false
+  },
+  "actualExecution": {
+    "completedActionIndices": [
+      0,
+      1
+    ],
+    "engineElapsedMs": 52.48924996703863,
+    "engineRunInvocations": 1,
+    "errorMeaningInferred": false,
+    "eventCount": 21,
+    "failedAction": {
+      "callbackUUID": null,
+      "error": {
+        "code": 1011,
+        "domain": "VCVoiceShortcutsErrorDomain",
+        "nativeClass": "NSError"
+      },
+      "eventSequence": 19,
+      "identifier": "is.workflow.actions.makezip",
+      "index": 1,
+      "modelUUID": "AB865229-0169-5E38-B6E2-5757E767E280",
+      "nativeClass": "WFMakeArchiveAction",
+      "outputCardinality": 0,
+      "uuidBindingPassed": false
+    },
+    "initialText": {
+      "actionIndex": 0,
+      "actionUUID": "EF0D62F2-5F4A-55F6-8420-6FD07DEA9877",
+      "bytes": 83,
+      "error": null,
+      "nativeClass": "WFStringContentItem",
+      "sha256": "539a079afd9ef25a7e6c893494300f86f9f8db22c9dc4b58bbb433d4e492c365",
+      "strictStoredTextHelper": "PASS"
+    },
+    "missingCompletionIndices": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "missingRoles": [
+      "extracted",
+      "extractedCount",
+      "named",
+      "namedBytes64",
+      "namedCount",
+      "namedExtension",
+      "namedStem",
+      "namedType",
+      "terminal"
+    ],
+    "terminal": {
+      "actionOutputsAtFinish": {
+        "kind": "NIL",
+        "nativeClass": null,
+        "present": false
+      },
+      "cancelled": false,
+      "error": {
+        "code": 1011,
+        "domain": "VCVoiceShortcutsErrorDomain",
+        "nativeClass": "NSError"
+      },
+      "eventSequence": 20,
+      "output": {
+        "kind": "NIL",
+        "nativeClass": null,
+        "present": false
+      }
+    },
+    "uuidChangeCauseInferred": false
+  },
+  "archive": {
+    "bytes": 138885,
+    "extractedBytesVerified": true,
+    "members": 54,
+    "path": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/export-evidence/native-file-archive-direct-acquisition-01/originals.mac.zip",
+    "sha256": "df55a16955a1b6d90c770cb86f7dd8c723cbb1909e66271be28570e7b682913e",
+    "transferManifestSHA256": "2ad151d7eac585f53305d38bb5e2459307a1570320f4e80c7203d050608a0ec2",
+    "transferPinsVerified": 53
+  },
+  "conclusion": "The direct model constructed all 11 original actions and invoked the engine once. Initial Text matched the independent 83-byte oracle. The next MakeArchive callback reported NSError VCVoiceShortcutsErrorDomain/1011, empty output, and a null actualUUID despite the bound model UUID. The workflow finished with the same error. Extraction, counts, naming and carrier diagnostics were not observed. Original-stream validation rejects ACTION_MODEL_BINDING; no File/carrier acceptance follows from owner exit zero or callbacks-retained status.",
+  "model": {
+    "actions": [
+      {
+        "actualClass": "WFTextAction",
+        "actualUUID": "EF0D62F2-5F4A-55F6-8420-6FD07DEA9877",
+        "identifier": "is.workflow.actions.gettext",
+        "index": 0,
+        "originalUUID": "EF0D62F2-5F4A-55F6-8420-6FD07DEA9877"
+      },
+      {
+        "actualClass": "WFMakeArchiveAction",
+        "actualUUID": "AB865229-0169-5E38-B6E2-5757E767E280",
+        "identifier": "is.workflow.actions.makezip",
+        "index": 1,
+        "originalUUID": "AB865229-0169-5E38-B6E2-5757E767E280"
+      },
+      {
+        "actualClass": "WFExtractArchiveAction",
+        "actualUUID": "063EA21B-1DA1-5C72-A29F-99A9D3DC5239",
+        "identifier": "is.workflow.actions.unzip",
+        "index": 2,
+        "originalUUID": "063EA21B-1DA1-5C72-A29F-99A9D3DC5239"
+      },
+      {
+        "actualClass": "WFCountAction",
+        "actualUUID": "20DC73FA-381E-5B65-9D8B-46426E1390B3",
+        "identifier": "is.workflow.actions.count",
+        "index": 3,
+        "originalUUID": "20DC73FA-381E-5B65-9D8B-46426E1390B3"
+      },
+      {
+        "actualClass": "WFSetItemNameAction",
+        "actualUUID": "4B99342E-95CE-54F7-9E3B-C4B00F5358D4",
+        "identifier": "is.workflow.actions.setitemname",
+        "index": 4,
+        "originalUUID": "4B99342E-95CE-54F7-9E3B-C4B00F5358D4"
+      },
+      {
+        "actualClass": "WFCountAction",
+        "actualUUID": "B55AC546-13D0-5B65-BDC5-2A5500688A1E",
+        "identifier": "is.workflow.actions.count",
+        "index": 5,
+        "originalUUID": "B55AC546-13D0-5B65-BDC5-2A5500688A1E"
+      },
+      {
+        "actualClass": "WFGetItemTypeAction",
+        "actualUUID": "E3B37B81-6D12-578D-844D-2275BB5EE86A",
+        "identifier": "is.workflow.actions.getitemtype",
+        "index": 6,
+        "originalUUID": "E3B37B81-6D12-578D-844D-2275BB5EE86A"
+      },
+      {
+        "actualClass": "WFBase64EncodingAction",
+        "actualUUID": "1B897E79-0339-509D-A9F6-784DD8E8D72D",
+        "identifier": "is.workflow.actions.base64encode",
+        "index": 7,
+        "originalUUID": "1B897E79-0339-509D-A9F6-784DD8E8D72D"
+      },
+      {
+        "actualClass": "WFGetItemNameAction",
+        "actualUUID": "C383E817-7A05-53A2-A8C3-168BF8C208C1",
+        "identifier": "is.workflow.actions.getitemname",
+        "index": 8,
+        "originalUUID": "C383E817-7A05-53A2-A8C3-168BF8C208C1"
+      },
+      {
+        "actualClass": "WFContentItemPropertiesAction",
+        "actualUUID": "E3B15747-935D-59E7-8A5A-DDFD3E4E0560",
+        "identifier": "is.workflow.actions.properties.files",
+        "index": 9,
+        "originalUUID": "E3B15747-935D-59E7-8A5A-DDFD3E4E0560"
+      },
+      {
+        "actualClass": "WFNothingAction",
+        "actualUUID": "1BCC762C-01F8-4D3C-9CD9-9705EA2AB86A",
+        "identifier": "is.workflow.actions.nothing",
+        "index": 10,
+        "originalUUID": null
+      }
+    ],
+    "allElevenOriginalActionsBound": true,
+    "originalFlagsPreserved": true,
+    "originalUUIDAbsentAtIndex": [
+      10
+    ]
+  },
+  "originalReceipts": {
+    "engineRunInvocations": 1,
+    "eventsSHA256": "f71b9e2ef5a236d72178e36e43ce66132ad4bfca07d166840038a771f63ef5c0",
+    "fullJSONLMatchesPilot": true,
+    "ownerAndPilotStatus": "ENGINE_CALLBACKS_RETAINED_VALIDATION_PENDING",
+    "pilotDone": true,
+    "pilotSHA256": "fa66c5a392f297fddabb87d903c6ad7f925cde3e9ed5705d5798873273150279",
+    "resultSHA256": "2868f3293388783a3278991ebc454a67c5cb31513a2c4cb6548d60f3174177b2",
+    "statusIsNotSemanticAcceptance": true,
+    "unchangedOriginalStreamValidator": "REJECTED",
+    "unchangedOriginalStreamValidatorReason": "ACTION_MODEL_BINDING"
+  },
+  "preservedPriorEvidence": {
+    "constructionIdentityReport": {
+      "path": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/export-evidence/native-file-identity-intake-01/independent-intake.original.json",
+      "sha256": "fb416d32d11c9883e957d1fee0fbc96baff79a85201dc7b77568e3e80c900d0e"
+    },
+    "guardedFourteenActionCandidateStillNotRun": true,
+    "originalBaselineStillNegativeFileClass": true,
+    "priorWitnessesOrBaselineRerun": false,
+    "witnessAndNegativeBaselineReport": {
+      "path": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/export-evidence/native-file-original-intake-01/independent-intake.original.json",
+      "sha256": "0a2a63d4873f6f5a761d614822280ca351a9c8f74333bc3314012a3544347b6c"
+    }
+  },
+  "processClosure": {
+    "admissionHashBound": true,
+    "capacityPolicyReinterpreted": false,
+    "captureElapsedMs": 1116,
+    "captureExitCode": 0,
+    "captureResult": "PASS",
+    "cleanupParentReaped": true,
+    "groupAfterCleanup": {
+      "errno": null,
+      "present": false,
+      "state": "ABSENT"
+    },
+    "nativeWorkflowSucceeded": false,
+    "ownedTemporaryMetadata": [],
+    "ownerElapsedMs": 1200,
+    "pid": 66732,
+    "rootAdmissionSHA256": "3b75902d26e249679cf0e077604c0778b7549c69461e0654c7bd33ff019df491",
+    "sourceSnapshotsVerified": true,
+    "stderr": {
+      "bytes": 0,
+      "eof": true,
+      "overflow": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 7034,
+      "eof": true,
+      "overflow": false,
+      "sha256": "fa66c5a392f297fddabb87d903c6ad7f925cde3e9ed5705d5798873273150279"
+    },
+    "temporaryObservationScope": "Only this owner's native-tmp directory; not an assertion of no OS temporary writes"
+  },
+  "requiredCarrierObservations": {
+    "extractedCollectionCount": "NOT_OBSERVED",
+    "extractedCountAction": "NOT_OBSERVED",
+    "extractedNativeFileClass": "NOT_OBSERVED",
+    "initialTextIsNotFileOutputProof": true,
+    "namedCollectionCount": "NOT_OBSERVED",
+    "namedCountAction": "NOT_OBSERVED",
+    "namedExact83Bytes": "NOT_OBSERVED",
+    "namedExtension": "NOT_OBSERVED",
+    "namedNativeFileClassBeforeConsumers": "NOT_OBSERVED",
+    "namedStem": "NOT_OBSERVED",
+    "namedTypeFile": "NOT_OBSERVED"
+  },
+  "reviewedUTC": "2026-11-27T17:14:56.999470+00:00",
+  "reviewer": "ChatGPT /root/cache_completion",
+  "schema": "cherri-native-file-archive-direct-independent-intake/1",
+  "sourceBinding": {
+    "allSourceBeforeAfterEqual": true,
+    "compilerSHA256": "278834c032c2ec3a246b2909b607b907b79d33ce5c19be05dfc853299464278a",
+    "directPlistPin": {
+      "bytes": 9649,
+      "sha256": "e0f08e38a88be8dfc1ca307368e679fedf750fabb82994dbc2e30e817c3af487"
+    },
+    "directSourcePin": {
+      "bytes": 642,
+      "sha256": "2611430bb28a10d4c0d1571ef8517d862128f049c8384bb8cd1188c98ebb9362"
+    },
+    "frozenInputsVerified": 38,
+    "manifestSHA256": "8fdfba44c0aa3259eaf2c9f65de25423519591f192fdb6930cd7ce3e8ab517ad",
+    "ownerSHA256": "0f2c71d157423518b18a62288fd1ce28d51f8005a3211328b1e310462b6602a0",
+    "sourceCommit": "5bc62d057e4bfa8bdd895e7228ca59eedac20b40",
+    "unchangedJoinedObserverSHA256": "9cb1d58914a8d262cd48fef48207ef74c0def7f89674afc3e75de69eb04959d5"
+  },
+  "status": "ACTUAL_DIRECT_RUNTIME_FAILURE_PRESERVED_NO_CARRIER_ACCEPTANCE"
+}

@@ -1,0 +1,157 @@
+{
+  "exactGitSourcePins": {
+    "actions/documents.cherri": {
+      "bytes": 6330,
+      "sha256": "b7d86a9a420fdb9d159a45d73164097c0c13c637fe0ffe5d0febacd3d1a5c70c"
+    },
+    "docs/apple-runtime/macos-27/builtin-actions.json": {
+      "bytes": 666423,
+      "sha256": "8fb303591888bcb01fe5935b1571d590add428c9bd044f0ab52dcdf99490571a"
+    },
+    "docs/apple-runtime/macos-27/parameter-encodings.json": {
+      "bytes": 520474,
+      "sha256": "9b153807299ae503ed2f9f665ab17ffbe650a4f6defec9f81eb0deac5a9e7969"
+    },
+    "docs/apple-runtime/macos-27/toolkit-registry.json": {
+      "bytes": 5690409,
+      "sha256": "79274716b2ec5f6f92f1a698acc839db789ebc81ee6ec116648bad05b4f7197f"
+    },
+    "internal/language/analysis/analyzer.go": {
+      "bytes": 76121,
+      "sha256": "a98c326744f43c255fe204ab1a2587d0781fa4a527dc36debfe1ea38609303ac"
+    },
+    "internal/language/analysis/enums.go": {
+      "bytes": 4757,
+      "sha256": "3385452c938c06cd0366a573bdbb630bdac3eadf8702fd27886ca8b3e71c4558"
+    },
+    "internal/language/lower/lower.go": {
+      "bytes": 198202,
+      "sha256": "4a28c73289d811282aac7be7bdea5d06f50e51486d951ea685f4064fe77c9eef"
+    }
+  },
+  "formatParameter": {
+    "description": null,
+    "flags": 0,
+    "key": "WFArchiveFormat",
+    "kind": "string",
+    "name": "Format",
+    "order": 1,
+    "type": {
+      "bundleIdentifier": "com.apple.shortcuts",
+      "cases": [
+        {
+          "id": "cpgz",
+          "title": ".cpgz"
+        },
+        {
+          "id": "cpio",
+          "title": ".cpio"
+        },
+        {
+          "id": "gz",
+          "title": ".gz"
+        },
+        {
+          "id": "iso",
+          "title": ".iso"
+        },
+        {
+          "id": "tar",
+          "title": ".tar"
+        },
+        {
+          "id": "tar.bz2",
+          "title": ".tar.bz2"
+        },
+        {
+          "id": "tar.gz",
+          "title": ".tar.gz"
+        },
+        {
+          "id": "tar.xz",
+          "title": ".tar.xz"
+        },
+        {
+          "id": "zip",
+          "title": ".zip"
+        }
+      ],
+      "kind": "enum",
+      "name": "is.workflow.actions.makezip.WFArchiveFormat"
+    }
+  },
+  "identifier": "is.workflow.actions.makezip",
+  "inference": "Committed metadata distinguishes wire id zip from display title .zip; this is not an interpretation of NSError code 1011.",
+  "isolatedExportWorktreeMatches": {
+    "actions/documents.cherri": true,
+    "docs/apple-runtime/macos-27/builtin-actions.json": true,
+    "docs/apple-runtime/macos-27/parameter-encodings.json": true,
+    "docs/apple-runtime/macos-27/toolkit-registry.json": true,
+    "internal/language/analysis/analyzer.go": false,
+    "internal/language/analysis/enums.go": true,
+    "internal/language/lower/lower.go": true
+  },
+  "metadataOSBuild": "26A434",
+  "nativeEscapeBranchUnchanged": true,
+  "nativeExecuted": false,
+  "nativeParameters": [
+    {
+      "class": "WFTextInputParameter",
+      "default": null,
+      "key": "WFZIPName",
+      "singleStateClass": "WFVariableStringParameterState",
+      "variableTypes": [
+        "ActionOutput",
+        "Ask",
+        "Clipboard",
+        "CurrentApp",
+        "CurrentDate",
+        "DeviceDetails",
+        "ExtensionInput",
+        "TriggerOutput",
+        "Variable"
+      ]
+    },
+    {
+      "class": "WFArchiveFormatParameter",
+      "default": "zip",
+      "key": "WFArchiveFormat",
+      "singleStateClass": "WFArchiveFormatSubstitutableState",
+      "variableTypes": [
+        "ActionOutput",
+        "Ask",
+        "ExtensionInput",
+        "TriggerOutput",
+        "Variable"
+      ]
+    },
+    {
+      "class": "WFVariablePickerParameter",
+      "default": null,
+      "key": "WFInput",
+      "singleStateClass": "WFVariableParameterState",
+      "variableTypes": [
+        "ActionOutput",
+        "Clipboard",
+        "CurrentApp",
+        "CurrentDate",
+        "DeviceDetails",
+        "ExtensionInput",
+        "TriggerOutput",
+        "Variable"
+      ]
+    }
+  ],
+  "priorActualRunOSBuild": "26A428",
+  "sourceCommit": "5bc62d057e4bfa8bdd895e7228ca59eedac20b40",
+  "toolkitProvenance": {
+    "dbFilename": "Tools-prod.v79-A0CCC5CC-AA05-4E4E-9F0E-999CEFCB8D69.sqlite",
+    "dbSha256": "7420cefa595a7f875771b11add43f2d0b94754eee9fcab6bf3a6e1c2dafa4340",
+    "extractedAt": "2026-10-15T21:53:05.152659+00:00",
+    "indexerSource": "BackgroundShortcutRunner",
+    "launchServicesSequence": 2016,
+    "osVersion": "26A434",
+    "schemaVersion": "2.0.0",
+    "toolkitVersion": "23DCB54F-5A3E-4530-BC56-00B693DCD9F7"
+  }
+}

@@ -1,0 +1,10 @@
+// Separately named diagnostic: unchanged Encode/Decode/Set Name baseline.
+let original = text("{\n  \"z\": 1.0, \"a\": 1e0,\n  \"text\": \"שָׁלוֹם 🍒\",\n  \"escaped\": \"\\u05E9\\n\"\n}\n")
+let encoded = base64Encode(original, lineBreakMode: "None")
+let decoded = base64Decode(encoded)
+let named = setName(decoded, "cherri-debug.json", false)
+let namedCount = count(named, "Items")
+let namedType = typeOf(named)
+let namedBytes64 = base64Encode(named, lineBreakMode: "None")
+let namedStem = getName(named)
+let namedExtension = getFileDetail(named, "File Extension")

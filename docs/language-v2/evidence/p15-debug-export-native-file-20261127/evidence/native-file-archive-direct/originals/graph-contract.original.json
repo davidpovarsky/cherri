@@ -1,0 +1,85 @@
+{
+  "cases": {
+    "direct": {
+      "actionCount": 11,
+      "conditionalOrItemSelectionActions": 0,
+      "extraItemsRejectCarrierEvidence": true,
+      "noNonlocalAction": true,
+      "plistPath": "compiled/qa-file-archive-direct-v2.shortcut",
+      "plistPin": {
+        "bytes": 9649,
+        "sha256": "e0f08e38a88be8dfc1ca307368e679fedf750fabb82994dbc2e30e817c3af487"
+      },
+      "requiredExtractedCount": 1,
+      "requiredNamedCount": 1,
+      "roles": {
+        "archive": {
+          "identifier": "is.workflow.actions.makezip",
+          "index": 1,
+          "uuid": "AB865229-0169-5E38-B6E2-5757E767E280"
+        },
+        "extracted": {
+          "identifier": "is.workflow.actions.unzip",
+          "index": 2,
+          "uuid": "063EA21B-1DA1-5C72-A29F-99A9D3DC5239"
+        },
+        "extractedCount": {
+          "identifier": "is.workflow.actions.count",
+          "index": 3,
+          "uuid": "20DC73FA-381E-5B65-9D8B-46426E1390B3"
+        },
+        "named": {
+          "identifier": "is.workflow.actions.setitemname",
+          "index": 4,
+          "uuid": "4B99342E-95CE-54F7-9E3B-C4B00F5358D4"
+        },
+        "namedBytes64": {
+          "identifier": "is.workflow.actions.base64encode",
+          "index": 7,
+          "uuid": "1B897E79-0339-509D-A9F6-784DD8E8D72D"
+        },
+        "namedCount": {
+          "identifier": "is.workflow.actions.count",
+          "index": 5,
+          "uuid": "B55AC546-13D0-5B65-BDC5-2A5500688A1E"
+        },
+        "namedExtension": {
+          "identifier": "is.workflow.actions.properties.files",
+          "index": 9,
+          "uuid": "E3B15747-935D-59E7-8A5A-DDFD3E4E0560"
+        },
+        "namedStem": {
+          "identifier": "is.workflow.actions.getitemname",
+          "index": 8,
+          "uuid": "C383E817-7A05-53A2-A8C3-168BF8C208C1"
+        },
+        "namedType": {
+          "identifier": "is.workflow.actions.getitemtype",
+          "index": 6,
+          "uuid": "E3B37B81-6D12-578D-844D-2275BB5EE86A"
+        },
+        "original": {
+          "identifier": "is.workflow.actions.gettext",
+          "index": 0,
+          "uuid": "EF0D62F2-5F4A-55F6-8420-6FD07DEA9877"
+        },
+        "terminal": {
+          "identifier": "is.workflow.actions.nothing",
+          "index": 10,
+          "uuid": null
+        }
+      },
+      "sourcePath": "fixtures/qa-file-archive-direct-v2.cherri",
+      "sourcePin": {
+        "bytes": 642,
+        "sha256": "2611430bb28a10d4c0d1571ef8517d862128f049c8384bb8cd1188c98ebb9362"
+      },
+      "wholeExtractedCollectionPassedToName": true
+    }
+  },
+  "formalAcceptanceGranted": false,
+  "nativeExecuted": false,
+  "schema": "cherri-native-file-archive-graph-contract/1",
+  "sourceAuditPassed": true,
+  "sourceCommit": "5bc62d057e4bfa8bdd895e7228ca59eedac20b40"
+}
