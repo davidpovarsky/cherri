@@ -19,6 +19,8 @@ type PaginateOptions struct {
 	Origin           string
 	SiblingBaseURL   string
 	ItemsKey         string
+	ItemKey          string
+	ItemType         string
 	NextKey          string
 	MaxPages         int
 	MaxItems         int
@@ -36,7 +38,7 @@ var paginateKeyPattern = regexp.MustCompile("^[A-Za-z_][A-Za-z0-9_-]{0,63}$")
 // Scalar traversal options are literal and bounded. The ordinary HTTP parameter
 // binder separately validates headers using the established Dictionary codec.
 func ResolvePaginateOptions(params map[string]any) (PaginateOptions, error) {
-	out := PaginateOptions{ItemsKey: "items", NextKey: "next", MaxPages: 20, MaxItems: 1000}
+	out := PaginateOptions{ItemsKey: "items", NextKey: "next", ItemType: "dictionary", MaxPages: 20, MaxItems: 1000}
 	start, ok := params["WFPaginateStartURL"].(string)
 	if !ok || start == "" {
 		return out, fmt.Errorf("PAGINATE_LITERAL: startURL must be a nonempty literal HTTP(S) URL")
@@ -96,6 +98,9 @@ func ResolvePaginateOptions(params map[string]any) (PaginateOptions, error) {
 			*option.target = int(number)
 		}
 	}
+	if err := resolvePaginateItemOptions(&out, params); err != nil {
+		return out, err
+	}
 	if err := resolvePaginateMode(&out, params, parsed); err != nil {
 		return out, err
 	}
@@ -117,6 +122,8 @@ func init() {
 			DefaultValue: StringDefault(strconv.Itoa(defaultValue)), OmissionPolicy: OmitPolicyOmit, EvidenceStatus: EvidenceInferred,
 		}
 	}
+	itemType := literalText("itemType", "Selected native item kind (dictionary, text, number, bool)", "WFPaginateItemType", StringDefault("dictionary"), true)
+	itemType.EnumValues = []string{"dictionary", "text", "number", "bool"}
 	result := types.NewList(types.NewMap(types.Text, types.AnyContent))
 	compilerMacroSchemas["paginate"] = &ActionSchema{
 		ID: "paginate", CallableName: "paginate", Module: "web", CompilerConstruct: true, ScopedBlock: true, ScopedBlockOptional: true,
@@ -126,7 +133,7 @@ func init() {
 			literalText("itemsKey", "Dictionary items key", "WFPaginateItemsKey", StringDefault("items"), true),
 			literalText("nextKey", "Next URL or sibling filename key", "WFPaginateNextKey", StringDefault("next"), true),
 			literalLimit("maxPages", "Maximum native GET invocations (0..100)", "WFPaginateMaxPages", 20),
-			literalLimit("maxItems", "Maximum returned Dictionary items (0..10000)", "WFPaginateMaxItems", 1000),
+			literalLimit("maxItems", "Maximum returned items (0..10000)", "WFPaginateMaxItems", 1000),
 			{
 				ID: "headers", Label: "headers", DisplayName: "Native HTTP headers",
 				Type: types.NewMap(types.Text, types.AnyContent), TypeName: "Map<Text, AnyContent>", RawType: "dictionary",
@@ -135,11 +142,13 @@ func init() {
 			},
 			literalText("mode", "Next marker mode (url, cursor, page, offset)", "WFPaginateMode", StringDefault("url"), true),
 			literalText("queryKey", "Query key replaced by cursor/page/offset marker", "WFPaginateQueryKey", nil, true),
+			literalText("itemKey", "Required Dictionary field selected from each item", "WFPaginateItemKey", nil, true),
+			itemType,
 		},
 		OutputType: result, OutputTypeName: result.String(), RawOutputType: "array",
 		Docs: ActionDocs{
 			Title: "Paginate Bounded Dictionary Pages", Category: "web",
-			Description:      "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Default URL mode accepts same-origin absolute URLs or simple sibling filenames. Optional cursor/page/offset modes use a fixed authored URL and replace one configured query value; cursor Text is encoded and roundtrip-checked, numeric next markers are exact bounded integers. Query byte order and unrelated query values remain unchanged. Exact marker and resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. An optional { page in ... } body receives the immutable native page Dictionary once per validated page, preserves lexical captured writes and must be Void; either zero cap skips it. Typed item selectors/returned items, Link parsing, HTTP status verification, retry and transport timeout remain separate contracts. Native runtime acceptance remains required.",
+			Description:      "Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Default URL mode accepts same-origin absolute URLs or simple sibling filenames. Optional cursor/page/offset modes use a fixed authored URL and replace one configured query value; cursor Text is encoded and roundtrip-checked, numeric next markers are exact bounded integers. Query byte order and unrelated query values remain unchanged. Exact marker and resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. An optional { page in ... } body receives the immutable native page Dictionary once per validated page, preserves lexical captured writes and must be Void; either zero cap skips it. Optional itemKey selects a required Dictionary field and itemType determines List<Dictionary>, List<Text>, List<Number> or List<Bool> with native singleton/type guards. Values keep their original native reference. Number and Boolean modes fail before any GET when native Boolean and Number witnesses are indistinguishable. Empty/absent values and standalone nested Lists are not declared lossless result shapes. Link parsing, HTTP status verification, retry and transport timeout remain separate contracts. Native runtime acceptance remains required.",
 			InsertionSnippet: "paginate(\"https://example.invalid/pages/one.json\")",
 		},
 		Builtin: true, EvidenceStatus: EvidenceInferred,

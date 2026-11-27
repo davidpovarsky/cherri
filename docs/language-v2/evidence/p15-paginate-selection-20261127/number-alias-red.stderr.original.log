@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/paginate/tools/p10r15/verify_paginate_selection.py", line 334, in <module>
+    main()
+  File "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/paginate/tools/p10r15/verify_paginate_selection.py", line 254, in main
+    entry["models"]["boolean-number-alias-before-get"] = inspect(graph, server, alias, kind, key, alias=True)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/paginate/tools/p10r15/verify_paginate_selection.py", line 76, in inspect
+    assert observed == case.get("guard"), f"fixed guard changed: {observed!r} != {case.get('guard')!r}"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: fixed guard changed: 'PAGINATE_ITEMS_KEY_REQUIRED' != 'PAGINATE_NUMBER_TYPE_UNAVAILABLE'

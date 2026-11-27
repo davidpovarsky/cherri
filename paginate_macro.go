@@ -15,7 +15,7 @@ func registerPaginateMacro() {
 		identifier: "getvariable", outputType: Arr,
 		doc: selfDoc{
 			title: "Paginate Bounded Dictionary Pages", category: "web",
-			description: "Collect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; optional native HTTP header dictionary with runtime leaf values; same-origin URL/sibling, opaque cursor, or explicit numeric page/offset next markers. Query modes replace only the configured query value, retaining other authored query bytes. Optional immutable page/Void callback runs once per validated page in Legacy and V2. Typed selectors/returned items, HTTP status verification, retry and transport timeout remain separate contracts. Native runtime acceptance remains required.",
+			description: "Collect ordered native Dictionary items from bounded GET page bodies. Literal startURL/selectors/caps; optional native HTTP header dictionary with runtime leaf values; same-origin URL/sibling, opaque cursor, or explicit numeric page/offset next markers. Query modes replace only the configured query value, retaining other authored query bytes. Optional immutable page/Void callback runs once per validated page in Legacy and V2. Optional itemKey selects a required Dictionary field and itemType declares dictionary/text/number/bool results with native singleton/type guards. Number and Boolean modes fail before requests when native Boolean and Number types cannot be distinguished. Empty/absent values and standalone nested Lists have no declared lossless result contract. HTTP status verification, retry and transport timeout remain separate contracts. Native runtime acceptance remains required.",
 		},
 		parameters: []parameterDefinition{
 			{name: "startURL", key: "WFPaginateStartURL", validType: RawString},
@@ -26,10 +26,12 @@ func registerPaginateMacro() {
 			{name: "headers", key: "WFHTTPHeaders", validType: Dict, optional: true, literal: true},
 			{name: "mode", key: "WFPaginateMode", validType: RawString, optional: true, defaultValue: "url"},
 			{name: "queryKey", key: "WFPaginateQueryKey", validType: RawString, optional: true},
+			{name: "itemKey", key: "WFPaginateItemKey", validType: RawString, optional: true},
+			{name: "itemType", key: "WFPaginateItemType", validType: RawString, optional: true, defaultValue: "dictionary"},
 		},
 		makeParams: func(args []actionArgument) map[string]any {
 			out := make(map[string]any)
-			keys := []string{"WFPaginateStartURL", "WFPaginateItemsKey", "WFPaginateNextKey", "WFPaginateMaxPages", "WFPaginateMaxItems", "WFHTTPHeaders", "WFPaginateMode", "WFPaginateQueryKey"}
+			keys := []string{"WFPaginateStartURL", "WFPaginateItemsKey", "WFPaginateNextKey", "WFPaginateMaxPages", "WFPaginateMaxItems", "WFHTTPHeaders", "WFPaginateMode", "WFPaginateQueryKey", "WFPaginateItemKey", "WFPaginateItemType"}
 			for index, key := range keys {
 				if index >= len(args) {
 					break
@@ -227,13 +229,19 @@ func buildScopedPaginateMacroActions(params map[string]any, resultUUID, resultNa
 	dictionaryType := b.produce("getitemtype", map[string]any{"WFInput": dictionary})
 	textType := b.produce("getitemtype", map[string]any{"WFInput": start})
 	var numberType WFTextTokenAttachment
-	if options.Mode == "page" || options.Mode == "offset" {
+	if options.Mode == "page" || options.Mode == "offset" || options.ItemType == "number" || options.ItemType == "bool" {
 		numberType = b.produce("getitemtype", map[string]any{"WFInput": b.one})
 	}
 	itemsKey := b.produce("gettext", map[string]any{"WFTextActionText": options.ItemsKey})
 	itemsHash := b.digest(itemsKey)
 	nextKey := b.produce("gettext", map[string]any{"WFTextActionText": options.NextKey})
 	nextHash := b.digest(nextKey)
+	var itemWitness = b.itemTypeWitness(dictionary, dictionaryType, textType, numberType)
+	var itemKeyHash WFTextTokenAttachment
+	if options.ItemKey != "" {
+		var key = b.produce("gettext", map[string]any{"WFTextActionText": options.ItemKey})
+		itemKeyHash = b.digest(key)
+	}
 
 	pages := strings.ToUpper(nextGeneratedUUID("paginate"))
 	b.add("repeat.count", backend.BuildRepeatCountStart(pages, options.MaxPages))
@@ -291,9 +299,10 @@ func buildScopedPaginateMacroActions(params map[string]any, resultUUID, resultNa
 	itemLoop := b.each(bounded)
 	room := b.begin(b.count(b.get("results"), "Items"), 0, options.MaxItems, backend.OperandNumber)
 	item := b.repeatItem()
-	b.requireCategory(item, dictionaryType, "PAGINATE_ITEM_DICTIONARY_REQUIRED")
-	// Append the original native Dictionary reference, never Text/JSON or a
-	// Dictionary-field wrapper that could coerce its nested values.
+	item = b.selectItem(item, dictionaryType, itemKeyHash)
+	b.requireSelectedItem(item, itemWitness)
+	// Append the selected original native reference, never a conversion or
+	// a wrapper which could erase its type or nested fields.
 	b.append("results", item)
 	b.end(room)
 	b.eachEnd(itemLoop)
