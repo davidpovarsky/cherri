@@ -88,8 +88,16 @@ def plist_blob(value: Any, mode: str, literal: str, name: str) -> bytes:
     count = 2 if mode=="v2" else 1
     if type(value["actionCount"]) is not int or value["actionCount"] != count or len(actions) != count:
         raise FixtureRejected("ORIGINAL_COMPLETE_ACTION_COUNT")
-    if any(type(a) is not dict or type(a.get("WFWorkflowActionParameters")) is not dict for a in actions):
+    if any(type(a) is not dict for a in actions):
         raise FixtureRejected("ACTION_ENVELOPE")
+    if type(actions[0].get("WFWorkflowActionParameters")) is not dict:
+        raise FixtureRejected("ACTION_ENVELOPE")
+    # The original bare Nothing action omits its optional parameter dictionary.
+    # Preserve that absence; a present dictionary must remain empty.
+    if mode == "v2" and "WFWorkflowActionParameters" in actions[1]:
+        parameters = actions[1]["WFWorkflowActionParameters"]
+        if type(parameters) is not dict or parameters:
+            raise FixtureRejected("ACTION_ENVELOPE")
     if actions[0].get("WFWorkflowActionIdentifier") != "is.workflow.actions.gettext":
         raise FixtureRejected("ORIGINAL_TEXT_PRODUCER")
     text = actions[0]["WFWorkflowActionParameters"].get("WFTextActionText")

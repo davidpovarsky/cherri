@@ -12,7 +12,7 @@ def workflow(mode,literal,name):
     actions=[{"WFWorkflowActionIdentifier":"is.workflow.actions.gettext",
               "WFWorkflowActionParameters":{"WFTextActionText":literal}}]
     if mode=="v2":
-        actions.append({"WFWorkflowActionIdentifier":"is.workflow.actions.nothing","WFWorkflowActionParameters":{}})
+        actions.append({"WFWorkflowActionIdentifier":"is.workflow.actions.nothing"})
     raw=plistlib.dumps({"WFWorkflowName":name,"WFWorkflowActions":actions})
     return dict(blob(raw),actionCount=len(actions),workflowNamePresent=True,workflowName=name)
 def packet(mode):
@@ -99,6 +99,23 @@ class NativeExplicitSigningFixtureTests(unittest.TestCase):
         def remove_void(p):
             p["currentUnsigned"]=workflow("legacy",f.CURRENT,f.CURRENT_NAME)
         self.rejected(self.changed("v2",remove_void),"ORIGINAL_COMPLETE_ACTION_COUNT")
+    def test_parameterless_nothing_preserved_and_text_parameters_required(self):
+        self.parse(events())
+        def replace_graph(p,change):
+            old=p["currentUnsigned"]
+            document=plistlib.loads(base64.b64decode(old["base64"]))
+            change(document["WFWorkflowActions"])
+            raw=plistlib.dumps(document)
+            old.update(blob(raw))
+        # Both omission and an explicitly empty dictionary represent the same
+        # parameterless action; neither is a present native value.
+        self.parse(self.changed("v2",lambda p:replace_graph(p,lambda a:a[1].__setitem__("WFWorkflowActionParameters",{}))))
+        for mode in f.CASES:
+            with self.subTest(mode=mode,problem="missing_text_parameters"):
+                self.rejected(self.changed(mode,lambda p:replace_graph(p,lambda a:a[0].pop("WFWorkflowActionParameters"))),"ACTION_ENVELOPE")
+        for value in ("bad",[],1,{"unexpected":"field"}):
+            with self.subTest(problem="invalid_nothing_parameters",value=value):
+                self.rejected(self.changed("v2",lambda p:replace_graph(p,lambda a:a[1].__setitem__("WFWorkflowActionParameters",value))),"ACTION_ENVELOPE")
     def test_exports_must_be_exactly_once_under_their_original_case(self):
         for mode in f.CASES:
             rows=events();name=f.EXPORT_PARENT+"/"+mode
