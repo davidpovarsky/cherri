@@ -1,0 +1,61 @@
+name: Original No-Content Affected Parents
+
+"on": create
+
+permissions:
+  contents: read
+
+concurrency:
+  group: no-content-focused-8333-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  actual-original-23-parents:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-no-content-focused-8333cde-20261127' &&
+      github.run_attempt == '1'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - name: Check out the exact controller
+        timeout-minutes: 2
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the fixed compiler source
+        timeout-minutes: 2
+        uses: actions/checkout@v6
+        with:
+          ref: 8333cde1d492f1b72faed5f3f5e92cf1d7f9d0c6
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select the existing qualified Go version
+        timeout-minutes: 4
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.13'
+          cache-dependency-path: source/go.sum
+
+      - name: Execute the 23 unreached original affected parents
+        timeout-minutes: 16
+        run: /usr/bin/python3 -I -B controller/tools/ci/distinct_functions/run.py
+
+      - name: Retain every original Go event and complete source receipts
+        timeout-minutes: 3
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: no-content-focused-8333-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-no-content-focused-8333
+          if-no-files-found: error
+          retention-days: 30
+          include-hidden-files: true
