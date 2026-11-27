@@ -16,6 +16,11 @@ on:
         required: false
         type: boolean
         default: false
+      joined_editor_component_only:
+        description: "Run the three presentation controls and two dedicated joined editor UI methods; grant no formal acceptance"
+        required: false
+        type: boolean
+        default: false
       workspace_presentation_only:
         description: "Run three UIKit presentation component controls; publish no formal acceptance records"
         required: false
@@ -51,6 +56,7 @@ jobs:
           DOCUMENTATION_COMPONENT_ONLY: ${{ inputs.documentation_component_only || false }}
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
+          JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only || false }}
         run: python3 -I -B ios/scripts/record_workspace_presentation_source.py mode
       - name: Verify pinned documentation generator
         run: |
@@ -98,15 +104,17 @@ jobs:
           DOCUMENTATION_COMPONENT_ONLY: ${{ inputs.documentation_component_only || false }}
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
+          JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only || false }}
         run: python3 -I -B ios/scripts/record_workspace_presentation_source.py mode
 
       - name: Bind declared presentation component sources
         id: workspace_component_source
-        if: ${{ inputs.workspace_presentation_only == true }}
+        if: ${{ inputs.workspace_presentation_only == true || inputs.joined_editor_component_only == true }}
         env:
           DOCUMENTATION_COMPONENT_ONLY: ${{ inputs.documentation_component_only || false }}
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
+          JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only || false }}
         run: python3 -I -B ios/scripts/record_workspace_presentation_source.py before
 
       - name: Test bounded iOS evidence collector
@@ -311,6 +319,7 @@ jobs:
         env:
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only }}
+          JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only }}
         run: |
           if [ ! -d "CherriUITests" ]; then
             echo "CRITICAL: ios/CherriUITests target missing!" >&2
@@ -326,7 +335,15 @@ jobs:
 
           printf '%s\n' "$SIMULATOR_UDID" > .build/startup-observation-udid.txt
           STARTUP_SELECTION=()
-          if [ "$STARTUP_OBSERVATION_ONLY" = "true" ]; then
+          if [ "$JOINED_EDITOR_COMPONENT_ONLY" = "true" ]; then
+            STARTUP_SELECTION=(
+              "-only-testing:CherriTests/CherriWorkspacePresentationTests/testCompactPaneTransitionsKeepNativeViewsAndDocumentState"
+              "-only-testing:CherriTests/CherriWorkspacePresentationTests/testCompactUncompiledDocumentsDoNotInstantiateWebKit"
+              "-only-testing:CherriTests/CherriWorkspacePresentationTests/testDocumentationSearchUsesLiteralNativeInputTraits"
+              "-only-testing:CherriUITests/CherriJoinedContractUITests/testRP39ActualCombinedEditorAndDelayedAnalysisUI"
+              "-only-testing:CherriUITests/CherriPreviewDocumentUITests/testRP41ActualMappedAndGeneratedPreviewSourceUI"
+            )
+          elif [ "$STARTUP_OBSERVATION_ONLY" = "true" ]; then
             STARTUP_SELECTION=(
               "-only-testing:CherriUITests/CherriEditorUITests/testBRG27EditorRealWorldWorkflowUI"
               "-only-testing:CherriUITests/CherriEditorUITests/testD03CurrentDocumentationSearchUI"
@@ -372,21 +389,24 @@ jobs:
           exit "$status"
 
       - name: Verify declared presentation component sources after native test
-        if: always() && inputs.workspace_presentation_only == true && steps.workspace_component_source.outcome == 'success'
+        if: always() && (inputs.workspace_presentation_only == true || inputs.joined_editor_component_only == true) && steps.workspace_component_source.outcome == 'success'
         env:
           DOCUMENTATION_COMPONENT_ONLY: ${{ inputs.documentation_component_only || false }}
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
+          JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only || false }}
         run: python3 -I -B ios/scripts/record_workspace_presentation_source.py after
 
       - name: Upload presentation component source receipts
-        if: always() && inputs.workspace_presentation_only == true && steps.workspace_component_source.outcome == 'success'
+        if: always() && (inputs.workspace_presentation_only == true || inputs.joined_editor_component_only == true) && steps.workspace_component_source.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: workspace-presentation-component-source
+          name: ${{ inputs.joined_editor_component_only == true && 'joined-editor-component-source' || 'workspace-presentation-component-source' }}
           path: |
             ios/.build/workspace-presentation-source/before.original.json
             ios/.build/workspace-presentation-source/after.original.json
+            ios/.build/joined-editor-component-source/before.original.json
+            ios/.build/joined-editor-component-source/after.original.json
           if-no-files-found: error
           retention-days: 14
 
@@ -420,9 +440,10 @@ jobs:
           IOS_EVIDENCE_RUN_ID: ${{ github.run_id }}
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only }}
+          JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only }}
         run: |
           DIAGNOSTIC_ARGS=()
-          if [ "$STARTUP_OBSERVATION_ONLY" = "true" ] || [ "$WORKSPACE_PRESENTATION_ONLY" = "true" ]; then
+          if [ "$STARTUP_OBSERVATION_ONLY" = "true" ] || [ "$WORKSPACE_PRESENTATION_ONLY" = "true" ] || [ "$JOINED_EDITOR_COMPONENT_ONLY" = "true" ]; then
             DIAGNOSTIC_ARGS=(--diagnostic-only)
           fi
           python3 scripts/collect_ios_test_evidence.py \

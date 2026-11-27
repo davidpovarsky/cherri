@@ -219,5 +219,104 @@ class WorkspacePresentationSourceTests(unittest.TestCase):
         self.assertIn("default: false\n      runner_label:", workflow)
 
 
+    def enable_joined_profile(self):
+        for name in source.JOINED_SOURCE_FILES:
+            path = self.repo / name
+            if not path.exists():
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("synthetic joined component control: " + name + "\n", encoding="utf-8")
+                path.chmod(0o644)
+        self.git("add", "--", *source.JOINED_SOURCE_FILES)
+        self.git("commit", "--quiet", "-m", "Synthetic dedicated component source")
+        self.head = self.git("rev-parse", "HEAD").strip()
+        self.environment.update(GITHUB_SHA=self.head, GITHUB_WORKFLOW_SHA=self.head)
+        self.context = source.context_from_environment(self.environment)
+
+    def test_joined_profile_binds_exact_five_methods_and_current_sources(self):
+        self.enable_joined_profile()
+        expected = [
+            "CherriTests/CherriWorkspacePresentationTests/testCompactPaneTransitionsKeepNativeViewsAndDocumentState",
+            "CherriTests/CherriWorkspacePresentationTests/testCompactUncompiledDocumentsDoNotInstantiateWebKit",
+            "CherriTests/CherriWorkspacePresentationTests/testDocumentationSearchUsesLiteralNativeInputTraits",
+            "CherriUITests/CherriJoinedContractUITests/testRP39ActualCombinedEditorAndDelayedAnalysisUI",
+            "CherriUITests/CherriPreviewDocumentUITests/testRP41ActualMappedAndGeneratedPreviewSourceUI",
+        ]
+        with contextlib.redirect_stdout(io.StringIO()):
+            before = source.record(self.repo, "before", self.context, joined=True)
+            after = source.record(self.repo, "after", self.context, joined=True)
+        self.assertEqual(before["methods"], expected)
+        self.assertEqual(before["schema"], "cherri-joined-editor-component-source/1")
+        self.assertEqual(before["scope"], "declared-joined-editor-component-source-only")
+        self.assertIs(before["nativeAcceptanceGranted"], False)
+        self.assertIs(after["nativeAcceptanceGranted"], False)
+        self.assertEqual(before["source"], after["source"])
+        self.assertEqual(len(before["source"]["files"]), 20)
+        for path in (
+                "ios/CherriApp/Diagnostics/EditorDeliveryObservation.swift",
+                "ios/CherriApp/Compiler/CherriCompiler.swift",
+                "ios/CherriApp/Compiler/CherriDocumentCompileContext.swift",
+                "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+                "ios/CherriApp/Preview/CherriPreviewEditTransaction.swift",
+                "ios/CherriApp/Preview/CherriPreviewRenderState.swift",
+                "ios/CherriUITests/CherriJoinedContractUITests.swift",
+                "ios/CherriUITests/CherriPreviewDocumentUITests.swift",
+                "ios/TestFixtures/joined-editor-contract.json",
+                "ios/scripts/joined_editor_evidence.py"):
+            self.assertIn(path, before["source"]["files"])
+        self.assertTrue((self.repo / "ios/.build/joined-editor-component-source/after.original.json").is_file())
+        self.assertFalse((self.repo / "ios/.build/workspace-presentation-source").exists())
+
+    def test_joined_profile_rejects_changed_or_missing_real_analysis_observer(self):
+        self.enable_joined_profile()
+        path = self.repo / "ios/CherriApp/Diagnostics/EditorDeliveryObservation.swift"
+        original = path.read_bytes()
+        healthy = source.source_snapshot(self.repo, self.context, source.JOINED_SOURCE_FILES)
+        self.assertEqual(len(healthy["files"]), 20)
+        for fault in ("bytes", "mode", "missing"):
+            with self.subTest(fault=fault):
+                if fault == "bytes":
+                    path.write_bytes(original + b"changed\n")
+                elif fault == "mode":
+                    path.chmod(0o755)
+                else:
+                    path.unlink()
+                with self.assertRaises((ValueError, FileNotFoundError)):
+                    source.record(self.repo, "before", self.context, joined=True)
+                path.write_bytes(original)
+                path.chmod(0o644)
+        self.assertFalse((self.repo / "ios/.build/joined-editor-component-source").exists())
+
+    def test_joined_mode_selects_only_fixed_five_and_remains_diagnostic(self):
+        source.validate_mode("false", "false", "false", "true")
+        for documentation, startup, presentation in (
+                ("true", "false", "false"), ("false", "true", "false"),
+                ("false", "false", "true"), ("true", "true", "true")):
+            with self.subTest(documentation=documentation, startup=startup, presentation=presentation):
+                with self.assertRaisesRegex(ValueError, "COMPONENT_MODE_CONFLICT"):
+                    source.validate_mode(documentation, startup, presentation, "true")
+        for invalid in ("", "True", "1", True, None):
+            with self.subTest(invalid=invalid):
+                with self.assertRaisesRegex(ValueError, "COMPONENT_MODE_VALUE"):
+                    source.validate_mode("false", "false", "false", invalid)
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+        selection = workflow.split("          STARTUP_SELECTION=()\n", 1)[1].split(
+            "\n          defaults write com.apple.iphonesimulator", 1)[0]
+        diagnostic = workflow.split("          DIAGNOSTIC_ARGS=()\n", 1)[1].split(
+            "\n          python3 scripts/collect_ios_test_evidence.py", 1)[0]
+        env = dict(os.environ, STARTUP_OBSERVATION_ONLY="false",
+                   WORKSPACE_PRESENTATION_ONLY="false", JOINED_EDITOR_COMPONENT_ONLY="true")
+        selected = subprocess.run(["/bin/bash", "-c", "STARTUP_SELECTION=()\n" + selection
+            + "\nprintf '%s\\0' \"${STARTUP_SELECTION[@]}\"\n"],
+            env=env, capture_output=True, timeout=5, check=True)
+        self.assertEqual([v.decode() for v in selected.stdout.split(b"\0") if v],
+                         ["-only-testing:" + v for v in source.JOINED_METHODS])
+        observed = subprocess.run(["/bin/bash", "-c", "DIAGNOSTIC_ARGS=()\n" + diagnostic
+            + "\nprintf '%s\\0' \"${DIAGNOSTIC_ARGS[@]}\"\n"],
+            env=env, capture_output=True, timeout=5, check=True)
+        self.assertEqual([v.decode() for v in observed.stdout.split(b"\0") if v], ["--diagnostic-only"])
+        self.assertEqual(workflow.count("timeout-minutes: 75"), 1)
+        self.assertEqual(len(source.METHODS), 3)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
