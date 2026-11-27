@@ -26,6 +26,11 @@ on:
         required: false
         type: boolean
         default: false
+      rp39_diagnostic_only:
+        description: "Run only the unchanged RP39 UI method and retain encrypted complete diagnostics; grant no acceptance"
+        required: false
+        type: boolean
+        default: false
       runner_label:
         description: "Existing macOS runner for the full iOS build and original test suite"
         required: true
@@ -57,6 +62,7 @@ jobs:
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
           JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only || false }}
+          RP39_DIAGNOSTIC_ONLY: ${{ inputs.rp39_diagnostic_only || false }}
         run: python3 -I -B ios/scripts/record_workspace_presentation_source.py mode
       - name: Verify pinned documentation generator
         run: |
@@ -105,16 +111,18 @@ jobs:
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
           JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only || false }}
+          RP39_DIAGNOSTIC_ONLY: ${{ inputs.rp39_diagnostic_only || false }}
         run: python3 -I -B ios/scripts/record_workspace_presentation_source.py mode
 
       - name: Bind declared presentation component sources
         id: workspace_component_source
-        if: ${{ inputs.workspace_presentation_only == true || inputs.joined_editor_component_only == true }}
+        if: ${{ inputs.workspace_presentation_only == true || inputs.joined_editor_component_only == true || inputs.rp39_diagnostic_only == true }}
         env:
           DOCUMENTATION_COMPONENT_ONLY: ${{ inputs.documentation_component_only || false }}
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
           JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only || false }}
+          RP39_DIAGNOSTIC_ONLY: ${{ inputs.rp39_diagnostic_only || false }}
         run: python3 -I -B ios/scripts/record_workspace_presentation_source.py before
 
       - name: Test bounded iOS evidence collector
@@ -122,6 +130,7 @@ jobs:
           python3 -m unittest discover -s ios/scripts -p 'test_collect_ios_test_evidence.py' -v
           python3 -m unittest discover -s ios/scripts -p 'test_ios_evidence_upload_contract.py' -v
           python3 -I -B -m unittest discover -s ios/scripts -p 'test_record_workspace_presentation_source.py' -v
+          python3 -I -B -m unittest discover -s ios/scripts -p 'test_rp39_diagnostic_transport.py' -v
 
       - name: Verify bounded xcresult summary protocol
         run: python3 -I -B -m unittest discover -s ios/scripts -p 'test_ios_xcresult_summary.py' -v
@@ -320,6 +329,7 @@ jobs:
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only }}
           JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only }}
+          RP39_DIAGNOSTIC_ONLY: ${{ inputs.rp39_diagnostic_only }}
         run: |
           if [ ! -d "CherriUITests" ]; then
             echo "CRITICAL: ios/CherriUITests target missing!" >&2
@@ -335,7 +345,11 @@ jobs:
 
           printf '%s\n' "$SIMULATOR_UDID" > .build/startup-observation-udid.txt
           STARTUP_SELECTION=()
-          if [ "$JOINED_EDITOR_COMPONENT_ONLY" = "true" ]; then
+          if [ "$RP39_DIAGNOSTIC_ONLY" = "true" ]; then
+            STARTUP_SELECTION=(
+              "-only-testing:CherriUITests/CherriJoinedContractUITests/testRP39ActualCombinedEditorAndDelayedAnalysisUI"
+            )
+          elif [ "$JOINED_EDITOR_COMPONENT_ONLY" = "true" ]; then
             STARTUP_SELECTION=(
               "-only-testing:CherriTests/CherriWorkspacePresentationTests/testCompactPaneTransitionsKeepNativeViewsAndDocumentState"
               "-only-testing:CherriTests/CherriWorkspacePresentationTests/testCompactUncompiledDocumentsDoNotInstantiateWebKit"
@@ -365,7 +379,11 @@ jobs:
 
           XCRESULT_ROOT="$RUNNER_TEMP/cherri-ios-xcresult-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_SHA}"
           printf 'IOS_XCRESULT_PREPARE_COMMAND_BEGIN\n'
-          python3 -I -B scripts/collect_ios_xcresult_summary.py prepare --repo ..
+          OWNED_GIT_ARGS=()
+          if [ "$RP39_DIAGNOSTIC_ONLY" = "true" ]; then
+            OWNED_GIT_ARGS=(--owned-git-diagnostic)
+          fi
+          python3 -I -B scripts/collect_ios_xcresult_summary.py prepare --repo .. "${OWNED_GIT_ARGS[@]}"
 
           set +e
           python3 scripts/prepare_editor_dependency.py --check-only || exit $?
@@ -389,24 +407,27 @@ jobs:
           exit "$status"
 
       - name: Verify declared presentation component sources after native test
-        if: always() && (inputs.workspace_presentation_only == true || inputs.joined_editor_component_only == true) && steps.workspace_component_source.outcome == 'success'
+        if: always() && (inputs.workspace_presentation_only == true || inputs.joined_editor_component_only == true || inputs.rp39_diagnostic_only == true) && steps.workspace_component_source.outcome == 'success'
         env:
           DOCUMENTATION_COMPONENT_ONLY: ${{ inputs.documentation_component_only || false }}
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only || false }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only || false }}
           JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only || false }}
+          RP39_DIAGNOSTIC_ONLY: ${{ inputs.rp39_diagnostic_only || false }}
         run: python3 -I -B ios/scripts/record_workspace_presentation_source.py after
 
       - name: Upload presentation component source receipts
-        if: always() && (inputs.workspace_presentation_only == true || inputs.joined_editor_component_only == true) && steps.workspace_component_source.outcome == 'success'
+        if: always() && (inputs.workspace_presentation_only == true || inputs.joined_editor_component_only == true || inputs.rp39_diagnostic_only == true) && steps.workspace_component_source.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.joined_editor_component_only == true && 'joined-editor-component-source' || 'workspace-presentation-component-source' }}
+          name: ${{ inputs.rp39_diagnostic_only == true && 'rp39-diagnostic-source' || inputs.joined_editor_component_only == true && 'joined-editor-component-source' || 'workspace-presentation-component-source' }}
           path: |
             ios/.build/workspace-presentation-source/before.original.json
             ios/.build/workspace-presentation-source/after.original.json
             ios/.build/joined-editor-component-source/before.original.json
             ios/.build/joined-editor-component-source/after.original.json
+            ios/.build/rp39-diagnostic-source/before.original.json
+            ios/.build/rp39-diagnostic-source/after.original.json
           if-no-files-found: error
           retention-days: 14
 
@@ -416,9 +437,14 @@ jobs:
         working-directory: ios
         env:
           IOS_XCRESULT_RESERVATION_SHA: ${{ steps.ios_native_test.outputs.xcresult_reservation_sha256 }}
+          RP39_DIAGNOSTIC_ONLY: ${{ inputs.rp39_diagnostic_only || false }}
         run: |
+          OWNED_GIT_ARGS=()
+          if [ "$RP39_DIAGNOSTIC_ONLY" = "true" ]; then
+            OWNED_GIT_ARGS=(--owned-git-diagnostic)
+          fi
           python3 -I -B scripts/collect_ios_xcresult_summary.py collect --repo .. \
-            --reservation-sha "$IOS_XCRESULT_RESERVATION_SHA"
+            --reservation-sha "$IOS_XCRESULT_RESERVATION_SHA" "${OWNED_GIT_ARGS[@]}"
 
       - name: Upload encrypted iOS xcresult summary
         if: always()
@@ -431,6 +457,24 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+      - name: Seal original RP39 diagnostic bundle
+        if: always() && inputs.rp39_diagnostic_only == true
+        working-directory: ios
+        env:
+          RP39_DIAGNOSTIC_ONLY: "true"
+        run: python3 -I -B scripts/seal_rp39_diagnostic.py --repo ..
+
+      - name: Upload encrypted RP39 original diagnostics
+        if: always() && inputs.rp39_diagnostic_only == true
+        uses: actions/upload-artifact@v4
+        with:
+          name: rp39-original-diagnostics
+          path: |
+            ${{ runner.temp }}/cherri-ios-xcresult-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}-rp39/public/rp39-originals.zip.p7m
+            ${{ runner.temp }}/cherri-ios-xcresult-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}-rp39/public/receipt.json
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Collect bounded iOS test evidence
         id: ios_evidence
         if: always()
@@ -441,9 +485,10 @@ jobs:
           STARTUP_OBSERVATION_ONLY: ${{ inputs.startup_observation_only }}
           WORKSPACE_PRESENTATION_ONLY: ${{ inputs.workspace_presentation_only }}
           JOINED_EDITOR_COMPONENT_ONLY: ${{ inputs.joined_editor_component_only }}
+          RP39_DIAGNOSTIC_ONLY: ${{ inputs.rp39_diagnostic_only }}
         run: |
           DIAGNOSTIC_ARGS=()
-          if [ "$STARTUP_OBSERVATION_ONLY" = "true" ] || [ "$WORKSPACE_PRESENTATION_ONLY" = "true" ] || [ "$JOINED_EDITOR_COMPONENT_ONLY" = "true" ]; then
+          if [ "$STARTUP_OBSERVATION_ONLY" = "true" ] || [ "$WORKSPACE_PRESENTATION_ONLY" = "true" ] || [ "$JOINED_EDITOR_COMPONENT_ONLY" = "true" ] || [ "$RP39_DIAGNOSTIC_ONLY" = "true" ]; then
             DIAGNOSTIC_ARGS=(--diagnostic-only)
           fi
           python3 scripts/collect_ios_test_evidence.py \
