@@ -236,6 +236,7 @@ func (m *testMockSession) AddImportQuestion(question map[string]any) {}
 func (m *testMockSession) BindImportQuestion(questionName string, wireKey string, nodeID string) error {
 	return nil
 }
+func (m *testMockSession) DiagnosticsEnabled() bool  { return true }
 func (m *testMockSession) Finalize() ([]byte, error) { return nil, nil }
 
 func TestLowerTriggersWithParameters(t *testing.T) {

@@ -1454,14 +1454,7 @@ func (l *Lowerer) lowerProgramWithFunctions(prog *syntax.Program) (*ir.NativeWor
 				carrier := l.optionalCarrier(nil, "0", "has_value", "value", "_cherri_optional_result_v1")
 				l.emitAction(&ir.NativeActionNode{NodeID: l.GenerateUUID(), AppleIdentifier: "is.workflow.actions.output", Parameters: map[string]interface{}{"WFOutput": carrier}})
 			} else {
-				l.emitAction(&ir.NativeActionNode{
-					NodeID:          l.GenerateUUID(),
-					AppleIdentifier: "is.workflow.actions.nothing",
-				})
-				l.emitAction(&ir.NativeActionNode{
-					NodeID:          l.GenerateUUID(),
-					AppleIdentifier: "is.workflow.actions.output",
-				})
+				l.emitNoContentReturn()
 			}
 		}
 
@@ -1600,8 +1593,8 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 				val = l.optionalCarrier(val, presence, "has_value", "value", "_cherri_optional_result_v1")
 			}
 			if val == nil {
-				// An omitted output input otherwise inherits the preceding action.
-				l.materializeYieldValue(nil)
+				l.emitNoContentReturn()
+				return nil
 			}
 			val = l.materializeToAttachment(val)
 			// Emit output action: is.workflow.actions.output
@@ -1614,15 +1607,7 @@ func (l *Lowerer) lowerStatement(stmt syntax.Statement) error {
 			}
 			l.emitAction(node)
 		} else {
-			l.emitAction(&ir.NativeActionNode{
-				NodeID:          l.GenerateUUID(),
-				AppleIdentifier: "is.workflow.actions.nothing",
-			})
-			node := &ir.NativeActionNode{
-				NodeID:          l.GenerateUUID(),
-				AppleIdentifier: "is.workflow.actions.output",
-			}
-			l.emitAction(node)
+			l.emitNoContentReturn()
 		}
 		return nil
 	case *syntax.BlockStmt:

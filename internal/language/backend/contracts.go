@@ -182,6 +182,8 @@ type ControlRegion struct {
 
 // Session is the interface for driving emission into the canonical backend.
 type Session interface {
+	// DiagnosticsEnabled describes the effective compilation profile; scope input helpers must be absent in Release.
+	DiagnosticsEnabled() bool
 	EmitResolvedCall(call ResolvedCall) (outputUUID string, err error)
 	BeginControl(region ControlRegion) error
 	EndControl(region ControlRegion) error

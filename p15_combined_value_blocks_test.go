@@ -336,7 +336,7 @@ func p15VBCases(t *testing.T, id string) []p15VBCase {
 			c.mark("clear_return")
 			c.bare("nothing")
 			c.mark("bare_output")
-			c.bare("output")
+			c.bare("exit")
 		}},
 		p15VBCase{"both_branches_return", "let seed=number(1)\nif seed == 1 {return \"THEN\"} else {return \"ELSE\"}\n", func(c *p15VBCursor) {
 			var seed = c.literal("number", "seed", "WFNumberActionNumber", uint64(1), true)
@@ -383,7 +383,7 @@ func p15VBCases(t *testing.T, id string) []p15VBCase {
 			c.mark("clear_return")
 			c.bare("nothing")
 			c.mark("bare_output")
-			c.bare("output")
+			c.bare("exit")
 			c.caller("child", "childResult")
 			c.mark("continued")
 			c.text("PARENT_CONTINUED", "", false)

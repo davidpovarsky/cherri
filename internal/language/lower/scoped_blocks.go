@@ -87,6 +87,26 @@ func (l *Lowerer) lowerScopedBlockCall(call *syntax.CallExpr) (interface{}, erro
 	resultExpr := syntax.BlockResultExpression(body)
 	// Each measurement has a distinct timer key, including repeated labels.
 	timerLabel := label.Value + ":" + prefix
+	input := backend.ScopedMeasureInput{}
+	if l.session.DiagnosticsEnabled() {
+		inputName := prefix + "_input"
+		input.Capture = func() error {
+			// Omitted WFInput captures the whole preceding native content sequence.
+			l.emitAction(&ir.NativeActionNode{
+				NodeID: l.GenerateUUID(), AppleIdentifier: "is.workflow.actions.setvariable",
+				Parameters: map[string]interface{}{"WFVariableName": inputName},
+			})
+			return l.emitErr
+		}
+		input.Restore = func() error {
+			id := l.GenerateUUID()
+			l.emitAction(&ir.NativeActionNode{
+				NodeID: id, AppleIdentifier: "is.workflow.actions.getvariable", OutputUUID: id,
+				Parameters: map[string]interface{}{"WFVariable": &ir.AttachmentToken{Type: "Variable", OutputName: inputName}},
+			})
+			return l.emitErr
+		}
+	}
 	if voidBody {
 		err := backend.EmitScopedMeasureVoid(
 			timerLabel,
@@ -105,6 +125,7 @@ func (l *Lowerer) lowerScopedBlockCall(call *syntax.CallExpr) (interface{}, erro
 				})
 				return nil
 			},
+			input,
 		)
 		return nil, err
 	}
@@ -135,6 +156,7 @@ func (l *Lowerer) lowerScopedBlockCall(call *syntax.CallExpr) (interface{}, erro
 		func(value *ir.AttachmentToken, final bool) (*ir.AttachmentToken, error) {
 			return l.emitBlockValueAlias(value), nil
 		},
+		input,
 	)
 }
 

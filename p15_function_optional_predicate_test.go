@@ -69,7 +69,7 @@ func p15OptionalPredicateError(actions []map[string]any, tc p15OptionalPredicate
 			g.boundary(predicate, 2, false)
 			// Existing non-optional function fallthrough clearing remains intact.
 			g.emit("nothing", nil)
-			g.emit("output", nil)
+			g.emit("exit", nil)
 		} else {
 			g.output(g.boundary(predicate, 2, true))
 		}

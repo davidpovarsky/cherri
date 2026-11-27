@@ -52,3 +52,17 @@ func mainStatementReturns(statement syntax.Statement) bool {
 		return false
 	}
 }
+
+// An omitted WFOutput is native empty Text, not no content. Clear the
+// incidental result and stop the current shortcut frame. Optional result
+// carriers and value-bearing returns retain their explicit Output action.
+func (l *Lowerer) emitNoContentReturn() {
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.nothing",
+	})
+	l.emitAction(&ir.NativeActionNode{
+		NodeID:          l.GenerateUUID(),
+		AppleIdentifier: "is.workflow.actions.exit",
+	})
+}

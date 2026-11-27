@@ -63,6 +63,10 @@ func newCanonicalBackendSession(tx *BackendTransaction, cleanup func()) *Canonic
 	}
 }
 
+func (s *CanonicalBackendSession) DiagnosticsEnabled() bool {
+	return s.buildProfile != BuildProfileRelease
+}
+
 func (s *CanonicalBackendSession) Close() {
 	if s.assetScope != nil {
 		_ = s.assetScope.Close()
