@@ -1765,6 +1765,14 @@ func parseFunctionsV2(actions []any) (map[string]*CanonicalFunction, []any) {
 		for b := lastParamEnd; b < len(fnActs); b++ {
 			fn.Body = append(fn.Body, deepCloneValue(fnActs[b]))
 		}
+		// Only the complete terminal no-content pair inside this witnessed
+		// function dispatch is a compiler epilogue. Keep every other Exit,
+		// including main-frame, branch-local, and value-bearing actions.
+		if len(fn.Body) >= 2 &&
+			parameterlessFunctionEpilogueAction(fn.Body[len(fn.Body)-2], "is.workflow.actions.nothing") &&
+			parameterlessFunctionEpilogueAction(fn.Body[len(fn.Body)-1], "is.workflow.actions.exit") {
+			fn.Body = fn.Body[:len(fn.Body)-2]
+		}
 		for len(fn.Body) > 0 {
 			lastAct, _ := fn.Body[len(fn.Body)-1].(map[string]any)
 			if lastAct == nil {
@@ -1784,6 +1792,22 @@ func parseFunctionsV2(actions []any) (map[string]*CanonicalFunction, []any) {
 	}
 
 	return funcs, mainActions
+}
+
+// parameterlessFunctionEpilogueAction recognizes only the complete action
+// shape emitted by the function no-content fallback. Unknown action metadata,
+// malformed parameter values, and any explicit inputs remain observable.
+func parameterlessFunctionEpilogueAction(raw any, identifier string) bool {
+	action, ok := raw.(map[string]any)
+	if !ok || action["WFWorkflowActionIdentifier"] != identifier {
+		return false
+	}
+	parameters, present := action["WFWorkflowActionParameters"]
+	if !present {
+		return len(action) == 1
+	}
+	values, valid := parameters.(map[string]any)
+	return len(action) == 2 && valid && len(values) == 0
 }
 
 func normalizeFunctionEnvelope(actions []any) []any {
