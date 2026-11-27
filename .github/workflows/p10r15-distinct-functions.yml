@@ -1,0 +1,61 @@
+name: Original Typed Defaults Parameter Forms Export
+
+"on": create
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-typed-default-export-55c89-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  actual-canonical-exports:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-native-typed-defaults-55c89-20261127' &&
+      github.run_attempt == '1'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - name: Check out the exact controller
+        timeout-minutes: 2
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the fixed compiler source
+        timeout-minutes: 2
+        uses: actions/checkout@v6
+        with:
+          ref: 55c892ee9ea71a38e49e2e6ce3a8c6215b2f3ea0
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select the existing qualified Go version
+        timeout-minutes: 4
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.13'
+          cache-dependency-path: source/go.sum
+
+      - name: Execute the original canonical fixture export
+        timeout-minutes: 16
+        run: /usr/bin/python3 -I -B controller/tools/ci/distinct_functions/run.py
+
+      - name: Retain original source streams and unsigned fixtures
+        timeout-minutes: 3
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-typed-default-export-55c89-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-native-typed-default-export-55c89
+          if-no-files-found: error
+          retention-days: 30
+          include-hidden-files: true
