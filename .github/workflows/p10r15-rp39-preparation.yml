@@ -1,0 +1,41 @@
+name: RP39 preparation diagnosis
+
+on:
+  push:
+    branches:
+      - probe/cherri-p10r15-rp39-preparation-20261127
+
+permissions:
+  contents: read
+
+jobs:
+  preparation:
+    runs-on: xcode-27
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Observe preparation boundary without native execution
+        run: python3 -I -B tools/ci/rp39_preparation/run.py probe
+      - name: Seal complete private preparation originals
+        if: always()
+        run: python3 -I -B tools/ci/rp39_preparation/run.py seal
+      - name: Upload encrypted preparation originals
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rp39-preparation-originals
+          path: ${{ runner.temp }}/cherri-rp39-preparation-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}/public/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload bounded diagnostic summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rp39-preparation-summary
+          path: ${{ runner.temp }}/cherri-rp39-preparation-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}/summary.original.json
+          if-no-files-found: error
+          retention-days: 14
