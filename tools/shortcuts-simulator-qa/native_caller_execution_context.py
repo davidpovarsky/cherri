@@ -17,7 +17,7 @@ SCHEMA = "cherri-fn04-hosted-execution-context/1"
 REPOSITORY = "davidpovarsky/cherri"
 WORKFLOW = "FN04 signed native caller input"
 WORKFLOW_FILE = ".github/workflows/p10r15-fn04-native.yml"
-BRANCH = "probe/cherri-p10r15-fn04-native-direct-20261127"
+BRANCH = "probe/cherri-p10r15-fn04-native-sealed-20261127"
 JOB = "native-caller-input"
 CASES = ("nested_false", "nested_true", "without_functions")
 

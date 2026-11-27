@@ -44,7 +44,7 @@ SIGNING_ZIPS = {
               "a782dc5ef24667421eb86574b39e94cc1c4ca4e5ea95f292c114b41199dd5f47"),
 }
 SEAL_PATH = "ios/scripts/seal_rp39_diagnostic.py"
-SEAL_SHA = "76f28b1d0c5b46997f5a52d7e9639a2a05a468b1201e1453e1b2e206f8db7d35"
+SEAL_SHA = "77bc46a766b6548774984780f695be88b4037b8a821508ad7d9e745b473784a0"
 RUNTIME_ID = "com.apple.CoreSimulator.SimRuntime.iOS-27-0"
 DEVICE_TYPE = "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro"
 MAX_ZIP_BYTES = 8 * 1024**2
@@ -514,6 +514,8 @@ class HostedCaller:
                 "caseId": self.context["caseId"], "executionLocation": "GITHUB_ACTIONS_MACOS",
                 "status": self.state["status"], "sourceUnchanged": self.state.get("sourceUnchanged", False),
                 "nativeChildInvocations": self.state["nativeChildInvocations"],
+                "nativeChildInvocationScope": "OUTER_OWNER_SUBPROCESSES_ONLY",
+                "innerNativeResultParsed": self.native_result is not None,
                 "nativeOwnerInvocations": self.state["nativeOwnerInvocations"],
                 "runtimeObservationAuthenticated": bool(self.native_result and
                     self.native_result.get("runtimeObservationAuthenticated") is True),
