@@ -34,7 +34,12 @@ def checked_clone(source, destination, revision, canonical_origin):
     if canonical_origin not in ("https://github.com/davidpovarsky/cherri.git",
                                 "https://github.com/davidpovarsky/cherrilang.org.git"):
         raise ValueError("Unexpected immutable clone origin")
-    run(["git", "clone", "--no-checkout", "--local", source, destination])
+    clone = ["git", "clone", "--no-checkout", "--local"]
+    objects = source / run(["git", "rev-parse", "--git-path", "objects"], source)
+    # Hardlinks cannot cross filesystems; copied objects remain self-contained.
+    if objects.stat().st_dev != destination.parent.stat().st_dev:
+        clone.append("--no-hardlinks")
+    run(clone + [source, destination])
     # Local objects may be hardlinked, but the release must not depend on the
     # temporary source checkout as its future origin or borrowed object store.
     run(["git", "remote", "set-url", "origin", canonical_origin], destination)

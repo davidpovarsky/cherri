@@ -424,3 +424,14 @@ and opaque imported absent-Value arrays retain separate tests. Optional
 paginate callbacks and semantic Release require consumers remain protected.
 See [source and original qualification](docs/language-v2/p15-root-ci-regressions-20261126.md).
 Final integration/179/Apple/provider/release closure remains open.
+
+
+## 2026-11-27 — RemoteBuilder staging across filesystems
+
+Immutable staging now selects copied Git objects when the source object store
+and release destination are on different filesystems. The canonical origin,
+independent object store and exact clean detached revision remain mandatory.
+Real Git controls cover same-filesystem and cross-filesystem staging, including
+reading and checking the clone after its synthetic source has been removed.
+This fixes the reproduced cross-device hardlink failure; the complete
+RemoteBuilder qualification and live rollout remain separate release gates.
