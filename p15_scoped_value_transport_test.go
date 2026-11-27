@@ -81,6 +81,11 @@ func p15ScopedTransportCompile(t *testing.T, source string, profile BuildProfile
 // output remains, so the pre-existing whole-body graph checks its real edge.
 // Nothing, body effects, payload fields and unexpected actions are never removed.
 func p15ScopedTransportBody(actual []map[string]any, profile BuildProfile) ([]map[string]any, error) {
+	var err error
+	actual, err = p15MeasureProjectInputRows(actual, 1, profile)
+	if err != nil {
+		return nil, err
+	}
 	n := len(actual)
 	start, end := 0, n-2
 	if n < 3 {
@@ -238,7 +243,7 @@ func TestP15ScopedValueTransportGraphFaults(t *testing.T) {
 					a := p15TaggedClone(t, actual)
 					start := 0
 					if profile == BuildProfileDebug {
-						start = 1
+						start = 3 // capture, timer, and restore precede the original body
 					}
 					switch fault {
 					case "restore_wrong_value":
@@ -254,7 +259,7 @@ func TestP15ScopedValueTransportGraphFaults(t *testing.T) {
 					case "duplicate_uuid":
 						p15Param(a[start+1])["UUID"] = p15Param(a[start])["UUID"]
 					case "wrong_timer_start":
-						p15Param(a[0])["WFInput"] = p15FunctionVariable("UNRELATED_DATE")
+						p15Param(a[1])["WFInput"] = p15FunctionVariable("UNRELATED_DATE")
 					case "wrong_elapsed_log":
 						p15Param(a[len(a)-4])["WFInput"] = p15FunctionEdge("UNRELATED_ELAPSED")
 					}
@@ -270,6 +275,15 @@ func TestP15ScopedValueTransportGraphFaults(t *testing.T) {
 // Repeated invocations and captured writes use distinct native storage while
 // retaining each returned mutable snapshot. This checks real serialized edges.
 func p15ScopedLexicalStorageGraph(actions []map[string]any, profile BuildProfile, captured bool) error {
+	timers := 2
+	if captured {
+		timers = 1
+	}
+	var err error
+	actions, err = p15MeasureProjectInputRows(actions, timers, profile)
+	if err != nil {
+		return err
+	}
 	type write struct {
 		name, value string
 		at          int
@@ -431,12 +445,23 @@ func TestP15ScopedValueTransportLexicalStorage(t *testing.T) {
 				if err := p15ScopedLexicalStorageGraph(actual, profile, captured); err != nil {
 					t.Fatal(err)
 				}
+				timers := 2
+				if captured {
+					timers = 1
+				}
+				inputActions, err := p15MeasureInputProjection(p15MeasureInputRows(actual), timers, profile)
+				if err != nil {
+					t.Fatal(err)
+				}
 				for _, fault := range []string{"wrong_snapshot", "swap_results", "source_write_changed", "storage_collision"} {
 					t.Run(fault, func(t *testing.T) {
 						a := p15TaggedClone(t, actual)
 						switch fault {
 						case "wrong_snapshot":
-							for _, action := range a {
+							for i, action := range a {
+								if inputActions[i] {
+									continue
+								}
 								p := p15Param(action)
 								_, vars := p15V02NativeReferences(p["WFVariable"])
 								if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.getvariable" && len(vars) == 1 {
@@ -456,7 +481,10 @@ func TestP15ScopedValueTransportLexicalStorage(t *testing.T) {
 							}
 						case "storage_collision":
 							first := ""
-							for _, action := range a {
+							for i, action := range a {
+								if inputActions[i] {
+									continue
+								}
 								p := p15Param(action)
 								name, _ := p["WFVariableName"].(string)
 								if action["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable" && strings.HasPrefix(name, "__cherri_block_") {
