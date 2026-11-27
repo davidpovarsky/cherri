@@ -248,6 +248,11 @@ final class CherriWorkspacePresentationTests: XCTestCase {
         await Task.yield()
         XCTAssertTrue(isNativeHitTarget(editor, in: mounted))
         XCTAssertFalse(isNativeHitTarget(web, in: mounted))
+        // The counterfactual yielded to SwiftUI with its binding still on Code.
+        // Re-establish the native request immediately before its single event;
+        // no intervening await may reconcile this uncommitted control value.
+        selector.selectedSegmentIndex = 1
+        XCTAssertEqual(selector.selectedSegmentIndex, 1)
         let previewTrace = PaneTrace(stage: "preview", terms: 7)
         observePane(previewTrace, phase: "before-event", completed: nil, mounted: mounted,
                     selector: selector, editor: editor, web: web)

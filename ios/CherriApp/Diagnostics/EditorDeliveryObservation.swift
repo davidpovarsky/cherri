@@ -239,7 +239,8 @@ struct CherriRP39NativeEditorWitness: UIViewRepresentable {
             if let target = CherriEditorDeliveryObservation.shared?.configuration.caretTargets[digest],
                target <= length,
                let position = editor.position(from: editor.beginningOfDocument, offset: target) {
-                let rect = editor.convert(editor.caretRect(for: position), to: window)
+                let localCaret = editor.caretRect(for: position)
+                let rect = editor.convert(localCaret, to: window)
                 let frame = editor.convert(editor.bounds, to: window)
                 let dx = (rect.midX - frame.minX) / frame.width
                 let dy = (rect.midY - frame.minY) / frame.height
@@ -248,6 +249,23 @@ struct CherriRP39NativeEditorWitness: UIViewRepresentable {
                     value["targetOffset"] = target
                     value["targetDX"] = Double(dx)
                     value["targetDY"] = Double(dy)
+                    // Diagnostic geometry only: no focus, selection or event.
+                    // The native closest position does not prove where XCTest
+                    // delivered its separately retained synthesized pointer.
+                    let geometry = [localCaret.midX, localCaret.midY, rect.midX, rect.midY,
+                                    frame.minX, frame.minY, frame.width, frame.height]
+                    if geometry.allSatisfy({ $0.isFinite }) {
+                        value["targetEditorPoint"] = [Double(localCaret.midX), Double(localCaret.midY)]
+                        value["targetWindowPoint"] = [Double(rect.midX), Double(rect.midY)]
+                        value["editorWindowFrame"] = [Double(frame.minX), Double(frame.minY),
+                                                       Double(frame.width), Double(frame.height)]
+                        if let closest = editor.closestPosition(to: CGPoint(x: localCaret.midX, y: localCaret.midY)) {
+                            let closestOffset = editor.offset(from: editor.beginningOfDocument, to: closest)
+                            if (0...length).contains(closestOffset) {
+                                value["targetClosestUTF16Offset"] = closestOffset
+                            }
+                        }
+                    }
                 }
             }
             return value

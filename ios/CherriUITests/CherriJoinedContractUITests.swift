@@ -476,13 +476,45 @@ final class CherriJoinedContractUITests: XCTestCase {
         try require(native["targetOffset"] as? Int == offset && (0...1).contains(dx) && (0...1).contains(dy),
                     "RP39 caret coordinate must come from this exact native source and target")
         editor.coordinate(withNormalizedOffset: CGVector(dx: CGFloat(dx), dy: CGFloat(dy))).tap()
-        try require(wait {
+        var lastNative: [String: Any]?
+        var observedPolls = 0
+        let selected = wait {
             guard let value = self.rp39Observation()?["native"] as? [String: Any] else { return false }
+            lastNative = value
+            observedPolls += 1
             return value["sourceSHA256"] as? String == CherriJoinedContract.digest(source)
                 && value["selectionLocation"] as? Int == offset
                 && value["selectionLength"] as? Int == 0
                 && value["firstResponder"] as? Bool == true
-        }, "The real pointer event must place the actual native caret at the authored UTF-16 offset")
+        }
+        if !selected {
+            // Reuse the real pre-tap and in-wait observations. This adds no AX
+            // query, source text, event, deadline, or acceptance condition.
+            let fields = ["status", "editorCount", "sourceSHA256", "utf16Length",
+                          "selectionLocation", "selectionLength", "firstResponder",
+                          "targetOffset", "targetDX", "targetDY", "targetEditorPoint",
+                          "targetWindowPoint", "editorWindowFrame", "targetClosestUTF16Offset"]
+            func retained(_ observation: [String: Any]?) -> [String: Any] {
+                guard let observation else { return ["status": "not-observed"] }
+                return Dictionary(uniqueKeysWithValues: fields.compactMap { key in
+                    observation[key].map { (key, $0) }
+                })
+            }
+            let observation: [String: Any] = [
+                "schema": "cherri-rp39-caret-failure-observation/1",
+                "diagnosticOnly": true, "requestedUTF16Offset": offset,
+                "observedPolls": observedPolls, "waitCompleted": selected,
+                "before": retained(native), "last": retained(lastNative),
+            ]
+            if let data = try? JSONSerialization.data(withJSONObject: observation, options: [.sortedKeys]),
+               data.count <= 4096 {
+                let attachment = XCTAttachment(data: data, uniformTypeIdentifier: "public.json")
+                attachment.name = "RP39 native caret failure observation"
+                attachment.lifetime = .keepAlways
+                add(attachment)
+            }
+        }
+        try require(selected, "The real pointer event must place the actual native caret at the authored UTF-16 offset")
     }
 
     private func rp39Format(_ editor: XCUIElement, fixture: JoinedFixture) throws {
