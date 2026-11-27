@@ -1523,6 +1523,32 @@
       ],
       "supersededByUpstream": null,
       "history": []
+    },
+    {
+      "name": "makeArchive",
+      "identifier": "is.workflow.actions.makezip",
+      "changeType": "modified-by-fork",
+      "upstreamStatus": "present-upstream-corrected",
+      "baselineSha": "951c0bb3c34ef4e3d6cb2ce9a1bff35071c9a7a2",
+      "upstreamLocation": "actions/documents.cherri",
+      "forkLocations": [
+        "action.go",
+        "archive_format_codec.go",
+        "decompile.go",
+        "archive_format_codec_test.go",
+        "tests/archive_format.cherri",
+        "docs/archive-format-codec.md"
+      ],
+      "firstForkCommit": "8df6923ce0852daa62475b82f141174d8ba7ee26",
+      "change": "Encode the eight existing dotted makeArchive literal formats as native WFArchiveFormat IDs. Decode those IDs back to public spellings, retain raw fallback for historical dotted or unknown native IDs, and withhold direct preview edit origin from converted values.",
+      "reason": "The retained macOS 27 Make Archive metadata distinguishes native IDs such as zip from display titles such as .zip; the inherited literal serializer wrote the title.",
+      "evidence": "docs/apple-runtime/macos-27/toolkit-registry.json (SHA256 79274716b2ec5f6f92f1a698acc839db789ebc81ee6ec116648bad05b4f7197f), is.workflow.actions.makezip / WFArchiveFormat cases; TestP10R15ArchiveFormat* and docs/archive-format-codec.md record independent metadata expectations, pre-overlay native action graph roundtrips, and frozen RED/GREEN receipt hashes.",
+      "notes": [
+        "The public signature, eight-member enum, optional/default behavior, runtime references and explicit raw/native.action values are preserved. cpgz is not added to the public API.",
+        "Source and wire-metadata compatibility only. This change does not explain or repair the separately observed runtime failure, prove File output, or close full macro, signed, physical iPad or formal 179-case acceptance."
+      ],
+      "supersededByUpstream": null,
+      "history": []
     }
   ],
   "infrastructure": [
