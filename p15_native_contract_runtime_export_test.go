@@ -12,7 +12,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/electrikmilk/cherri/internal/language/lower"
 	"github.com/electrikmilk/cherri/internal/language/migrate"
+	"github.com/electrikmilk/cherri/internal/language/schema"
+	"github.com/electrikmilk/cherri/internal/language/syntax"
 	"howett.net/plist"
 )
 
@@ -121,10 +124,19 @@ func p15NativeContractEmit(t *testing.T, requirement, caseID, originalTest, orac
 }
 
 func TestP15NativeContractRuntimeFixtureExport(t *testing.T) {
+	// An unenrolled original case must never silently inherit the Void oracle.
+	for _, unknown := range []string{"", "__unregistered__", "return_zero_extra"} {
+		if _, err := p15NativeContractMainResult(unknown); err == nil {
+			t.Fatalf("unenrolled main case %q was accepted", unknown)
+		}
+	}
 	t.Run("T01", func(t *testing.T) {
 		for _, tc := range p15TypedDefaultCases() {
 			t.Run("typed/"+tc.name, func(t *testing.T) {
 				source := p15TypedDefaultSource(tc)
+				p15FunctionTypedProgram(t, source, map[string]string{
+					"echo(" + tc.supplied + ")": "AnyContent", "echo()": "AnyContent", "echo(value:" + tc.supplied + ")": "AnyContent",
+				})
 				raw, _, actions := p15NativeContractCompile(t, "p15-short-circuit.cherri", source)
 				if _, err := p15TypedDefaultGraph(actions, tc); err != nil {
 					t.Fatal(err)
@@ -145,6 +157,7 @@ func TestP15NativeContractRuntimeFixtureExport(t *testing.T) {
 			for _, mode := range []string{"omitted", "none", "empty"} {
 				t.Run("optional/"+tc.name+"/"+mode, func(t *testing.T) {
 					source := p15OptionalMapDefaultSource(tc, mode)
+					p15FunctionTypedProgram(t, source, map[string]string{})
 					raw, _, actions := p15NativeContractCompile(t, "p15-short-circuit.cherri", source)
 					if _, err := p15OptionalMapDefaultGraph(actions, tc, mode); err != nil {
 						t.Fatal(err)
@@ -165,6 +178,7 @@ func TestP15NativeContractRuntimeFixtureExport(t *testing.T) {
 		for _, optional := range []bool{false, true} {
 			t.Run(fmt.Sprintf("effects/optional_%t", optional), func(t *testing.T) {
 				source := p15MapDefaultEffectSource(optional)
+				p15FunctionTypedProgram(t, source, map[string]string{})
 				raw, _, actions := p15NativeContractCompile(t, "p15-short-circuit.cherri", source)
 				if _, err := p15MapDefaultEffectGraph(actions, optional); err != nil {
 					t.Fatal(err)
@@ -187,6 +201,11 @@ func TestP15NativeContractRuntimeFixtureExport(t *testing.T) {
 		for _, nested := range []bool{false, true} {
 			t.Run(fmt.Sprintf("nested_%t", nested), func(t *testing.T) {
 				source := p15CallerInputSource(nested)
+				callee := "inspect"
+				if nested {
+					callee = "outer"
+				}
+				p15FunctionTypedProgram(t, source, map[string]string{callee + `("VALUE")`: "Text"})
 				raw, _, actions := p15NativeContractCompile(t, "p15-short-circuit.cherri", source)
 				if _, err := p15CallerInputGraph(actions, nested); err != nil {
 					t.Fatal(err)
@@ -230,7 +249,10 @@ func TestP15NativeContractRuntimeFixtureExport(t *testing.T) {
 				if _, present := root["outputMode"]; present {
 					t.Fatal("entry-mode compiler metadata escaped to native workflow")
 				}
-				slot := p15NativeContractMainResult(tc.name)
+				slot, err := p15NativeContractMainResult(tc.name)
+				if err != nil {
+					t.Fatal(err)
+				}
 				p15NativeContractEmit(t, "M02", "main/"+tc.name,
 					"TestP15M02CompleteMainGraphs/"+tc.name, "p15M02GraphError",
 					"p15-none-clear.cherri", tc.source, "unaltered-target-and-separate-caller", raw, actions,
@@ -288,6 +310,21 @@ func TestP15NativeContractRuntimeFixtureExport(t *testing.T) {
 				if _, exists := root["outputMode"]; exists {
 					t.Fatal("migration metadata escaped to native workflow")
 				}
+				if strings.Contains(legacy, "#define name") {
+					program := p15M02Parse(t, source)
+					header, ok := program.Declarations[0].(*syntax.ShortcutDecl)
+					if !ok || header.Name != "M02_MIGRATED_NAME" {
+						t.Fatal("migration changed the existing declared name")
+					}
+					workflow, lowerErr := lower.NewLowerer(schema.DefaultRegistry()).LowerProgram(program)
+					if lowerErr != nil || workflow.Name != "M02_MIGRATED_NAME" {
+						t.Fatal("checked lowering lost the existing workflow name", lowerErr)
+					}
+				}
+				// Ensure the whole document is serializable without hidden Go values.
+				if _, err := json.Marshal(root); err != nil {
+					t.Fatal(err)
+				}
 				p15NativeContractEmit(t, "M02", fmt.Sprintf("migration/source_%d", len(legacy)),
 					fmt.Sprintf("TestP15M02MigratedEntryOutput/source_%d", len(legacy)), "original-migration-and-complete-output-graph",
 					"p15-none-clear.cherri", source, "unaltered-target-and-separate-caller", raw, actions,
@@ -297,25 +334,32 @@ func TestP15NativeContractRuntimeFixtureExport(t *testing.T) {
 	})
 }
 
-func p15NativeContractMainResult(name string) p15NativeContractSlot {
-	result := p15NativeContractSlot{"result", "Void", false, nil}
+func p15NativeContractMainResult(name string) (p15NativeContractSlot, error) {
 	switch name {
 	case "both_branches_return":
-		return p15NativeContractSlot{"result", "Text", true, "M02_THEN"}
+		return p15NativeContractSlot{"result", "Text", true, "M02_THEN"}, nil
 	case "parent_explicit_return_after_child":
-		return p15NativeContractSlot{"result", "Text", true, "M02_CHILD"}
+		return p15NativeContractSlot{"result", "Text", true, "M02_CHILD"}, nil
 	case "legacy_mode_preserves_incidental_result":
-		return p15NativeContractSlot{"result", "Text", true, "M02_LEGACY"}
+		return p15NativeContractSlot{"result", "Text", true, "M02_LEGACY"}, nil
 	case "authored_native_output":
-		return p15NativeContractSlot{"result", "Text", true, "M02_NATIVE_OUTPUT"}
+		return p15NativeContractSlot{"result", "Text", true, "M02_NATIVE_OUTPUT"}, nil
 	case "return_text":
-		return p15NativeContractSlot{"result", "Text", true, "M02_RETURNED"}
+		return p15NativeContractSlot{"result", "Text", true, "M02_RETURNED"}, nil
 	case "return_empty_text":
-		return p15NativeContractSlot{"result", "Text", true, ""}
+		return p15NativeContractSlot{"result", "Text", true, ""}, nil
 	case "return_false":
-		return p15NativeContractSlot{"result", "Bool", true, false}
+		return p15NativeContractSlot{"result", "Bool", true, false}, nil
 	case "return_zero":
-		return p15NativeContractSlot{"result", "Number", true, json.Number("0")}
+		return p15NativeContractSlot{"result", "Number", true, json.Number("0")}, nil
+	case "empty_input_boundary", "unused_text", "unused_number_binding",
+		"void_action_after_value", "partial_early_return", "zero_iteration_return",
+		"child_return_parent_falls_through", "child_bare_return_parent_continues",
+		"raw_nothing_then_resolved_text", "native_word_is_only_text",
+		"authored_native_stop", "explicit_mode_clears_incidental_result",
+		"return_empty_", "return_empty_none":
+		return p15NativeContractSlot{"result", "Void", false, nil}, nil
+	default:
+		return p15NativeContractSlot{}, fmt.Errorf("unenrolled original M02 case %q", name)
 	}
-	return result
 }
