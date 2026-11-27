@@ -417,3 +417,131 @@ enum QAImportedLibrarySelection {
         return after
     }
 }
+
+
+/// Diagnostic navigation into the already named shortcut. No import or run
+/// action is admitted; this decision never grants native runtime evidence.
+enum QAExistingEditorNavigation {
+    typealias Node = QAImportSheetSelection.Node
+    typealias Candidate = QAImportSheetSelection.Candidate
+
+    struct Context {
+        let expectedName: String
+        let foreground: Bool
+        let alreadyInvoked: Bool
+        let now: Date
+        let deadline: Date
+    }
+
+    struct Binding {
+        let queryIndex: Int
+        let navigationBarPath: [Int]
+        let buttonPath: [Int]
+    }
+
+    struct Decision {
+        let binding: Binding?
+        let reason: String
+        let currentNavigationBarCount: Int
+        let matchedCandidateCount: Int
+        var canNavigate: Bool { binding != nil }
+    }
+
+    static func rejected(_ reason: String) -> Decision {
+        Decision(binding: nil, reason: reason, currentNavigationBarCount: 0, matchedCandidateCount: 0)
+    }
+
+    private static func same(_ left: Node, _ right: Node) -> Bool {
+        left.kind == right.kind && QAImportSheetSelection.bytesEqual(left.label, right.label) &&
+        QAImportSheetSelection.bytesEqual(left.identifier, right.identifier) &&
+        left.enabled == right.enabled && left.selected == right.selected && left.frame == right.frame &&
+        left.children.count == right.children.count &&
+        zip(left.children, right.children).allSatisfy { same($0.0, $0.1) }
+    }
+
+    private static func frame(_ value: CGRect, positive: Bool = false) -> Bool {
+        [value.minX, value.minY, value.width, value.height].allSatisfy { $0.isFinite } &&
+        value.width >= 0 && value.height >= 0 && (!positive || (value.width > 0 && value.height > 0))
+    }
+
+    static func select(current: Node, candidates: [Candidate], context: Context) -> Decision {
+        guard context.foreground else { return rejected("EDITOR_NOT_FOREGROUND") }
+        guard !context.alreadyInvoked else { return rejected("EDITOR_NAVIGATION_ALREADY_INVOKED") }
+        guard context.now.timeIntervalSince1970.isFinite, context.deadline.timeIntervalSince1970.isFinite,
+              context.now < context.deadline else { return rejected("EDITOR_NAVIGATION_DEADLINE") }
+        guard !context.expectedName.isEmpty, context.expectedName.utf8.count <= 4096,
+              current.kind == .application, current.enabled, frame(current.frame, positive: true),
+              candidates.count <= 32, Set(candidates.map(\.queryIndex)).count == candidates.count,
+              candidates.allSatisfy({ $0.queryIndex >= 0 && $0.queryIndex < 32 &&
+                  (!$0.hittable || $0.exists) && ($0.exists == ($0.snapshot != nil)) }) else {
+            return rejected("INVALID_EDITOR_OBSERVATION")
+        }
+        var count = 0
+        func valid(_ node: Node, depth: Int) -> Bool {
+            count += 1
+            guard count <= 8192, depth <= 64, node.label.utf8.count <= 4096,
+                  node.identifier.utf8.count <= 4096, frame(node.frame) else { return false }
+            return node.children.allSatisfy { valid($0, depth: depth + 1) }
+        }
+        guard valid(current, depth: 0) else { return rejected("INVALID_EDITOR_OBSERVATION") }
+        for candidate in candidates {
+            if let snapshot = candidate.snapshot {
+                count = 0
+                guard valid(snapshot, depth: 0), snapshot.kind == .button,
+                      QAImportSheetSelection.bytesEqual(snapshot.label, "Editor") && snapshot.identifier.isEmpty else {
+                    return rejected("INVALID_EDITOR_OBSERVATION")
+                }
+            }
+        }
+        var bars: [(path: [Int], buttonPath: [Int], button: Node)] = []
+        var namedBarCount = 0
+        func visit(_ node: Node, path: [Int], enabled: Bool) {
+            let live = enabled && node.enabled
+            if live && node.kind == .navigationBar &&
+                QAImportSheetSelection.bytesEqual(node.identifier, context.expectedName) &&
+                frame(node.frame, positive: true) && current.frame.contains(node.frame) {
+                namedBarCount += 1
+                // This is the observed Editor navigation button, a direct child
+                // of this exact named bar. It cannot select Play, Back or Add.
+                for (index, child) in node.children.enumerated() where child.kind == .button &&
+                    child.enabled && QAImportSheetSelection.bytesEqual(child.label, "Editor") && child.identifier.isEmpty &&
+                    frame(child.frame, positive: true) && node.frame.contains(child.frame) &&
+                    current.frame.contains(child.frame) {
+                    bars.append((path, path + [index], child))
+                }
+            }
+            for (index, child) in node.children.enumerated() {
+                visit(child, path: path + [index], enabled: live)
+            }
+        }
+        visit(current, path: [], enabled: true)
+        guard namedBarCount == 1 && bars.count == 1 else {
+            return rejected("NO_UNIQUE_CURRENT_REQUESTED_EDITOR_BUTTON")
+        }
+        var matches: [Binding] = []
+        for candidate in candidates where candidate.exists && candidate.hittable {
+            guard let snapshot = candidate.snapshot, snapshot.enabled else { continue }
+            for bar in bars where same(bar.button, snapshot) {
+                matches.append(Binding(queryIndex: candidate.queryIndex,
+                    navigationBarPath: bar.path, buttonPath: bar.buttonPath))
+            }
+        }
+        guard matches.count == 1 else {
+            return Decision(binding: nil,
+                reason: matches.isEmpty ? "NO_CURRENT_HITTABLE_EDITOR_BUTTON" : "AMBIGUOUS_EDITOR_BUTTON",
+                currentNavigationBarCount: bars.count, matchedCandidateCount: matches.count)
+        }
+        return Decision(binding: matches[0], reason: "UNIQUE_CURRENT_REQUESTED_EDITOR_BUTTON",
+                        currentNavigationBarCount: bars.count, matchedCandidateCount: matches.count)
+    }
+
+    static func inspectForNavigation(observe: () throws -> Decision,
+                                     capture: () throws -> Void) rethrows -> Decision {
+        let before = try observe()
+        guard before.canNavigate else { return before }
+        try capture()
+        // No cached element survives capture. The caller resets its selected
+        // native element and rechecks the original clock in every observation.
+        return try observe()
+    }
+}

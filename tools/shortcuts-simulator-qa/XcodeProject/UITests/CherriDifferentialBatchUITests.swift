@@ -147,6 +147,209 @@ final class CherriDifferentialBatchUITests: XCTestCase {
 
 
 
+    // Separate diagnostic: one observed Editor navigation, no import or Run.
+    private func navigateExistingEditor(_ command: DifferentialCommand) throws -> [String: Any] {
+        let name = try XCTUnwrap(command.shortcutName)
+        guard command.operation == "navigate-existing-editor",
+              command.id.range(of: "^editor-nav-[0-9a-f]{32}$", options: .regularExpression) != nil,
+              !name.isEmpty, name.utf8.count <= 4096 else {
+            throw NSError(domain: "CherriQAEditorNavigation", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "EDITOR_COMMAND_CONTEXT"])
+        }
+        let folder = runDirectory.appendingPathComponent(command.id + "-editor-navigation", isDirectory: true)
+        guard !FileManager.default.fileExists(atPath: folder.path) else {
+            throw NSError(domain: "CherriQAEditorNavigation", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "EDITOR_OUTPUT_EXISTS"])
+        }
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: false,
+                                               attributes: [.posixPermissions: 0o700])
+        let started = Date()
+        let deadline = started.addingTimeInterval(25)
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        var invocationCount = 0
+        var selectedButton: XCUIElement?
+        func require(_ condition: Bool, _ code: String) throws {
+            guard condition else {
+                throw NSError(domain: "CherriQAEditorNavigation", code: 2,
+                              userInfo: [NSLocalizedDescriptionKey: code])
+            }
+        }
+        func budget() throws { try require(Date() < deadline, "EDITOR_NAVIGATION_DEADLINE") }
+        func save(_ value: Any, _ filename: String) throws {
+            let bytes = try JSONSerialization.data(withJSONObject: value, options: [.prettyPrinted, .sortedKeys])
+            try require(bytes.count <= 2 * 1024 * 1024, "EDITOR_OBSERVATION_BYTES")
+            let url = folder.appendingPathComponent(filename)
+            try bytes.write(to: url, options: .withoutOverwriting)
+            try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
+        }
+        func model(_ snapshot: XCUIElementSnapshot) throws -> (QAImportSheetSelection.Node, [[String: Any]]) {
+            var rows: [[String: Any]] = []
+            func visit(_ node: XCUIElementSnapshot, _ path: [Int]) throws -> QAImportSheetSelection.Node {
+                try require(rows.count < 8192 && path.count <= 64, "EDITOR_TREE_BOUNDS")
+                try require(node.label.utf8.count <= 4096 && node.identifier.utf8.count <= 4096,
+                            "EDITOR_LABEL_BOUNDS")
+                let f = node.frame
+                try require([f.minX, f.minY, f.width, f.height].allSatisfy { $0.isFinite }, "EDITOR_FRAME")
+                rows.append(["path": path, "type": Int(node.elementType.rawValue),
+                             "label": node.label, "identifier": node.identifier,
+                             "enabled": node.isEnabled, "selected": node.isSelected,
+                             "frame": ["x": Double(f.minX), "y": Double(f.minY),
+                                       "width": Double(f.width), "height": Double(f.height)],
+                             "childCount": node.children.count])
+                let kind: QAImportSheetSelection.Kind
+                switch node.elementType {
+                case .application: kind = .application
+                case .window: kind = .window
+                case .other: kind = .other
+                case .sheet: kind = .sheet
+                case .scrollView: kind = .scrollView
+                case .navigationBar: kind = .navigationBar
+                case .cell: kind = .cell
+                case .collectionView: kind = .collectionView
+                case .button: kind = .button
+                case .staticText: kind = .staticText
+                default: kind = .unsupported
+                }
+                let children = try node.children.enumerated().map { try visit($0.element, path + [$0.offset]) }
+                return QAImportSheetSelection.Node(kind: kind, label: node.label, identifier: node.identifier,
+                    enabled: node.isEnabled, selected: node.isSelected, frame: f, children: children)
+            }
+            let root = try visit(snapshot, [])
+            return (root, rows)
+        }
+        func screenshot(_ filename: String) throws {
+            try budget()
+            let png = XCUIScreen.main.screenshot().pngRepresentation
+            try budget()
+            try require(png.count <= 8 * 1024 * 1024, "EDITOR_IMAGE_BOUNDS")
+            let url = folder.appendingPathComponent(filename)
+            try png.write(to: url, options: .withoutOverwriting)
+            try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
+            try budget()
+        }
+        var ordinal = 0
+        func observe() throws -> QAExistingEditorNavigation.Decision {
+            selectedButton = nil
+            try budget()
+            let foreground = shortcuts.state == .runningForeground
+            try budget()
+            let bars = shortcuts.navigationBars.matching(identifier: name).allElementsBoundByIndex
+            try budget()
+            let buttons = bars.count == 1 ? bars[0].buttons.matching(
+                NSPredicate(format: "label == %@", "Editor")).allElementsBoundByIndex : []
+            try budget()
+            try save(["navigationBarQueryCount": bars.count, "buttonQueryCount": buttons.count,
+                "observedUTC": formatter.string(from: Date())], String(format: "query-%02d.original.json", ordinal))
+            try budget()
+            try require(buttons.count <= 1, "EDITOR_QUERY_NOT_UNIQUE")
+            var candidates: [QAImportSheetSelection.Candidate] = []
+            for (index, button) in buttons.enumerated() {
+                let exists = button.exists
+                try budget()
+                let hittable = exists && button.isHittable
+                try budget()
+                var node: QAImportSheetSelection.Node?
+                var row: [String: Any] = ["queryIndex": index, "exists": exists,
+                    "hittable": hittable, "observedUTC": formatter.string(from: Date())]
+                if exists {
+                    let snapshot = try button.snapshot()
+                    try budget()
+                    let observed = try model(snapshot)
+                    node = observed.0
+                    row["snapshot"] = observed.1
+                }
+                try save(row, String(format: "candidate-%02d.original.json", ordinal))
+                try budget()
+                candidates.append(QAImportSheetSelection.Candidate(queryIndex: index, exists: exists,
+                    hittable: hittable, snapshot: node))
+            }
+            let snapshot = try shortcuts.snapshot()
+            try budget()
+            let current = try model(snapshot)
+            try save(current.1, String(format: "snapshot-%02d.original.json", ordinal))
+            try budget()
+            let decision = bars.count == 1 ? QAExistingEditorNavigation.select(current: current.0,
+                candidates: candidates, context: .init(expectedName: name, foreground: foreground,
+                alreadyInvoked: invocationCount > 0, now: Date(), deadline: deadline)) :
+                QAExistingEditorNavigation.rejected("NO_UNIQUE_REQUESTED_EDITOR_QUERY")
+            var evidence: [String: Any] = ["reason": decision.reason,
+                "navigationBarQueryCount": bars.count, "buttonQueryCount": buttons.count,
+                "currentNavigationBarCount": decision.currentNavigationBarCount,
+                "matchedCandidateCount": decision.matchedCandidateCount,
+                "observedUTC": formatter.string(from: Date()), "canNavigate": decision.canNavigate]
+            if let binding = decision.binding {
+                selectedButton = buttons[binding.queryIndex]
+                evidence["queryIndex"] = binding.queryIndex
+                evidence["navigationBarPath"] = binding.navigationBarPath
+                evidence["buttonPath"] = binding.buttonPath
+            }
+            try save(evidence, String(format: "selection-%02d.original.json", ordinal))
+            ordinal += 1
+            try budget()
+            return decision
+        }
+        try save(["schema": "cherri-existing-editor-navigation/1", "expectedName": name,
+            "startedUTC": formatter.string(from: started), "deadlineUTC": formatter.string(from: deadline),
+            "nativeImportInvoked": false, "nativeRuntimeInvoked": false,
+            "navigationInvocationCount": 0, "formalAcceptanceGranted": false], "intent.original.json")
+        do {
+            try require(!name.isEmpty && name.utf8.count <= 4096, "EDITOR_NAME_BOUND")
+            let state = shortcuts.state
+            try budget()
+            try require(state == .runningForeground || state == .runningBackground, "EDITOR_SHORTCUTS_NOT_RUNNING")
+            if state != .runningForeground {
+                shortcuts.activate()
+                try budget()
+                let foreground = shortcuts.wait(for: .runningForeground, timeout: min(8, deadline.timeIntervalSinceNow))
+                try budget()
+                try require(foreground, "EDITOR_SHORTCUTS_NOT_FOREGROUND")
+            }
+            let selected = try QAExistingEditorNavigation.inspectForNavigation(observe: observe,
+                capture: { try screenshot("screen.before.original.png") })
+            try budget()
+            try require(selected.canNavigate, selected.reason)
+            let button = try XCTUnwrap(selectedButton)
+            try require(invocationCount == 0, "EDITOR_NAVIGATION_ALREADY_INVOKED")
+            // Claim once before the native call. A returned tap is not itself
+            // proof that the editor displayed any action or executed a workflow.
+            invocationCount = 1
+            try save(["expectedName": name, "navigationInvocationCount": invocationCount,
+                "invokedUTC": formatter.string(from: Date()), "buttonLabel": "Editor",
+                "nativeImportInvoked": false, "nativeRuntimeInvoked": false,
+                "formalAcceptanceGranted": false], "navigation-intent.original.json")
+            try budget()
+            button.tap()
+            try budget()
+            try save(["returnedUTC": formatter.string(from: Date()), "navigationInvocationCount": invocationCount],
+                     "navigation-return.original.json")
+            let after = try shortcuts.snapshot()
+            try budget()
+            let current = try model(after)
+            try save(current.1, "snapshot.after.original.json")
+            try budget()
+            try screenshot("screen.after.original.png")
+            try budget()
+            let result: [String: Any] = ["schema": "cherri-existing-editor-navigation/1",
+                "outcome": "EDITOR_NAVIGATION_AND_AX_RETAINED", "expectedName": name,
+                "completedUTC": formatter.string(from: Date()), "selectionObservations": ordinal,
+                "navigationInvocationCount": invocationCount, "nativeImportInvoked": false,
+                "nativeRuntimeInvoked": false, "formalAcceptanceGranted": false,
+                "actionListRequiresOriginalIntake": true]
+            try save(result, "result.original.json")
+            return result
+        } catch {
+            let failure: [String: Any] = ["schema": "cherri-existing-editor-navigation/1",
+                "outcome": "EDITOR_NAVIGATION_FAILED", "expectedName": name,
+                "completedUTC": formatter.string(from: Date()), "reason": (error as NSError).localizedDescription,
+                "selectionObservations": ordinal, "navigationInvocationCount": invocationCount,
+                "nativeImportInvoked": false, "nativeRuntimeInvoked": false,
+                "formalAcceptanceGranted": false]
+            try? save(failure, "failure.original.json")
+            throw error
+        }
+    }
+
     private func importShortcut(_ command: DifferentialCommand) throws -> [String: Any] {
         try QAImportedShortcutObserver(runDirectory: runDirectory, shortcuts: shortcuts,
             capture: { self.capture($0) }).importShortcut(command)
@@ -209,6 +412,7 @@ final class CherriDifferentialBatchUITests: XCTestCase {
             var receipt: [String: Any]
             switch command.operation {
             case "observe-import": receipt = try observeImportSheet(command)
+            case "navigate-existing-editor": receipt = try navigateExistingEditor(command)
             case "import": receipt = try importShortcut(command)
             case "runtime": receipt = try consentForRuntime(command)
             case "finish":
