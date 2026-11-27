@@ -124,7 +124,7 @@ func p15ExportMetadataGraphError(graph []ShortcutAction, o p15ExportMetadataOpti
 		switch id {
 		case "gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "setitemname",
 			"getvariable", "count", "setvariable", "getvalueforkey", "format.date", "number", "math", "nothing",
-			"dictionary", "round", "getitemfromlist", "repeat.count", "appendvariable":
+			"dictionary", "round", "getitemfromlist", "repeat.count", "appendvariable", "text.match":
 		default:
 			return fmt.Errorf("unexpected export effect %s", id)
 		}
@@ -163,7 +163,15 @@ func p15ExportMetadataGraphError(graph []ShortcutAction, o p15ExportMetadataOpti
 		return err
 	}
 
-	formatters := p15ActionsNamed(graph, "format.date")
+	// Payload Date formatting is separate from the original item Creation Date
+	// contract. Keep the latter's exact source/cardinality/type causality checks.
+	var formatters []ShortcutAction
+	for _, action := range p15ActionsNamed(graph, "format.date") {
+		dateID := p15ExportMetadataOutputRef(action.WFWorkflowActionParameters["WFDate"])
+		if source, exists := byID[dateID]; exists && p15ExportMetadataStringContains([]ShortcutAction{source}, "WFFileCreationDate") {
+			formatters = append(formatters, action)
+		}
+	}
 	if !o.dates {
 		if len(formatters) != 0 {
 			return fmt.Errorf("omitted dates performed date conversion")
@@ -347,7 +355,13 @@ func TestP15DebugExportMetadataDefaultFlagsControl(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				baseline, err := os.ReadFile(filepath.Join("testdata", "p15-debug-export-metadata", "default", fmt.Sprintf("%s-redact_%t.json", format, redact)))
+				baselineDir := filepath.Join("testdata", "p15-debug-export-metadata", "default")
+				if !redact {
+					// The historical Text-only graph remains in its original fixture.
+					// This opt-in now has a separately model-checked typed diagnostic graph.
+					baselineDir = filepath.Join("testdata", "p15-debug-export-payloads", "unredacted")
+				}
+				baseline, err := os.ReadFile(filepath.Join(baselineDir, fmt.Sprintf("%s-redact_%t.json", format, redact)))
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -355,8 +369,25 @@ func TestP15DebugExportMetadataDefaultFlagsControl(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
+				if out := os.Getenv("CHERRI_EXPORT_METADATA_DEFAULT_GOLDEN_OUT"); out != "" {
+					data, err := json.MarshalIndent(a, "", "  ")
+					if err != nil {
+						t.Fatal(err)
+					}
+					path := filepath.Join(out, fmt.Sprintf("%s-redact_%t.json", format, redact))
+					f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if _, err = f.Write(append(data, '\n')); err != nil {
+						t.Fatal(err)
+					}
+					if err = f.Close(); err != nil {
+						t.Fatal(err)
+					}
+				}
 				if string(append(actual, '\n')) != string(baseline) {
-					t.Fatal("default native graph differs from the actual pre-implementation source75c6 baseline")
+					t.Fatal("native graph differs from its separately qualified disclosure-policy baseline")
 				}
 				if !reflect.DeepEqual(a, b) {
 					t.Fatalf("omitted metadata differs from explicit false flags: old=%#v; current=%#v", a, b)
@@ -453,23 +484,6 @@ func TestP15DebugExportMetadataDefaultFlagsControl(t *testing.T) {
 					})
 				}
 
-				if out := os.Getenv("CHERRI_EXPORT_METADATA_DEFAULT_GOLDEN_OUT"); out != "" {
-					data, err := json.MarshalIndent(a, "", "  ")
-					if err != nil {
-						t.Fatal(err)
-					}
-					path := filepath.Join(out, fmt.Sprintf("%s-redact_%t.json", format, redact))
-					f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
-					if err != nil {
-						t.Fatal(err)
-					}
-					if _, err = f.Write(append(data, '\n')); err != nil {
-						t.Fatal(err)
-					}
-					if err = f.Close(); err != nil {
-						t.Fatal(err)
-					}
-				}
 			})
 		}
 	}

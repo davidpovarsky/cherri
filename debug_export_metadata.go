@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/electrikmilk/cherri/internal/language/backend"
-	"github.com/google/uuid"
 )
 
 // Metadata stays separate from native log items. Every private variable is
@@ -48,7 +47,7 @@ func (b *debugExportExpansion) math(value any, operation string, operand any) WF
 }
 
 func (b *debugExportExpansion) numberBranch(input any, code int, comparison any, yes, no func()) WFTextTokenAttachment {
-	group := strings.ToUpper(uuid.NewString())
+	group := strings.ToUpper(nextGeneratedUUID("debug-export-metadata"))
 	b.add("conditional", backend.BuildIfStartTyped(group,
 		map[string]any{"Type": "Variable", "Variable": input}, code, comparison, nil, backend.OperandNumber, true))
 	yes()
@@ -60,7 +59,7 @@ func (b *debugExportExpansion) numberBranch(input any, code int, comparison any,
 }
 
 func (b *debugExportExpansion) typeBranch(actual, witness WFTextTokenAttachment, yes, no func()) WFTextTokenAttachment {
-	group := strings.ToUpper(uuid.NewString())
+	group := strings.ToUpper(nextGeneratedUUID("debug-export-metadata"))
 	b.add("conditional", backend.BuildIfStartTyped(group,
 		map[string]any{"Type": "Variable", "Variable": actual}, 4, requireComparisonText(witness), nil, backend.OperandString, true))
 	yes()
@@ -117,7 +116,7 @@ func (m *debugExportMetadata) date(item WFTextTokenAttachment) WFTextTokenAttach
 func (m *debugExportMetadata) entry(item WFTextTokenAttachment, label any) WFTextTokenAttachment {
 	b, options := m.b, m.options
 	var actualType WFTextTokenAttachment
-	if options.includeTypes || !options.redact {
+	if options.includeTypes || m.payloadEnabled() {
 		actualType = b.kind(item)
 	}
 	var typeValue *WFTextTokenAttachment
@@ -132,15 +131,10 @@ func (m *debugExportMetadata) entry(item WFTextTokenAttachment, label any) WFTex
 	if options.includeLabels {
 		metadata = append(metadata, `,"label":`, label)
 	}
-	if options.redact {
+	if options.redact && len(options.redactKeys) == 0 {
 		return b.row("REDACTED", typeValue, nil, metadata...)
 	}
-	return b.typeBranch(actualType, m.textType, func() {
-		payload := b.base64(item)
-		b.row("TEXT_PAYLOAD_ENCODED", typeValue, &payload, metadata...)
-	}, func() {
-		b.row("UNSUPPORTED_PAYLOAD_TYPE", typeValue, nil, metadata...)
-	})
+	return m.selectedPayload(item, actualType, typeValue, metadata...)
 }
 
 // Validate the source-owned range metadata once. Wrong native types and
@@ -156,7 +150,7 @@ func (m *debugExportMetadata) validateLabels(itemCount WFTextTokenAttachment) {
 		b.numberBranch(b.readVariable(status), 4, 0, func() { b.setVariable(status, b.number(1)) }, nil)
 	}
 	invalidRange := func() { b.setVariable(valid, b.number(0)) }
-	group := strings.ToUpper(uuid.NewString())
+	group := strings.ToUpper(nextGeneratedUUID("debug-export-metadata"))
 	b.add("repeat.each", backend.BuildRepeatEachStart(group, debugLogValueRef(debugLabelVariableName)))
 	item := b.readVariable("Repeat Item")
 	b.typeBranch(b.kind(item), m.dictionaryType, func() {
@@ -221,7 +215,7 @@ func (m *debugExportMetadata) labeledRows() WFTextTokenAttachment {
 	b.add("setvariable", map[string]any{"WFVariableName": rows})
 
 	iterations := b.math(n, "+", debugDateFieldToken(labelCount.Value))
-	group := strings.ToUpper(uuid.NewString())
+	group := strings.ToUpper(nextGeneratedUUID("debug-export-metadata"))
 	b.add("repeat.count", backend.BuildRepeatCountStart(group, debugDateFieldToken(iterations.Value)))
 	b.numberBranch(b.readVariable(itemIndex), 1, debugDateFieldToken(n.Value), func() {
 		b.setVariable(emit, b.number(0))
@@ -273,26 +267,23 @@ func (m *debugExportMetadata) labeledRows() WFTextTokenAttachment {
 
 func buildDebugExportMetadataActions(options debugExportOptions, resultUUID, resultName string) []ShortcutAction {
 	b := &debugExportExpansion{}
-	m := &debugExportMetadata{b: b, options: options, prefix: "__cherri_debug_export_" + strings.ReplaceAll(strings.ToUpper(uuid.NewString()), "-", "") + "_"}
-	if !options.redact {
+	m := &debugExportMetadata{b: b, options: options, prefix: "__cherri_debug_export_" + strings.ReplaceAll(strings.ToUpper(nextGeneratedUUID("debug-export-metadata")), "-", "") + "_"}
+	if m.payloadEnabled() {
 		m.textType = b.kind(b.text("Cherri export Text witness"))
-	}
-	if options.includeDates {
-		// This runtime witness establishes the native Date class only. It is
-		// never formatted, logged, or substituted for an item's Creation Date.
-		m.dateType = b.kind(debugCurrentDateRef())
-	}
-	if options.includeLabels && !options.redact {
 		m.numberType = b.kind(b.number(0))
 		var fields any = []WFDictionaryFieldValueItem{}
 		dictionary := b.produce("dictionary", map[string]any{"WFItems": makeExplicitDictionaryValue(&fields)})
 		m.dictionaryType = b.kind(dictionary)
 	}
+	if options.includeDates || m.payloadEnabled() {
+		// This witness establishes native Date class, never a fabricated log date.
+		m.dateType = b.kind(debugCurrentDateRef())
+	}
 	var rows WFTextTokenAttachment
 	if options.includeLabels && !options.redact {
 		rows = m.labeledRows()
 	} else {
-		group := strings.ToUpper(uuid.NewString())
+		group := strings.ToUpper(nextGeneratedUUID("debug-export-metadata"))
 		b.add("repeat.each", backend.BuildRepeatEachStart(group, debugLogValueRef(debugLogVariableName)))
 		item := b.readVariable("Repeat Item")
 		var label any
@@ -311,7 +302,9 @@ func buildDebugExportMetadataActions(options debugExportOptions, resultUUID, res
 	})
 	policy, dates, labels := "redacted", "not-collected", "not-collected"
 	if !options.redact {
-		policy = "text-only-base64"
+		policy = "native-scalar-and-dictionary-diagnostics"
+	} else if len(options.redactKeys) > 0 {
+		policy = "selective-dictionary-diagnostics"
 	}
 	if options.includeDates {
 		dates = "source-creation-date"
@@ -322,20 +315,24 @@ func buildDebugExportMetadataActions(options debugExportOptions, resultUUID, res
 			labels = "source-range-metadata"
 		}
 	}
+	var boundaries = ""
+	if m.payloadEnabled() {
+		boundaries = `,"sourceTypePolicy":"source-types-not-reconstructed","collectionPolicy":"native-item-stream","nullPolicy":"absence-not-reconstructed"`
+	}
 	var envelope any
 	if options.format == "json" {
 		envelope = debugExportTextToken(
 			`{"schemaVersion":"`+debugExportSchemaVersion+`","scope":"run-local-native-items","payloadPolicy":"`+policy+
-				`","dates":"`+dates+`","labels":"`+labels+`","entries":[`, combined, "]}")
+				`","dates":"`+dates+`","labels":"`+labels+`"`+boundaries+`,"entries":[`, combined, "]}")
 	} else {
 		envelope = debugExportTextToken("Cherri Debug Export 1\nScope: run-local native items\nPayload policy: "+policy+
-			"\nDates: "+dates+"\nLabels: "+labels+"\nEntry encoding: JSON lines; Text payloads use base64-utf8\n\n", combined)
+			"\nDates: "+dates+"\nLabels: "+labels+"\nEntry encoding: JSON lines; scalar presentations use base64-utf8\nSource types: source-types-not-reconstructed\nCollection policy: native-item-stream\n\n", combined)
 	}
 	content := b.produce("gettext", map[string]any{"WFTextActionText": envelope})
 	encoded := b.base64(content)
 	materialized := b.produce("base64encode", map[string]any{"WFInput": encoded, "WFEncodeMode": "Decode"})
 	if resultUUID == "" {
-		resultUUID = strings.ToUpper(uuid.NewString())
+		resultUUID = strings.ToUpper(nextGeneratedUUID("debug-export-metadata"))
 	}
 	extension := "json"
 	if options.format == "text" {

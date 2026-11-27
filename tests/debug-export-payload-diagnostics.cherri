@@ -1,0 +1,16 @@
+// Compile-only fixture for local diagnostic payloads and explicit key policy.
+// Native File identity and Shortcuts execution remain separate acceptance gates.
+// Dictionary output is diagnostic fields, never lossless source JSON.
+debugClearLogs()
+text("שָׁלוֹם 🍒 payload")
+debugLog()
+number(12.5)
+debugLog()
+getVariable(CurrentDate)
+debugLog()
+const original = getDictionary('{"public":"safe synthetic text","count":7,"enabled":false,"empty":null,"list":[1,2],"nested":{"value":"synthetic"},"password":"SYNTHETIC_CREDENTIAL","customerSecret":"SYNTHETIC_CUSTOM_SECRET","literal.key":"SYNTHETIC_DOTTED_KEY"}')
+getVariable(original)
+debugLog()
+const exported = debugExport("json", true, true, false, false, ["customerSecret"])
+getVariable(original)
+output(exported)

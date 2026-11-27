@@ -1,8 +1,8 @@
 package main
 
-// This is the deliberately bounded first local export contract. Native log
-// items remain untouched. Arbitrary Content Graph objects are not JSON values;
-// only an explicitly opted-in Text item has a payload in this version.
+// Native log items remain untouched. Explicit payload export distinguishes
+// native scalar presentations from bounded Dictionary diagnostics; it never
+// claims to reconstruct lost source types, collections, or arbitrary objects.
 import (
 	"fmt"
 	"strings"
@@ -17,7 +17,7 @@ func registerDebugExportMacro() {
 		identifier: "setitemname", outputType: Variable,
 		doc: selfDoc{
 			title:       "Export Local Debug File",
-			description: "Return one local JSON or text File without saving, sharing or uploading. Payloads are fully redacted by default. Explicit redactSensitive:false exports Text as base64-encoded UTF-8; other native payloads report UNSUPPORTED_PAYLOAD_TYPE. Opt-in dates read item Creation Date metadata; labels are separately opt-in and stay redacted by default. Native File-class acceptance remains open. Options are compile-time literals.",
+			description: "Return one local JSON or text artifact without saving, sharing or uploading. Payloads stay fully redacted by default. Explicit redactSensitive:false exports Text, native Number display text, ISO 8601 Dates and bounded Dictionary field diagnostics. It never reconstructs source Bool, null or List boundaries. Nonempty literal redactKeys opts into structural field filtering, including credential and URL/query keys; with redactSensitive:true Text and all non-Dictionary top-level payloads stay redacted. Empty keys do not widen default disclosure. Unsupported native or nested values have explicit statuses. Dates/labels remain separately opt-in. Native File-class acceptance remains open.",
 			category:    "debug",
 		},
 		parameters: []parameterDefinition{
@@ -26,6 +26,7 @@ func registerDebugExportMacro() {
 			{name: "includeTypes", key: "WFDebugExportTypes", validType: Bool, optional: true, defaultValue: true},
 			{name: "redactSensitive", key: "WFDebugExportRedact", validType: Bool, optional: true, defaultValue: true},
 			{name: "includeLabels", key: "WFDebugExportLabels", validType: Bool, optional: true, defaultValue: false},
+			{name: "redactKeys", key: "WFDebugExportRedactKeys", validType: Arr, optional: true, literal: true},
 		},
 	}
 }
@@ -36,6 +37,7 @@ type debugExportOptions struct {
 	redact        bool
 	includeDates  bool
 	includeLabels bool
+	redactKeys    []string
 }
 
 func parseDebugExportOptions(params map[string]any) (debugExportOptions, error) {
@@ -67,6 +69,13 @@ func parseDebugExportOptions(params map[string]any) (debugExportOptions, error) 
 			return out, fmt.Errorf("DEBUG_EXPORT_LITERAL: %s must be a Boolean literal", item.key)
 		}
 		*item.target = value
+	}
+	if raw, exists := params["WFDebugExportRedactKeys"]; exists {
+		keys, err := parseDebugExportRedactKeys(raw)
+		if err != nil {
+			return out, err
+		}
+		out.redactKeys = keys
 	}
 	return out, nil
 }
@@ -138,7 +147,7 @@ func buildDebugExportActions(params map[string]any, resultUUID, resultName strin
 	if err != nil {
 		return nil, err
 	}
-	if options.includeDates || options.includeLabels {
+	if options.includeDates || options.includeLabels || !options.redact || len(options.redactKeys) > 0 {
 		return buildDebugExportMetadataActions(options, resultUUID, resultName), nil
 	}
 	b := &debugExportExpansion{}
