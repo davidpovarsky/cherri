@@ -30,7 +30,7 @@ MARKER = re.compile(r"^\s*p15_native_explicit_signing_export_test.go:[0-9]+: "
                     r"P15_NATIVE_EXPLICIT_SIGNING_FIXTURE sha256=([0-9a-f]{64}) "
                     r"bytes=([1-9][0-9]*) base64=([A-Za-z0-9+/]+={0,2})$")
 AUTHORITY_PATH = "p15_signing_explicit_joined_test.go"
-AUTHORITY_SHA = "77b8616bbcc6dc93c5edd33ff9cfd2acffba31f553e5e60e7785e7a00e3f8e29"
+AUTHORITY_SHA = "ec54d81c51bc51c2a7b96b48437f2362f8bb4f88e5f25fb113a55bfc952e8b01"
 EARLIER = "BRG26_A_EARLIER"
 CURRENT = "BRG26_B_CURRENT_שלום"
 CURRENT_NAME = "BRG26 B שלום"

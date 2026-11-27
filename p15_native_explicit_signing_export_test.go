@@ -44,7 +44,7 @@ func p15NativeSigningBlob(t *testing.T, raw []byte, mode, literal string) map[st
 
 func TestP15NativeExplicitSigningFixtureExport(t *testing.T) {
 	authority, err := os.ReadFile("p15_signing_explicit_joined_test.go")
-	if err != nil || len(authority) != 13121 || p15NativeSigningSHA(authority) != "77b8616bbcc6dc93c5edd33ff9cfd2acffba31f553e5e60e7785e7a00e3f8e29" {
+	if err != nil || len(authority) != 13269 || p15NativeSigningSHA(authority) != "ec54d81c51bc51c2a7b96b48437f2362f8bb4f88e5f25fb113a55bfc952e8b01" {
 		t.Fatal("original complete signing producer changed", err)
 	}
 	for _, mode := range []string{"v2", "legacy"} {
