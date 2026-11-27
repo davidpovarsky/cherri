@@ -119,6 +119,103 @@ class RP39DiagnosticTransportTests(unittest.TestCase):
         self.assertTrue((output / "command-01/started.original.json").is_file())
         self.assertTrue((output / "command-01/finished.original.json").is_file())
 
+    def test_missing_darwin_selection_binds_observed_directory_before_real_git(self):
+        actual_capture = getattr(base.OwnedGitReads, "capture_command", None)
+        actual_platform = sys.platform
+        output = self.path / "selected-directory"
+        requested = []
+        synthetic_directory = self.path / "SyntheticSelectedXcode/Contents/Developer"
+        synthetic_directory.mkdir(parents=True)
+        expected_selection = self.selected_developer_directory(str(synthetic_directory))
+        def capture(instance, operation, argv, deadline):
+            requested.append((operation, argv))
+            if operation == "selected_developer_directory":
+                self.assertEqual(argv, ["/usr/bin/xcode-select", "--print-path"])
+                if actual_platform != "darwin":
+                    # Linux injects only the unavailable platform selector.
+                    # Both following Git reads and all cleanup remain real.
+                    argv = [sys.executable, "-c", "import sys;sys.stdout.write(sys.argv[1]+'\\n')",
+                            str(synthetic_directory)]
+            return actual_capture(instance, operation, argv, deadline)
+        env = dict(os.environ, PRIVATE_ENVIRONMENT_CANARY="must-not-reach-git")
+        env.pop("DEVELOPER_DIR", None)
+        with mock.patch.dict(os.environ, env, clear=True), \
+                mock.patch.object(base.sys, "platform", "darwin"), \
+                mock.patch.object(base.OwnedGitReads, "capture_command", capture, create=True), base.envelope(15):
+            base._owned_git = base.OwnedGitReads(self.repo, output)
+            deadline = time.monotonic() + 15
+            for _ in range(2):
+                raw = base.local_git(self.repo, ["rev-parse", "--verify", "HEAD"], deadline)
+                self.assertEqual(raw, (self.source + "\n").encode())
+        self.originals(output)
+        rows = base._owned_git.records
+        git_rows = [r for r in rows if "/usr/bin/git" in r["argv"]]
+        self.assertEqual(len(git_rows), 2)
+        for row in git_rows:
+            self.assertIn("DEVELOPER_DIR=" + expected_selection, row["argv"])
+            self.assertFalse(any(x.startswith("PRIVATE_ENVIRONMENT_CANARY=") for x in row["argv"]))
+        self.assertEqual([r["operation"] for r in rows], ["selected_developer_directory", "git", "git"])
+        self.assertEqual([op for op, _ in requested], ["selected_developer_directory", "git", "git"])
+        selection = (output / "command-01/stdout.original").read_text().removesuffix("\n")
+        self.assertTrue(Path(selection).is_absolute() and Path(selection).is_dir())
+        for row in rows:
+            self.assertEqual(row["observed"]["result"], "PASS")
+            self.assertTrue(row["capture"]["cleanupParentReaped"])
+            self.assertEqual(row["capture"]["groupAfterCleanup"]["state"], "ABSENT")
+        self.assertEqual(selection, expected_selection)
+
+    def test_failed_selected_directory_cannot_start_git(self):
+        actual_capture = base.OwnedGitReads.capture_command
+        output = self.path / "failed-selection"
+        def capture(instance, operation, argv, deadline):
+            self.assertEqual(operation, "selected_developer_directory")
+            self.assertEqual(argv, ["/usr/bin/xcode-select", "--print-path"])
+            return actual_capture(instance, operation, [sys.executable, "-c", "raise SystemExit(17)"], deadline)
+        env = dict(os.environ)
+        env.pop("DEVELOPER_DIR", None)
+        with mock.patch.dict(os.environ, env, clear=True), \
+                mock.patch.object(base.sys, "platform", "darwin"), \
+                mock.patch.object(base.OwnedGitReads, "capture_command", capture), base.envelope(15):
+            base._owned_git = base.OwnedGitReads(self.repo, output)
+            with self.assertRaisesRegex(base.Rejected, "SOURCE_CHANGED"):
+                base.local_git(self.repo, ["rev-parse", "--verify", "HEAD"], time.monotonic() + 15)
+        self.originals(output)
+        self.assertEqual(len(base._owned_git.records), 1)
+        row = base._owned_git.records[0]
+        self.assertEqual(row["operation"], "selected_developer_directory")
+        self.assertEqual(row["observed"]["result"], "EXIT_NONZERO")
+        self.assertEqual(row["capture"]["returnCodeObserved"], 17)
+        self.assertTrue(row["capture"]["cleanupParentReaped"])
+        self.assertEqual(row["capture"]["groupAfterCleanup"]["state"], "ABSENT")
+
+    def test_invalid_selected_directory_cannot_start_git(self):
+        actual_capture = base.OwnedGitReads.capture_command
+        env = dict(os.environ)
+        env.pop("DEVELOPER_DIR", None)
+        for index, invalid in enumerate((b"", b"relative/path\n", b"/missing/SelectedXcode\n", b"/bad\x00path\n", b"\xff\n")):
+            with self.subTest(output=index):
+                output = self.path / ("invalid-selection-%d" % index)
+                def capture(instance, operation, argv, deadline):
+                    self.assertEqual(operation, "selected_developer_directory")
+                    self.assertEqual(argv, ["/usr/bin/xcode-select", "--print-path"])
+                    return actual_capture(instance, operation,
+                        [sys.executable, "-c", "import sys;sys.stdout.buffer.write(bytes.fromhex(sys.argv[1]))", invalid.hex()], deadline)
+                with mock.patch.dict(os.environ, env, clear=True), \
+                        mock.patch.object(base.sys, "platform", "darwin"), \
+                        mock.patch.object(base.OwnedGitReads, "capture_command", capture), base.envelope(15):
+                    base._owned_git = base.OwnedGitReads(self.repo, output)
+                    with self.assertRaisesRegex(base.Rejected, "SOURCE_CHANGED"):
+                        base.local_git(self.repo, ["rev-parse", "--verify", "HEAD"], time.monotonic() + 15)
+                self.assertEqual(len(base._owned_git.records), 1)
+                self.assertEqual(base._owned_git.records[0]["operation"], "selected_developer_directory")
+                self.assertEqual(base._owned_git.records[0]["observed"]["result"], "PASS")
+                self.assertTrue(base._owned_git.records[0]["capture"]["cleanupParentReaped"])
+                self.assertEqual(base._owned_git.records[0]["capture"]["groupAfterCleanup"]["state"], "ABSENT")
+                # Malformed UTF-8 is intentional input; retain exact bytes.
+                CONTROL_ORIGINALS[self._testMethodName + "/" + output.name] = {
+                    str(path.relative_to(output)): {"encoding": "hex", "bytes": path.read_bytes().hex()}
+                    for path in sorted(output.rglob("*")) if path.is_file()}
+
     def test_changed_bootstrap_is_rejected_before_any_child(self):
         path = self.repo / base.HELPER_FILES[-1]
         path.write_bytes(path.read_bytes() + b"\n# synthetic mutation\n")

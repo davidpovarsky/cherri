@@ -172,6 +172,7 @@ class OwnedGitReads:
         self.repo, self.output = Path(repo), Path(output)
         self.helper = load_primitives(repo, None)
         self.records = []
+        self.selected_developer_directory = None
         self.output.mkdir(mode=0o700)
 
     @staticmethod
@@ -192,15 +193,34 @@ class OwnedGitReads:
             return {"state": "NOT_OBSERVED", "path": None}
 
     def run(self, args, env, deadline):
-        require(_first_interruption is None and len(self.records) < 24,
+        env = dict(env)
+        if sys.platform == "darwin" and not env.get("DEVELOPER_DIR"):
+            if self.selected_developer_directory is None:
+                selection = self.capture_command("selected_developer_directory",
+                    ["/usr/bin/xcode-select", "--print-path"], deadline)
+                try:
+                    value = selection.stdout.decode("utf-8").removesuffix("\n")
+                except UnicodeDecodeError:
+                    raise Rejected("SOURCE_CHANGED")
+                require(0 < len(value.encode("utf-8")) <= 4096 and
+                        not any(ord(c) < 32 or ord(c) == 127 for c in value), "SOURCE_CHANGED")
+                directory = Path(value)
+                require(directory.is_absolute() and directory.is_dir(), "SOURCE_CHANGED")
+                self.selected_developer_directory = value
+            env["DEVELOPER_DIR"] = self.selected_developer_directory
+        argv = ["/usr/bin/env", "-i", *[k + "=" + v for k, v in sorted(env.items())],
+                "/usr/bin/git", "--no-replace-objects", "-C", str(self.repo), *args]
+        return self.capture_command("git", argv, deadline)
+
+    def capture_command(self, operation, argv, deadline):
+        require(operation in ("git", "selected_developer_directory") and
+                _first_interruption is None and len(self.records) < 24,
                 "DIAGNOSTIC_DEADLINE")
         now = time.monotonic()
         require(deadline - now > 2, "DIAGNOSTIC_DEADLINE")
         directory = self.output / ("command-%02d" % (len(self.records) + 1))
         directory.mkdir(mode=0o700)
-        argv = ["/usr/bin/env", "-i", *[k + "=" + v for k, v in sorted(env.items())],
-                "/usr/bin/git", "--no-replace-objects", "-C", str(self.repo), *args]
-        row = {"argv": argv, "executionDeadlineMonotonic": deadline - 2,
+        row = {"operation": operation, "argv": argv, "executionDeadlineMonotonic": deadline - 2,
                "hardDeadlineMonotonic": deadline, "observed": None, "capture": None,
                "processImage": None}
         self.records.append(row)
@@ -211,7 +231,7 @@ class OwnedGitReads:
             if phase == "started":
                 row["processImage"] = self.process_image(detail["pid"])
             image = row["processImage"]
-            value = {"phase": phase, "popenReturned": detail["pid"] is not None,
+            value = {"operation": operation, "phase": phase, "popenReturned": detail["pid"] is not None,
                      "gitImageObserved": image is not None and image["path"] is not None
                          and image["path"].endswith("/git"),
                      "processImage": image, "capture": detail}
@@ -238,7 +258,7 @@ class OwnedGitReads:
         for item in self.records:
             detail = item["capture"]
             image = item["processImage"]
-            rows.append({"pid": None if detail is None else detail["pid"],
+            rows.append({"operation": item["operation"], "pid": None if detail is None else detail["pid"],
                          "popenReturned": detail is not None and detail["pid"] is not None,
                          "gitImageObserved": image is not None and image["path"] is not None
                              and image["path"].endswith("/git"),
