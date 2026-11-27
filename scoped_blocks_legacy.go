@@ -555,6 +555,21 @@ func emitLegacyScopedBlock(block *legacyScopedBlock, reference *WFActionReferenc
 		makeAction([]actionArgument{{valueType: RawString, value: label}}, &WFActionReference{})
 		return nil
 	}
+	input := backend.ScopedMeasureInput{}
+	if legacyActiveBuildProfile != BuildProfileRelease {
+		inputName := block.prefix + "_input"
+		input.Capture = func() error {
+			addStdAction("setvariable", map[string]any{"WFVariableName": inputName})
+			return nil
+		}
+		input.Restore = func() error {
+			id := createUUIDReference(inputName + "_restored")
+			addStdAction("getvariable", map[string]any{
+				"WFVariable": debugLogValueRef(inputName), "UUID": id,
+			})
+			return nil
+		}
+	}
 	emitBody := func() {
 		for _, step := range block.steps {
 			withLegacyScopedEnvironment(step, func() {
@@ -575,6 +590,7 @@ func emitLegacyScopedBlock(block *legacyScopedBlock, reference *WFActionReferenc
 				addStdAction("nothing", map[string]any{})
 				return nil
 			},
+			input,
 		)
 		if err != nil {
 			exit(err.Error())
@@ -607,6 +623,7 @@ func emitLegacyScopedBlock(block *legacyScopedBlock, reference *WFActionReferenc
 			return EncodeReferenceAttachment(ReferenceDescriptor{Kind: "ActionOutput", OutputUUID: id, OutputName: name},
 				"WFTextTokenAttachment").(WFTextTokenAttachment), nil
 		},
+		input,
 	)
 	if err != nil {
 		exit(err.Error())
