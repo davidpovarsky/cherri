@@ -62,10 +62,15 @@ func TestP15M02ExplicitMainReturnBaseline(t *testing.T) {
 				t.Fatal("missing actual main return")
 			}
 			last := actions[len(actions)-1]
-			if last["WFWorkflowActionIdentifier"] != "is.workflow.actions.output" {
-				t.Fatal("main return does not stop with output", last)
+			noContent := tc.name == "bare" || tc.name == "none"
+			terminal := "is.workflow.actions.output"
+			if noContent {
+				terminal = "is.workflow.actions.exit"
 			}
-			if tc.name == "bare" || tc.name == "none" {
+			if last["WFWorkflowActionIdentifier"] != terminal {
+				t.Fatal("main return has the wrong value-presence terminal", last)
+			}
+			if noContent {
 				if len(p15Param(last)) != 0 || actions[len(actions)-2]["WFWorkflowActionIdentifier"] != "is.workflow.actions.nothing" {
 					t.Fatal("bare/None return can leak preceding output")
 				}

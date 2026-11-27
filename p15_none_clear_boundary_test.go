@@ -79,7 +79,7 @@ func p15NoneReturnError(actions []map[string]any, tagged ...bool) error {
 	if actions[marker+1]["WFWorkflowActionIdentifier"] != "is.workflow.actions.nothing" || len(p15Param(actions[marker+1])) != 0 {
 		return fmt.Errorf("none return does not explicitly clear the preceding output")
 	}
-	if actions[marker+2]["WFWorkflowActionIdentifier"] != "is.workflow.actions.output" || len(p15Param(actions[marker+2])) != 0 {
+	if actions[marker+2]["WFWorkflowActionIdentifier"] != "is.workflow.actions.exit" || len(p15Param(actions[marker+2])) != 0 {
 		return fmt.Errorf("none return fabricated an output value or did not stop")
 	}
 	return nil

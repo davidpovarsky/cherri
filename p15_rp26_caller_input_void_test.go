@@ -77,13 +77,13 @@ func p15RP26Graph(actions []map[string]any, mode string) (*p15FTCursor, error) {
 	c.mark("bare_clear")
 	c.bare("nothing")
 	c.mark("bare_return")
-	c.bare("output")
+	c.bare("exit")
 	c.beginFunction("falling")
 	c.take("gettext", "", map[string]any{"WFTextActionText": "RP26_FALLTHROUGH_INCIDENTAL"}, false)
 	c.mark("fallthrough_clear")
 	c.bare("nothing")
 	c.mark("fallthrough_return")
-	c.bare("output")
+	c.bare("exit")
 	c.caller()
 	c.mark("before")
 	before := c.take("gettext", "before", map[string]any{"WFTextActionText": p15FEHealthyText(caller, caller)}, true)
@@ -111,7 +111,7 @@ func p15RP26Graph(actions []map[string]any, mode string) (*p15FTCursor, error) {
 	case "bare":
 		c.mark("main_terminal")
 		c.bare("nothing")
-		c.bare("output")
+		c.bare("exit")
 	case "fallthrough":
 	default:
 		return c, fmt.Errorf("unknown RP26 terminal %s", mode)
@@ -185,7 +185,8 @@ func TestP15RP26CallerInputVoidNative(t *testing.T) {
 						bad[index] = map[string]any{"WFWorkflowActionIdentifier": "is.workflow.actions.getvariable",
 							"WFWorkflowActionParameters": map[string]any{"WFVariable": transport}}
 					case "bare_return", "fallthrough_return":
-						bad[view.points[fault]]["WFWorkflowActionIdentifier"] = "is.workflow.actions.exit"
+						// The former empty Output can fabricate an empty Text item.
+						bad[view.points[fault]]["WFWorkflowActionIdentifier"] = "is.workflow.actions.output"
 					case "between_input", "after_input":
 						point := strings.TrimSuffix(fault, "_input")
 						p15SCParams(bad[view.points[point]])["WFTextActionText"] = p15FEHealthyText(map[string]any{"Type": "ExtensionInput"}, map[string]any{"Type": "ExtensionInput"})

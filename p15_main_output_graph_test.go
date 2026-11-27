@@ -77,7 +77,7 @@ func p15M02GraphCases() []p15M02GraphCase {
 			g.header("child")
 			g.emit("gettext", map[string]any{"WFTextActionText": "M02_CHILD_NOISE"})
 			clear(g)
-			g.emit("output", nil)
+			g.emit("exit", nil)
 			g.caller()
 			g.call(g.payload("child"))
 			g.emit("gettext", map[string]any{"WFTextActionText": "M02_PARENT_CONTINUED"})
@@ -136,12 +136,7 @@ func p15M02GraphCases() []p15M02GraphCase {
 		cases = append(cases, p15M02GraphCase{"return_empty_" + expression, "text(\"M02_NOISE\")\nreturn " + expression, func(g *p15FunctionGraph) {
 			g.emit("gettext", map[string]any{"WFTextActionText": "M02_NOISE"})
 			clear(g)
-			g.emit("output", nil)
-			if expression == "none" {
-				// None retains an explicitly empty parameter dictionary after
-				// nil WFOutput serialization; a bare return omits that dictionary.
-				g.expected[len(g.expected)-1]["WFWorkflowActionParameters"] = map[string]any{}
-			}
+			g.emit("exit", nil)
 		}})
 	}
 	return cases
