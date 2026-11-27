@@ -1,0 +1,284 @@
+{
+  "schema": "cherri-archive-format-generation-impact-review/1",
+  "status": "READ_ONLY_GENERATION_IMPACT_REVIEW_PASS_NO_REPLAY_REQUIRED",
+  "createdUTC": "2026-11-27T18:01:46.137501+00:00",
+  "sourceBindings": {
+    "canonicalGeneratedCommit": "5bc62d057e4bfa8bdd895e7228ca59eedac20b40",
+    "reviewedMergedCommit": "831541058d1a215ecb8cf8fe7315a29e62fb91b9",
+    "priorGenerationInputCommit": "5cdf50ac617b22ddf3b38d8d9b91b8cfa0e13b94",
+    "nativeEvidenceCommit": "ef1fc9412dca2bed0b70f10d626aa8f285b78f0a",
+    "implementationCommit": "8df6923ce0852daa62475b82f141174d8ba7ee26",
+    "provenanceCommit": "022aa2495efe9c3dcefe94d0ff5b5397bd0840be"
+  },
+  "completedReviewTiming": {
+    "startedHeartbeatUTC": "2026-11-27T17:58:37+00:00",
+    "completedHeartbeatUTC": "2026-11-27T18:00:27+00:00",
+    "timeBasis": "Original own-review heartbeat tool responses, preserved from the completed review; these are review stage timestamps, not test or generator execution timestamps.",
+    "registryStateDuringReview": "RUNNING_NOT_YET_ACCEPTED",
+    "registryRunReportedByRootDuringReview": "job_3e04a8737c15"
+  },
+  "receiptCreationScope": "Create-only retention of the completed independent read-only review. The source comparisons below were re-read from the same immutable commits while recording exact Git tree and SHA256 bindings. No prior result or timestamp is restamped.",
+  "directoryComparisons": [
+    {
+      "path": "actions",
+      "comparison": "recursive Git tree identity and empty git diff --name-only between exact commits",
+      "canonicalTreeEntry": "040000 tree 358ee2526bc5f22984de244bf5ef6677cceb0b2b\tactions",
+      "mergedTreeEntry": "040000 tree 358ee2526bc5f22984de244bf5ef6677cceb0b2b\tactions",
+      "changedPaths": [],
+      "equal": true
+    },
+    {
+      "path": "internal/language/schema",
+      "comparison": "recursive Git tree identity and empty git diff --name-only between exact commits",
+      "canonicalTreeEntry": "040000 tree 3112634e7dacdac8d84bf49e996ffb6541f55a3c\tinternal/language/schema",
+      "mergedTreeEntry": "040000 tree 3112634e7dacdac8d84bf49e996ffb6541f55a3c\tinternal/language/schema",
+      "changedPaths": [],
+      "equal": true
+    },
+    {
+      "path": "tools/language-schema",
+      "comparison": "recursive Git tree identity and empty git diff --name-only between exact commits",
+      "canonicalTreeEntry": "040000 tree 4cf4a8253ec6d839f722f817650f6c1cec4e809a\ttools/language-schema",
+      "mergedTreeEntry": "040000 tree 4cf4a8253ec6d839f722f817650f6c1cec4e809a\ttools/language-schema",
+      "changedPaths": [],
+      "equal": true
+    },
+    {
+      "path": "tools/language-docs",
+      "comparison": "recursive Git tree identity and empty git diff --name-only between exact commits",
+      "canonicalTreeEntry": "040000 tree 0740f7c5a928dc323878a1f1644ab8dcd581d166\ttools/language-docs",
+      "mergedTreeEntry": "040000 tree 0740f7c5a928dc323878a1f1644ab8dcd581d166\ttools/language-docs",
+      "changedPaths": [],
+      "equal": true
+    }
+  ],
+  "fileComparisons": {
+    "actions/documents.cherri": {
+      "canonical": {
+        "bytes": 6330,
+        "sha256": "b7d86a9a420fdb9d159a45d73164097c0c13c637fe0ffe5d0febacd3d1a5c70c"
+      },
+      "merged": {
+        "bytes": 6330,
+        "sha256": "b7d86a9a420fdb9d159a45d73164097c0c13c637fe0ffe5d0febacd3d1a5c70c"
+      },
+      "equal": true
+    },
+    "actions_std.go": {
+      "canonical": {
+        "bytes": 97982,
+        "sha256": "74143e268ab3a0684f73a03a28437a8e82f4b0aa6655ecf63c7f57644a3afd1e"
+      },
+      "merged": {
+        "bytes": 97982,
+        "sha256": "74143e268ab3a0684f73a03a28437a8e82f4b0aa6655ecf63c7f57644a3afd1e"
+      },
+      "equal": true
+    },
+    "actions_catalog.go": {
+      "canonical": {
+        "bytes": 12755,
+        "sha256": "4a0dcafa435fa63bd93341d09f1e1f9eed0b6e07d590195c1a24790d501d47c7"
+      },
+      "merged": {
+        "bytes": 12755,
+        "sha256": "4a0dcafa435fa63bd93341d09f1e1f9eed0b6e07d590195c1a24790d501d47c7"
+      },
+      "equal": true
+    },
+    "internal/language/schema/generated_registry.go": {
+      "canonical": {
+        "bytes": 703659,
+        "sha256": "66f8d6bc09bb37c20cc78af16448a9a40acde74a02226f466339c27df31fde84"
+      },
+      "merged": {
+        "bytes": 703659,
+        "sha256": "66f8d6bc09bb37c20cc78af16448a9a40acde74a02226f466339c27df31fde84"
+      },
+      "equal": true
+    },
+    "tools/language-schema/main.go": {
+      "canonical": {
+        "bytes": 28238,
+        "sha256": "78367ace1ab0bf9ff339068d3cf4a5d8197b950cec1caf0dc13c3dfd1521b2ad"
+      },
+      "merged": {
+        "bytes": 28238,
+        "sha256": "78367ace1ab0bf9ff339068d3cf4a5d8197b950cec1caf0dc13c3dfd1521b2ad"
+      },
+      "equal": true
+    },
+    "tools/language-docs/main.go": {
+      "canonical": {
+        "bytes": 7262,
+        "sha256": "52332f913124e89c833b74ca5b6f6b8734621e456e5e8598c37839d829d80474"
+      },
+      "merged": {
+        "bytes": 7262,
+        "sha256": "52332f913124e89c833b74ca5b6f6b8734621e456e5e8598c37839d829d80474"
+      },
+      "equal": true
+    },
+    "docs/language-v2/actions-reference.md": {
+      "canonical": {
+        "bytes": 246448,
+        "sha256": "2260cce2ca72abf6d606aca6827120c2fa90a5cc1c80519a5bcf519f46655c6d"
+      },
+      "merged": {
+        "bytes": 246448,
+        "sha256": "2260cce2ca72abf6d606aca6827120c2fa90a5cc1c80519a5bcf519f46655c6d"
+      },
+      "equal": true
+    },
+    "skills/cherri-shortcuts/compatibility-manifest.json": {
+      "canonical": {
+        "bytes": 620,
+        "sha256": "ed0a87e9dad4796aadfeefd9d1516ac907dfaa5a6d5e682ced7d1fcf54caed27"
+      },
+      "merged": {
+        "bytes": 620,
+        "sha256": "ed0a87e9dad4796aadfeefd9d1516ac907dfaa5a6d5e682ced7d1fcf54caed27"
+      },
+      "equal": true
+    }
+  },
+  "priorCanonicalGenerationReceipt": {
+    "path": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/integration-evidence/canonical-phase1-01/result.original.json",
+    "bytes": 2420,
+    "sha256": "ee7ce88e02a9e89015e80e620c8ef9c5f2f58b6410d6a7c72a9c50cb6a30e7b9",
+    "originalStatus": "PASS_CANONICAL_GENERATION_AND_DEFAULT_BASELINE",
+    "originalStartedUTC": "2026-11-27T15:43:40.790085+00:00",
+    "originalFinishedUTC": "2026-11-27T15:44:27.656019+00:00",
+    "originalSource": "5cdf50ac617b22ddf3b38d8d9b91b8cfa0e13b94",
+    "originalSteps": [
+      {
+        "name": "01-schema",
+        "argv": [
+          "go",
+          "run",
+          "./tools/language-schema"
+        ],
+        "budgetSeconds": 300,
+        "startedUTC": "2026-11-27T15:43:40.866247+00:00",
+        "pid": 1231980,
+        "exit": 0,
+        "elapsedSeconds": 15.624
+      },
+      {
+        "name": "02-docs",
+        "argv": [
+          "go",
+          "run",
+          "./tools/language-docs"
+        ],
+        "budgetSeconds": 180,
+        "startedUTC": "2026-11-27T15:43:56.490530+00:00",
+        "pid": 1232775,
+        "exit": 0,
+        "elapsedSeconds": 0.372
+      },
+      {
+        "name": "03-baseline",
+        "argv": [
+          "go",
+          "test",
+          "-json",
+          "-count=1",
+          "-timeout=180s",
+          "-run",
+          "^TestP15PaginateSelectionDefaultSnapshot$",
+          "."
+        ],
+        "budgetSeconds": 300,
+        "startedUTC": "2026-11-27T15:43:56.862956+00:00",
+        "pid": 1232826,
+        "exit": 0,
+        "elapsedSeconds": 30.693
+      },
+      {
+        "name": "04-format",
+        "argv": [
+          "gofmt",
+          "-l",
+          "p15_paginate_selection_test.go"
+        ],
+        "budgetSeconds": 15,
+        "startedUTC": "2026-11-27T15:44:27.556032+00:00",
+        "pid": 1234236,
+        "exit": 0,
+        "elapsedSeconds": 0.033
+      },
+      {
+        "name": "05-diffcheck",
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "budgetSeconds": 15,
+        "startedUTC": "2026-11-27T15:44:27.588902+00:00",
+        "pid": 1234241,
+        "exit": 0,
+        "elapsedSeconds": 0.067
+      }
+    ],
+    "generatedActionCount": 505,
+    "referenceCommittedAt": "5bc62d057e4bfa8bdd895e7228ca59eedac20b40",
+    "reinterpretedAsCurrentMergedExecution": false
+  },
+  "dependencyFindings": {
+    "catalog": "actions_catalog.go buildActionCatalog reads action definition parameters, enum values, defaults, keys and static metadata. It does not call canonicalArchiveFormatValue or the action parameter serializer.",
+    "schema": "tools/language-schema consumes live --actions-json definition facts or an explicit catalog file; its unchanged inputs do not depend on the new literal encoder.",
+    "docs": "tools/language-docs renders schema.DefaultRegistry. Definitions, generated registry, generator code and generated reference remain byte-identical.",
+    "forkRegistry": "The reviewed production catalog/schema/docs generators do not read docs/fork-action-provenance.json; registry changes are covered by the separate existing provenance test.",
+    "publicContractChanged": false
+  },
+  "recommendedIntegrationGate": {
+    "name": "TestForkActionProvenanceRegistry",
+    "argv": [
+      "go",
+      "test",
+      "-p=2",
+      "-count=1",
+      "-timeout=5m",
+      "-run",
+      "^TestForkActionProvenanceRegistry$",
+      "-json",
+      "."
+    ],
+    "cwd": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/integration",
+    "executionOwner": "root",
+    "executedByReviewer": false,
+    "registryTestSource": {
+      "path": "fork_provenance_test.go",
+      "bytes": 5592,
+      "sha256": "9112dfa74f45aeaccbd2a092b4e61866f7b404933c1284cffed45dcdf1319720"
+    },
+    "checks": "Registry shape, unique names, status values, evidence, affected paths and full commit SHAs; full-history checkout also checks actual commit existence and ancestry.",
+    "schemaGeneratorReplayRequired": false,
+    "docsGeneratorReplayRequired": false,
+    "component58CaseReplayRequired": false
+  },
+  "subsequentRootReportedRegistryResult": {
+    "status": "PASS_REPORTED_AFTER_REVIEW",
+    "receiptSHA256": "9d4825acaf785733500e21e39b6d2d0cd14aa1385d3de3c331d246008376d74b",
+    "sourceOfFact": "Parent root message received after the completed generation-impact review; the reviewer did not execute or independently reopen this later test receipt.",
+    "recordedHereUTC": "2026-11-27T18:01:46.137501+00:00",
+    "changesOriginalReviewPendingState": false
+  },
+  "ownershipAndLimits": {
+    "CMFullGoAndFormal179Owner": "primary MAIN_SESSION",
+    "noGeneratorRun": true,
+    "noTestRun": true,
+    "noBuildRun": true,
+    "noNativeOrMacAccess": true,
+    "noSourceEdits": true,
+    "noWorktreeMutation": true,
+    "noPriorReceiptMutation": true,
+    "noRestamping": true,
+    "onlyArtifactCreated": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/integration-evidence/archive-format-generation-impact-01.json",
+    "currentMergedFullAcceptanceClaimed": false,
+    "nativeFileOrMacroAcceptanceClaimed": false
+  },
+  "outcome": "The exact merged source has no catalog/schema/docs input or generated-artifact drift relative to the committed canonical generation. Reuse the prior receipt at its historical source identity; do not replay schema/docs generation for this merge. Root owns the one new integrated provenance gate. CM, full Go, formal 179 and native obligations retain their existing owners and status."
+}

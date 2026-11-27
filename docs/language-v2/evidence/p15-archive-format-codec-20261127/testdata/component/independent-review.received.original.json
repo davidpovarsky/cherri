@@ -1,0 +1,12 @@
+{
+  "delivery": "collaboration.send_message",
+  "implementationCommit": "8df6923ce0852daa62475b82f141174d8ba7ee26",
+  "independentTestReplay": false,
+  "message": "Frozen archive-format implementation review PASS: 8df6923ce0852daa62475b82f141174d8ba7ee26 plus provenance 022aa2495efe9c3dcefe94d0ff5b5397bd0840be. Verified exact 7-file diff, clean HEAD, all handoff/patch hashes, all nine GREEN source pins against final commit, original RED 16 causal mismatches and GREEN 58 named PASS from complete JSONL. Source handling matches scoped contract: eight literal mappings only; omitted/reference/raw paths preserved; inverse known IDs; old dotted/unknown raw fallback; converted preview field uneditable while name remains editable. Provenance only adds new makeArchive entry and references direct implementation ancestor. On your generator question: repository-wide exact-name search finds fork-action-provenance.json readers only in tests/docs; language-schema consumes live --actions-json/definitions and language-docs consumes schema.DefaultRegistry, with no provenance registry dependency found. Existing no-schema/catalog-drift sentence is supported for this change; root's integrated registry/generation gates remain separately required. No reruns or edits.",
+  "originalHandoffUnchanged": true,
+  "provenanceCommit": "022aa2495efe9c3dcefe94d0ff5b5397bd0840be",
+  "recordedUTC": "2026-11-27T17:56:15.073354+00:00",
+  "reportedOutcome": "PASS",
+  "reviewer": "/root/cache_completion",
+  "schema": "cherri-archive-format-independent-review-message/1"
+}

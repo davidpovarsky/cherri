@@ -1,0 +1,484 @@
+{
+  "command": [
+    "/usr/local/bin/go",
+    "test",
+    "-p=2",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^TestP10R15ArchiveFormat",
+    "-json",
+    "."
+  ],
+  "cwd": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/archive-format",
+  "diskFreeAfter": 11592986624,
+  "diskFreeBefore": 11649646592,
+  "elapsedSeconds": 31.651,
+  "environmentOverrides": {
+    "CGO_ENABLED": "0",
+    "GOCACHE": "/mnt/development/tooling/caches/go-build/ubuntu",
+    "GOMAXPROCS": "2",
+    "GOMODCACHE": "/mnt/development/tooling/caches/go-mod/ubuntu",
+    "GOPATH": "/mnt/development/tooling/go-workspace/ubuntu",
+    "GOTMPDIR": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/archive-format-evidence/tmp",
+    "TMPDIR": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/archive-format-evidence/tmp"
+  },
+  "finishedUTC": "2026-11-27T17:49:28.050706+00:00",
+  "goExitCode": 0,
+  "logs": {
+    "stderr.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.original.jsonl": {
+      "bytes": 56889,
+      "sha256": "84cd209d0241bd4935087f8df28dc44775e16c48a6e063afcd9750cb9a47e874"
+    }
+  },
+  "nonJSONStdoutLines": [],
+  "phase": "green-02",
+  "pid": 1578386,
+  "schema": "cherri-archive-format-focused-run/1",
+  "sourceAfter": {
+    "files": {
+      "action.go": {
+        "bytes": 54785,
+        "sha256": "f6ace3e4e3a4c995ef89826fea3ec2c05b6628a97cbbb66974716e7cc9638d4f"
+      },
+      "actions/documents.cherri": {
+        "bytes": 6330,
+        "sha256": "b7d86a9a420fdb9d159a45d73164097c0c13c637fe0ffe5d0febacd3d1a5c70c"
+      },
+      "archive_format_codec.go": {
+        "bytes": 1681,
+        "sha256": "f27f5de0c8d20ff798f9ece79b36556d02af50e407a44437544f08fbf0e00306"
+      },
+      "archive_format_codec_test.go": {
+        "bytes": 11735,
+        "sha256": "ad7aa51ba5056ae8019eb275b12712491f0a3bd61327655090d33c16ea97f84f"
+      },
+      "decompile.go": {
+        "bytes": 101514,
+        "sha256": "7bb572c5a47dc90d2ff59662951b5e45e31a47700b50e4853ac01185ec6a0178"
+      },
+      "docs/apple-runtime/macos-27/toolkit-registry.json": {
+        "bytes": 5690409,
+        "sha256": "79274716b2ec5f6f92f1a698acc839db789ebc81ee6ec116648bad05b4f7197f"
+      },
+      "internal/language/analysis/enums.go": {
+        "bytes": 4757,
+        "sha256": "3385452c938c06cd0366a573bdbb630bdac3eadf8702fd27886ca8b3e71c4558"
+      },
+      "internal/language/schema/generated_registry.go": {
+        "bytes": 703659,
+        "sha256": "66f8d6bc09bb37c20cc78af16448a9a40acde74a02226f466339c27df31fde84"
+      },
+      "tests/archive_format.cherri": {
+        "bytes": 370,
+        "sha256": "feac3dd0e5ab6d2c697d31174b518fe3e8fed04946386eb821f9d6a6c59802c4"
+      }
+    },
+    "head": "992729d9fbd56bf811e7905916c07f8944e2d1f7",
+    "status": " M action.go\n M decompile.go\n?? archive_format_codec.go\n?? archive_format_codec_test.go\n?? tests/archive_format.cherri\n"
+  },
+  "sourceBefore": {
+    "files": {
+      "action.go": {
+        "bytes": 54785,
+        "sha256": "f6ace3e4e3a4c995ef89826fea3ec2c05b6628a97cbbb66974716e7cc9638d4f"
+      },
+      "actions/documents.cherri": {
+        "bytes": 6330,
+        "sha256": "b7d86a9a420fdb9d159a45d73164097c0c13c637fe0ffe5d0febacd3d1a5c70c"
+      },
+      "archive_format_codec.go": {
+        "bytes": 1681,
+        "sha256": "f27f5de0c8d20ff798f9ece79b36556d02af50e407a44437544f08fbf0e00306"
+      },
+      "archive_format_codec_test.go": {
+        "bytes": 11735,
+        "sha256": "ad7aa51ba5056ae8019eb275b12712491f0a3bd61327655090d33c16ea97f84f"
+      },
+      "decompile.go": {
+        "bytes": 101514,
+        "sha256": "7bb572c5a47dc90d2ff59662951b5e45e31a47700b50e4853ac01185ec6a0178"
+      },
+      "docs/apple-runtime/macos-27/toolkit-registry.json": {
+        "bytes": 5690409,
+        "sha256": "79274716b2ec5f6f92f1a698acc839db789ebc81ee6ec116648bad05b4f7197f"
+      },
+      "internal/language/analysis/enums.go": {
+        "bytes": 4757,
+        "sha256": "3385452c938c06cd0366a573bdbb630bdac3eadf8702fd27886ca8b3e71c4558"
+      },
+      "internal/language/schema/generated_registry.go": {
+        "bytes": 703659,
+        "sha256": "66f8d6bc09bb37c20cc78af16448a9a40acde74a02226f466339c27df31fde84"
+      },
+      "tests/archive_format.cherri": {
+        "bytes": 370,
+        "sha256": "feac3dd0e5ab6d2c697d31174b518fe3e8fed04946386eb821f9d6a6c59802c4"
+      }
+    },
+    "head": "992729d9fbd56bf811e7905916c07f8944e2d1f7",
+    "status": " M action.go\n M decompile.go\n?? archive_format_codec.go\n?? archive_format_codec_test.go\n?? tests/archive_format.cherri\n"
+  },
+  "sourceUnchangedDuringRun": true,
+  "startedUTC": "2026-11-27T17:48:56.399042+00:00",
+  "testResults": [
+    {
+      "Action": "pass",
+      "Elapsed": 0.03,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_false/.zip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_false/.tar.gz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_false/.tar.bz2"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_false/.tar.xz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_false/.tar"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_false/.gz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_false/.cpio"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_false/.iso"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_true/.zip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_true/.tar.gz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_true/.tar.bz2"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_true/.tar.xz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_true/.tar"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_true/.gz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_true/.cpio"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs/legacy_true/.iso"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.19,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatWireIDs"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.03,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatOmissionAndDefault/legacy_false"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatOmissionAndDefault/legacy_true"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.04,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatOmissionAndDefault"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatInvalidValues/legacy_false/zip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatInvalidValues/legacy_false/.cpgz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatInvalidValues/legacy_false/.not-an-archive"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatInvalidValues/legacy_true/zip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatInvalidValues/legacy_true/.cpgz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatInvalidValues/legacy_true/.not-an-archive"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.04,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatInvalidValues"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw/reference/legacy_false/mutable_false"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw/reference/legacy_false/mutable_true"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw/raw/legacy_false/.zip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw/raw/legacy_false/zip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw/raw/legacy_false/future.archive"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw/reference/legacy_true/mutable_false"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw/reference/legacy_true/mutable_true"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw/raw/legacy_true/.zip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw/raw/legacy_true/zip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw/raw/legacy_true/future.archive"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.06,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatReferencesAndRaw"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/zip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/tar.gz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/tar.bz2"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/tar.xz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/tar"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/gz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/cpio"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/iso"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/.zip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/.tar.gz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/.tar.bz2"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/.tar.xz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/.tar"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/.gz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/.cpio"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/.iso"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/cpgz"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.01,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip/future.archive"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.26,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatNativeRoundTrip"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.02,
+      "Package": "github.com/electrikmilk/cherri",
+      "Test": "TestP10R15ArchiveFormatPreviewOrigin"
+    },
+    {
+      "Action": "pass",
+      "Elapsed": 0.635,
+      "Package": "github.com/electrikmilk/cherri"
+    }
+  ],
+  "timedOut": false
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "cherri-integrated-registry-run/1",
+  "sourceBefore": {
+    "head": "831541058d1a215ecb8cf8fe7315a29e62fb91b9",
+    "tree": "5c29cd9b67466d8c6224a928b8d4adadf2a88c08",
+    "status": "",
+    "shallow": "false",
+    "registrySHA256": "012ff3175e45c7d35b46360033e13593d9017301553a3a5eedf6167fafaf20c6",
+    "testSHA256": "9112dfa74f45aeaccbd2a092b4e61866f7b404933c1284cffed45dcdf1319720"
+  },
+  "command": [
+    "runuser",
+    "-u",
+    "ubuntu",
+    "--",
+    "/usr/local/bin/go",
+    "test",
+    "-p=2",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^TestForkActionProvenanceRegistry$",
+    "-json",
+    "."
+  ],
+  "environmentOverrides": {
+    "GOCACHE": "/mnt/development/tooling/caches/go-build/ubuntu",
+    "GOMODCACHE": "/mnt/development/tooling/caches/go-mod/ubuntu",
+    "GOPATH": "/mnt/development/tooling/go-workspace/ubuntu",
+    "GOMAXPROCS": "2",
+    "CGO_ENABLED": "0",
+    "GOTMPDIR": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/integration-evidence/archive-format-registry-01/tmp",
+    "TMPDIR": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/integration-evidence/archive-format-registry-01/tmp"
+  },
+  "goVersion": "go version go1.27.4 linux/arm64",
+  "startedUTC": "2026-11-27T17:59:38.028855+00:00",
+  "pid": 1607148,
+  "pgid": 1607148,
+  "outerOwnerBudgetSeconds": 360,
+  "innerGoBudgetSeconds": 300
+}

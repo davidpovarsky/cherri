@@ -1,0 +1,48 @@
+diff --git a/action.go b/action.go
+index c688560e..4f1bcb09 100644
+--- a/action.go
++++ b/action.go
+@@ -453,6 +453,11 @@ func makeActionParamsWithOrigins(arguments []actionArgument, params map[string]a
+ 		if (currentAction.identifier == "editEvent" || currentAction.identifier == "editReminder") && param.name == "newValue" {
+ 			continue
+ 		}
++		// A translated enum is not a direct source-to-wire preview edit origin.
++		if value, handled := canonicalArchiveFormatValue(getFullActionIdentifier(), param, arguments[i]); handled {
++			params[param.key] = value
++			continue
++		}
+ 		if observe != nil {
+ 			observe(i, param.key)
+ 		}
+diff --git a/decompile.go b/decompile.go
+index 16f4c5a9..624d9d00 100644
+--- a/decompile.go
++++ b/decompile.go
+@@ -2580,6 +2580,13 @@ func isActionRepresentable(action *ShortcutAction, def *actionDefinition) bool {
+ 			// Enum parameter must match one of the enum values
+ 			if param.enum != "" {
+ 				if strVal, isStr := val.(string); isStr {
++					if isMakeArchiveFormatParameter(action.WFWorkflowActionIdentifier, param) {
++						var representable bool
++						strVal, representable = archiveFormatSourceValue(strVal)
++						if !representable {
++							return false
++						}
++					}
+ 					enumVals := getEnum(param.enum)
+ 					if len(enumVals) > 0 && !slices.Contains(enumVals, strVal) {
+ 						return false
+@@ -2788,6 +2795,13 @@ func decompActionArguments(actionCallCode *strings.Builder, matchedAction *actio
+ 		}
+ 		if argValue == "" {
+ 			if value, found := action.WFWorkflowActionParameters[param.key]; found {
++				if isMakeArchiveFormatParameter(action.WFWorkflowActionIdentifier, param) {
++					if wire, literal := value.(string); literal {
++						if source, known := archiveFormatSourceValue(wire); known {
++							value = source
++						}
++					}
++				}
+ 				if (param.validType == String || param.validType == RawString || param.validType == Variable) && !isReferenceValue(value) {
+ 					if strVal, isStr := value.(string); isStr && isLiteralRawStringCandidate(strVal) {
+ 						argValue = fmt.Sprintf("'%s'", strVal)

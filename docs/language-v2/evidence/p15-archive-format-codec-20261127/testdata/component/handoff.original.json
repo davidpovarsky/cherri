@@ -1,0 +1,120 @@
+{
+  "baseCommit": "992729d9fbd56bf811e7905916c07f8944e2d1f7",
+  "branch": "agent/cherri-p10r15-archive-format-20261127",
+  "claimsExcluded": [
+    "Apple runtime success",
+    "runtime error explanation or repair",
+    "File output acceptance",
+    "full macro acceptance",
+    "signed import",
+    "physical iPad",
+    "formal 179-case gate"
+  ],
+  "cleanWorktree": true,
+  "committedFiles": {
+    "action.go": {
+      "bytes": 54785,
+      "sha256": "f6ace3e4e3a4c995ef89826fea3ec2c05b6628a97cbbb66974716e7cc9638d4f"
+    },
+    "archive_format_codec.go": {
+      "bytes": 1681,
+      "sha256": "f27f5de0c8d20ff798f9ece79b36556d02af50e407a44437544f08fbf0e00306"
+    },
+    "archive_format_codec_test.go": {
+      "bytes": 11735,
+      "sha256": "ad7aa51ba5056ae8019eb275b12712491f0a3bd61327655090d33c16ea97f84f"
+    },
+    "decompile.go": {
+      "bytes": 101514,
+      "sha256": "7bb572c5a47dc90d2ff59662951b5e45e31a47700b50e4853ac01185ec6a0178"
+    },
+    "docs/archive-format-codec.md": {
+      "bytes": 4266,
+      "sha256": "9e504c3ea9519bdf827dc3c31fffcd424397f40b75985b89a7a7afc0fa6fc821"
+    },
+    "docs/fork-action-provenance.json": {
+      "bytes": 250626,
+      "sha256": "012ff3175e45c7d35b46360033e13593d9017301553a3a5eedf6167fafaf20c6"
+    },
+    "tests/archive_format.cherri": {
+      "bytes": 370,
+      "sha256": "feac3dd0e5ab6d2c697d31174b518fe3e8fed04946386eb821f9d6a6c59802c4"
+    }
+  },
+  "frozenUTC": "2026-11-27T17:52:56.381363+00:00",
+  "green": {
+    "familiesPassed": 6,
+    "goExitCode": 0,
+    "namedPassed": 58,
+    "sourceUnchangedDuringRun": true,
+    "subtestsPassed": 52,
+    "timedOut": false
+  },
+  "implementationCommit": "8df6923ce0852daa62475b82f141174d8ba7ee26",
+  "interruption": {
+    "jsonTestEvents": 0,
+    "observedPIDAbsentLater": true,
+    "originalPID": 1569284,
+    "outerTimeoutSeconds": 20,
+    "parentReapedReceipt": null,
+    "pgidSeparatelyCaptured": false,
+    "phase": "green-01",
+    "testResult": null
+  },
+  "provenanceCommit": "022aa2495efe9c3dcefe94d0ff5b5397bd0840be",
+  "pushed": false,
+  "receipts": {
+    "final-source.original.patch": {
+      "bytes": 23602,
+      "sha256": "4f21a1b339783f411cbe40da854b3d8709128ab1896dd8061377d9f8266d6a58"
+    },
+    "green-01/interruption.original.json": {
+      "bytes": 442,
+      "sha256": "c6aaf529f3b6c619defb4c82829fc078095776de32fd66b444ebde3f7135e449"
+    },
+    "green-01/process-observation.original.json": {
+      "bytes": 10160,
+      "sha256": "81ba283cf4b6a65e6b0739cea390c0b3c5bfd0681cf41bc3f650d52e11537f5d"
+    },
+    "green-01/transport-result.original.json": {
+      "bytes": 667,
+      "sha256": "190159029fb5b6212c9d61c76cab290da5545f19736e2d52abf5f71a0be30ad1"
+    },
+    "green-02/receipt.original.json": {
+      "bytes": 15245,
+      "sha256": "fd12c51e6a52602a60a17d7f202242f4fe139ce110ef94b576261f44706783fc"
+    },
+    "implementation.original.patch": {
+      "bytes": 21307,
+      "sha256": "da8162b179c82efd60ee96e3f4ecab206670f7253e143dba6cc783f61feeefcc"
+    },
+    "provenance-static-check.original.json": {
+      "bytes": 482,
+      "sha256": "b3a17936112a26488d411255d77cf171722f6152c87e9d564463b06c0e762612"
+    },
+    "red-01/receipt.original.json": {
+      "bytes": 7114,
+      "sha256": "fb9aff70db0c62393d0da4af7539d160ba0b779b85156b6cf9bae16fa6d8e610"
+    }
+  },
+  "red": {
+    "expectedWireMismatchSubtests": 16,
+    "goExitCode": 1
+  },
+  "remainingOwnedGates": {
+    "independentSourceReview": "cache_completion",
+    "integratedTestForkActionProvenanceRegistry": "root"
+  },
+  "schema": "cherri-archive-format-handoff/1",
+  "staticChecks": {
+    "diffCheck": true,
+    "documentationLinksResolve": true,
+    "existingProvenanceEntriesUnchanged": true,
+    "newProvenanceCommitExistsAndIsAncestor": true
+  },
+  "status": "COMPONENT_SOURCE_PASS_PENDING_INDEPENDENT_REVIEW",
+  "testRunSourceBinding": "Working tree at the base commit with exact implementation and test bytes; all nine run-pinned source/fixture/metadata files match the final commit. Only explanatory documentation and provenance metadata were added after the completed GREEN run.",
+  "testedSourcePinsMatchFinalCommit": true,
+  "tree": "a1e366f953090d6f5a175551b54facdd31c8a9ac",
+  "worktree": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/archive-format"
+}

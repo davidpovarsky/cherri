@@ -1,0 +1,61 @@
+{
+  "command": [
+    "/usr/local/bin/go",
+    "test",
+    "-p=2",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^TestP10R15ArchiveFormatWireIDs$",
+    "-json",
+    "."
+  ],
+  "cwd": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/archive-format",
+  "diskFreeBefore": 11799486464,
+  "environmentOverrides": {
+    "CGO_ENABLED": "0",
+    "GOCACHE": "/mnt/development/tooling/caches/go-build/ubuntu",
+    "GOMAXPROCS": "2",
+    "GOMODCACHE": "/mnt/development/tooling/caches/go-mod/ubuntu",
+    "GOPATH": "/mnt/development/tooling/go-workspace/ubuntu",
+    "GOTMPDIR": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/archive-format-evidence/tmp",
+    "TMPDIR": "/mnt/development/projects/agent-workspaces/cherri-macro-completion-20261127/archive-format-evidence/tmp"
+  },
+  "phase": "red-01",
+  "schema": "cherri-archive-format-focused-run/1",
+  "sourceBefore": {
+    "files": {
+      "action.go": {
+        "bytes": 54555,
+        "sha256": "467270f54d8bf33e681689268ef023fbe80909cfcefc67a601e2ab6dc42200ad"
+      },
+      "actions/documents.cherri": {
+        "bytes": 6330,
+        "sha256": "b7d86a9a420fdb9d159a45d73164097c0c13c637fe0ffe5d0febacd3d1a5c70c"
+      },
+      "archive_format_codec_test.go": {
+        "bytes": 11735,
+        "sha256": "ad7aa51ba5056ae8019eb275b12712491f0a3bd61327655090d33c16ea97f84f"
+      },
+      "decompile.go": {
+        "bytes": 101040,
+        "sha256": "19d41c9feddae9bc95ed5dec75b3fac00690f6d2d895f7a406a096ea221c58c3"
+      },
+      "docs/apple-runtime/macos-27/toolkit-registry.json": {
+        "bytes": 5690409,
+        "sha256": "79274716b2ec5f6f92f1a698acc839db789ebc81ee6ec116648bad05b4f7197f"
+      },
+      "internal/language/analysis/enums.go": {
+        "bytes": 4757,
+        "sha256": "3385452c938c06cd0366a573bdbb630bdac3eadf8702fd27886ca8b3e71c4558"
+      },
+      "internal/language/schema/generated_registry.go": {
+        "bytes": 703659,
+        "sha256": "66f8d6bc09bb37c20cc78af16448a9a40acde74a02226f466339c27df31fde84"
+      }
+    },
+    "head": "992729d9fbd56bf811e7905916c07f8944e2d1f7",
+    "status": "?? archive_format_codec_test.go\n"
+  },
+  "startedUTC": "2026-11-27T17:38:25.800271+00:00"
+}
