@@ -80,9 +80,18 @@ class RP39DiagnosticTransportTests(unittest.TestCase):
             profile.record(self.repo, "before", context, rp39=True)
             profile.record(self.repo, "after", context, rp39=True)
 
+    def selected_developer_directory(self, synthetic):
+        if sys.platform != "darwin":
+            return synthetic
+        result = subprocess.run(["/usr/bin/xcode-select", "--print-path"],
+                                capture_output=True, timeout=10, check=True)
+        selected = result.stdout.decode("utf-8").strip()
+        self.assertTrue(Path(selected).is_absolute() and Path(selected).is_dir())
+        return selected
+
     def test_selected_developer_directory_reaches_original_git(self):
         actual_run = subprocess.run
-        expected = str(self.path / "SyntheticXcode/Contents/Developer")
+        expected = self.selected_developer_directory(str(self.path / "SyntheticXcode/Contents/Developer"))
         def checked(*args, **kwargs):
             self.assertEqual(kwargs["env"].get("DEVELOPER_DIR"), expected)
             self.assertNotIn("PRIVATE_ENVIRONMENT_CANARY", kwargs["env"])
@@ -94,14 +103,15 @@ class RP39DiagnosticTransportTests(unittest.TestCase):
 
     def test_owned_git_retains_actual_child_streams_and_cleanup(self):
         output = self.path / "owned"
+        expected = self.selected_developer_directory("/synthetic/SelectedXcode")
         with base.envelope(15):
             base._owned_git = base.OwnedGitReads(self.repo, output)
-            with mock.patch.dict(os.environ, {"DEVELOPER_DIR": "/synthetic/SelectedXcode"}):
+            with mock.patch.dict(os.environ, {"DEVELOPER_DIR": expected}):
                 raw = base.local_git(self.repo, ["rev-parse", "--verify", "HEAD"], time.monotonic() + 15)
         self.originals(output)
         self.assertEqual(raw, (self.source + "\n").encode())
         row = base._owned_git.records[0]
-        self.assertIn("DEVELOPER_DIR=/synthetic/SelectedXcode", row["argv"])
+        self.assertIn("DEVELOPER_DIR=" + expected, row["argv"])
         self.assertEqual(row["observed"]["result"], "PASS")
         self.assertTrue(row["capture"]["cleanupParentReaped"])
         self.assertEqual(row["capture"]["groupAfterCleanup"]["state"], "ABSENT")
