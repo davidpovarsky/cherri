@@ -1,13 +1,14 @@
 <#
 .SYNOPSIS
-    Diagnoses and safely repairs named AI team configuration files.
+    Checks that required named AI team files are present.
 .DESCRIPTION
-    Idempotent, non-destructive script that verifies the presence and integrity
-    of team configuration files across branches.
+    Read-only file-presence precheck for the current worktree. This does not
+    validate file contents, configuration integrity, or runtime activation.
+    Complete the separate checks in docs/ai-team/VALIDATION.md.
 .PARAMETER Check
-    Performs verification only (default).
+    Performs the file-presence precheck (default).
 .PARAMETER Apply
-    Restores missing files from the canonical templates.
+    Unsupported. Exits with an error without modifying any files.
 #>
 [CmdletBinding()]
 param(
@@ -16,6 +17,12 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
+if ($Apply) {
+    Write-Host "FAIL: -Apply is unsupported; no files were changed." -ForegroundColor Red
+    exit 2
+}
+
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 
 Write-Host "Checking AI Team configuration in: $RepoRoot" -ForegroundColor Cyan
@@ -44,16 +51,16 @@ foreach ($r in $Roles) {
 $Missing = @()
 foreach ($f in $RequiredFiles) {
     $fullPath = Join-Path $RepoRoot $f
-    if (-not (Test-Path $fullPath)) {
+    if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) {
         $Missing += $f
     }
 }
 
 if ($Missing.Count -eq 0) {
-    Write-Host "PASS: All $($RequiredFiles.Count) team files exist." -ForegroundColor Green
+    Write-Host "PASS: All $($RequiredFiles.Count) required team files are present (presence precheck only)." -ForegroundColor Green
     exit 0
 } else {
-    Write-Host "FAIL: Missing $($Missing.Count) files:" -ForegroundColor Red
+    Write-Host "FAIL: $($Missing.Count) required paths are missing or are not files:" -ForegroundColor Red
     foreach ($m in $Missing) {
         Write-Host "  - $m" -ForegroundColor Red
     }
