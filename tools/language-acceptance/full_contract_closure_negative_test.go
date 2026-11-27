@@ -209,6 +209,12 @@ func TestFull179ContractRequirements_RejectsUnexecutedScenarioClosure(t *testing
 						expectedAuthorizationErrors = append(expectedAuthorizationErrors,
 							"RP24 record is detached from its complete return/recursion scenario; actual Apple producer is still required")
 					}
+					if test.attacked == "BRG15" {
+						// Each borrowed FN01 record also fails the distinct BRG15
+						// producer's exact command/event/scope binding boundary.
+						expectedAuthorizationErrors = append(expectedAuthorizationErrors,
+							"BRG15 record is detached from its distinct joined source and complete local production; native runtime remains required")
+					}
 				}
 			}
 			raw, err := json.MarshalIndent(records, "", "  ")
