@@ -576,9 +576,12 @@ final class CherriJoinedContractUITests: XCTestCase {
         rename.tap()
         let alert = app.alerts["Rename Symbol"]
         try require(alert.waitForExistence(timeout: 5), "RP39 requires the native Rename dialog")
-        let field = alert.textFields["renameTextField"]
-        try require(field.waitForExistence(timeout: 2) && field.isHittable,
-                    "RP39 requires the actual rename input")
+        let fields = alert.textFields.matching(NSPredicate(
+            format: "identifier == %@ OR placeholderValue == %@", "renameTextField", "New Name"))
+        try require(wait(2) {
+            fields.count == 1 && fields.element(boundBy: 0).isHittable
+        }, "RP39 requires the actual rename input")
+        let field = fields.element(boundBy: 0)
         field.tap()
         field.typeText(name)
         let confirmations = alert.buttons.matching(NSPredicate(format: "label == %@", "Rename"))
