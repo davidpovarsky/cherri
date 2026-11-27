@@ -1,0 +1,305 @@
+{
+  "activation": {
+    "allowedAttempt": 1,
+    "case": "nested_false",
+    "event": "create",
+    "ref": "probe/cherri-p10r15-fn04-native-direct-20261127",
+    "workflowDispatchUsed": false
+  },
+  "formalAcceptanceGranted": false,
+  "goExecuted": false,
+  "nativeExecuted": false,
+  "proof": {
+    "bytes": 1162222,
+    "members": 12,
+    "originalQualificationZIP": {
+      "bytes": 1108042,
+      "members": 207,
+      "sha256": "8f79b751af322646ac864e04681d142ab9f97185e2505615ade2f9c689e147f1"
+    },
+    "path": "docs/language-v2/fn04-hosted-native-qualification-originals-20261127.zip",
+    "sha256": "f6646c8d911a3517be79634275c15839c78a15dae9d71308ad19ba84e668ce3e"
+  },
+  "proposal": {
+    "activationBranch": "probe/cherri-p10r15-fn04-native-direct-20261127",
+    "base": "04696126a1de41ec802c2ed61429e4d32aea132f",
+    "files": {
+      ".github/workflows/p10r15-fn04-native.yml": {
+        "after": {
+          "bytes": 1844,
+          "sha256": "c63ea87af70ad9a46cfe1352f3a1716c38accdc8ca56bc6926a49e04847308ed"
+        },
+        "before": null
+      },
+      "ios/scripts/seal_rp39_diagnostic.py": {
+        "after": {
+          "bytes": 16616,
+          "sha256": "76f28b1d0c5b46997f5a52d7e9639a2a05a468b1201e1453e1b2e206f8db7d35"
+        },
+        "before": null
+      },
+      "tests/language-v2/fn04-caller-packet-originals.zip": {
+        "after": {
+          "bytes": 419199,
+          "sha256": "012e4a67114965b4bab9335e8117580c59279ed6ff85b0e9005e12d479bf1430"
+        },
+        "before": null
+      },
+      "tools/shortcuts-simulator-qa/native_caller_execution_context.py": {
+        "after": {
+          "bytes": 6243,
+          "sha256": "8e39ff65c65bbe811fb71cb343f263b3e7d557ceddd049c911845f5a8d765656"
+        },
+        "before": null
+      },
+      "tools/shortcuts-simulator-qa/native_caller_hosted_build.py": {
+        "after": {
+          "bytes": 16582,
+          "sha256": "057107509db856c6974f77d899cf9ee9ee4f93dbe4ea9fd1d3abddec4e420940"
+        },
+        "before": null
+      },
+      "tools/shortcuts-simulator-qa/native_caller_hosted_run.py": {
+        "after": {
+          "bytes": 31802,
+          "sha256": "50128e8a901fdad96d42922589548ab4ef7a1ebb5d505a702baed5f5a921ac43"
+        },
+        "before": null
+      },
+      "tools/shortcuts-simulator-qa/native_caller_input_owner.py": {
+        "after": {
+          "bytes": 35437,
+          "sha256": "043aba13d9b442abdf442b278b89904ef00791cf85e007a5daf251f1e7e66c87"
+        },
+        "before": {
+          "bytes": 34224,
+          "sha256": "0270d801d5342d71fdfa2be718770c87142d8cb633c3425da5756cd19dec2465"
+        }
+      },
+      "tools/shortcuts-simulator-qa/native_signed_caller_input_owner.py": {
+        "after": {
+          "bytes": 20977,
+          "sha256": "0cfb1675ef6f264df4dda02d2ded8ef26c4a96cb8f3b819067d69981b26dccad"
+        },
+        "before": {
+          "bytes": 20343,
+          "sha256": "fe786c0cce2b498c33ab2f5db3d10ebed5babaed69a13448bfaa413079de8072"
+        }
+      },
+      "tools/shortcuts-simulator-qa/test_native_caller_execution_context.py": {
+        "after": {
+          "bytes": 11667,
+          "sha256": "3889df9a44bc413180d6e023fd8d6271b76e6d35bc6fb8bcebe047238f40bc2e"
+        },
+        "before": null
+      },
+      "tools/shortcuts-simulator-qa/test_native_caller_hosted_run.py": {
+        "after": {
+          "bytes": 17244,
+          "sha256": "663af5c8366bd6941232e86c37964f42a987f1bed3db78d8bf0d7552c352924a"
+        },
+        "before": null
+      }
+    },
+    "formalAcceptanceGranted": false,
+    "fullPatch": {
+      "bytes": 113869,
+      "sha256": "c43b33dc625f8772f4bbc1746cde91faedac9ec6349916beab803ce3c9e84e44"
+    },
+    "nativeExecuted": false,
+    "priorProposalSHA256": "e0ea6eb83bbfa027f8e4348a5ba766d31b549720e7fbb11ccb2e7c432f9f5e1d",
+    "qualificationIntakeSHA256": "1c8de3fd95eadc488c4656e51c4b1b7d4da869c884f3e421e7d45b03d8478e96",
+    "schema": "cherri-fn04-hosted-native-proposal/1",
+    "sourceBranch": "agent/cherri-p10r15-fn04-hosted-native-20261127",
+    "status": "QUALIFIED_CODE_WITH_FINITE_WORKFLOW_ENVELOPE",
+    "workflowEnvelope": {
+      "buildOwnerSeconds": 780,
+      "checkoutSeconds": 120,
+      "controllerSeconds": 2580,
+      "jobOverheadSeconds": 120,
+      "jobSeconds": 3600,
+      "nativeExecutionSeconds": 900,
+      "nativeOwnerSeconds": 1200,
+      "ownerStepSeconds": 2640,
+      "pythonSetupSeconds": 120,
+      "stepTotalSeconds": 3480,
+      "uploadSeconds": 300,
+      "xcodeBuildSeconds": 600,
+      "xcodegenSetupSeconds": 300
+    },
+    "workflowEnvelopeDelta": {
+      "bytes": 1223,
+      "sha256": "ca1d237b8092f4296cb3352d0d42fd6e454a693a22ac902ce583581043a6b0a8"
+    }
+  },
+  "publishedSourceFiles": {
+    ".github/workflows/p10r15-fn04-native.yml": {
+      "bytes": 1844,
+      "sha256": "c63ea87af70ad9a46cfe1352f3a1716c38accdc8ca56bc6926a49e04847308ed"
+    },
+    "ios/scripts/seal_rp39_diagnostic.py": {
+      "bytes": 16616,
+      "sha256": "76f28b1d0c5b46997f5a52d7e9639a2a05a468b1201e1453e1b2e206f8db7d35"
+    },
+    "tests/language-v2/fn04-caller-packet-originals.zip": {
+      "bytes": 419199,
+      "sha256": "012e4a67114965b4bab9335e8117580c59279ed6ff85b0e9005e12d479bf1430"
+    },
+    "tools/shortcuts-simulator-qa/native_caller_execution_context.py": {
+      "bytes": 6243,
+      "sha256": "8e39ff65c65bbe811fb71cb343f263b3e7d557ceddd049c911845f5a8d765656"
+    },
+    "tools/shortcuts-simulator-qa/native_caller_hosted_build.py": {
+      "bytes": 16578,
+      "sha256": "fd8faecafab9538873d2efa8b849c0f551174dbb922457552d7a50df0febd93d"
+    },
+    "tools/shortcuts-simulator-qa/native_caller_hosted_run.py": {
+      "bytes": 31802,
+      "sha256": "50128e8a901fdad96d42922589548ab4ef7a1ebb5d505a702baed5f5a921ac43"
+    },
+    "tools/shortcuts-simulator-qa/native_caller_input_owner.py": {
+      "bytes": 35437,
+      "sha256": "043aba13d9b442abdf442b278b89904ef00791cf85e007a5daf251f1e7e66c87"
+    },
+    "tools/shortcuts-simulator-qa/native_signed_caller_input_owner.py": {
+      "bytes": 20977,
+      "sha256": "0cfb1675ef6f264df4dda02d2ded8ef26c4a96cb8f3b819067d69981b26dccad"
+    },
+    "tools/shortcuts-simulator-qa/test_native_caller_execution_context.py": {
+      "bytes": 11667,
+      "sha256": "3889df9a44bc413180d6e023fd8d6271b76e6d35bc6fb8bcebe047238f40bc2e"
+    },
+    "tools/shortcuts-simulator-qa/test_native_caller_hosted_run.py": {
+      "bytes": 17244,
+      "sha256": "663af5c8366bd6941232e86c37964f42a987f1bed3db78d8bf0d7552c352924a"
+    }
+  },
+  "qualification": {
+    "actualFirstSignalControl": {
+      "controllerFirstInterruption": "INNER_native-owner:NATIVE_OWNER_SIGNAL_15",
+      "groupAfterCleanup": {
+        "errno": null,
+        "present": false,
+        "state": "ABSENT"
+      },
+      "injection": [
+        {
+          "pid": 3594516,
+          "signal": 15,
+          "stage": "original-finish-group-observation"
+        }
+      ],
+      "nativeExecuted": false,
+      "pid": 3594516,
+      "returnCode": -9,
+      "testRescue": null
+    },
+    "attempts": [
+      {
+        "directory": "/var/cache/cherri-native-contract-producers-20261126/caller-hosted-context-qualification-01",
+        "errors": 0,
+        "failed": 0,
+        "groupState": "ABSENT",
+        "parentReaped": true,
+        "passed": 29,
+        "receiptSHA256": "3b3bc2700a3491f105f2812cc36b3bff9af13a3956665792cf76ef159a6f87b8",
+        "skipped": 0,
+        "sourceUnchanged": true,
+        "status": "PASS_ORIGINAL21_AND_HOSTED8_CONTEXT_CONTROLS",
+        "subtests": 112,
+        "testsRun": 29
+      },
+      {
+        "directory": "/var/cache/cherri-native-contract-producers-20261126/caller-hosted-controller-qualification-01",
+        "errors": 0,
+        "failed": 0,
+        "groupState": "ABSENT",
+        "parentReaped": true,
+        "passed": 6,
+        "receiptSHA256": "b404da20d7caa7d002f1793f9ba5929a6b1e38ae92f344844f5a92f2067b5409",
+        "skipped": 0,
+        "sourceUnchanged": true,
+        "status": "PASS_SIX_HOSTED_CONTROLLER_CONTROLS",
+        "subtests": 32,
+        "testsRun": 6
+      },
+      {
+        "directory": "/var/cache/cherri-native-contract-producers-20261126/caller-hosted-create-qualification-01",
+        "errors": 0,
+        "failed": 1,
+        "groupState": "ABSENT",
+        "parentReaped": true,
+        "passed": 9,
+        "receiptSHA256": "819d720787b4d70adb351473114c3161cb819caf301ceffb4630ff503abc7d37",
+        "skipped": 0,
+        "sourceUnchanged": true,
+        "status": "FAIL",
+        "subtests": 55,
+        "testsRun": 10
+      },
+      {
+        "directory": "/var/cache/cherri-native-contract-producers-20261126/caller-hosted-create-qualification-02",
+        "errors": 0,
+        "failed": 0,
+        "groupState": "ABSENT",
+        "parentReaped": true,
+        "passed": 2,
+        "receiptSHA256": "dacfe695adc0151f3a66066d721b405207b613290b7736cff8d81653132bc879",
+        "skipped": 0,
+        "sourceUnchanged": true,
+        "status": "PASS_TWO_SCOPED_OWNER_CONTEXT_CONTROLS",
+        "subtests": 18,
+        "testsRun": 2
+      },
+      {
+        "directory": "/var/cache/cherri-native-contract-producers-20261126/caller-hosted-lifecycle-qualification-01",
+        "errors": 0,
+        "failed": 0,
+        "groupState": "ABSENT",
+        "parentReaped": true,
+        "passed": 3,
+        "receiptSHA256": "d613cd1f4a58a8ab65aa46ba1b58d308158a98b3e633067ae2bc5d829cd2556d",
+        "skipped": 0,
+        "sourceUnchanged": true,
+        "status": "PASS_THREE_IN_PROCESS_LIFECYCLE_CONTROLS",
+        "subtests": 0,
+        "testsRun": 3
+      }
+    ],
+    "intakeSHA256": "1c8de3fd95eadc488c4656e51c4b1b7d4da869c884f3e421e7d45b03d8478e96",
+    "originalIntakeChecks": 400,
+    "priorFailedTenControlAttemptPreserved": true,
+    "singleWholeSuitePassClaimed": false
+  },
+  "reviews": {
+    "buildLifecycleWorkflowSHA256": "d226bf19d79787341587b48a46328190920c1288bcf0751c20d40bbd31bfbda9",
+    "contextDefaultsSHA256": "3cf00e4a71a83f357f1161ff5befa62a9f4093e9fe5cb3b984d009eadf16914a"
+  },
+  "schema": "cherri-fn04-hosted-native-qualified-source/1",
+  "scope": "Actual FN04 direct caller-input native transport using exact original signed bytes; remaining cases and formal runtime acceptance require their actual original observations.",
+  "signingRepeated": false,
+  "sourceBase": "04696126a1de41ec802c2ed61429e4d32aea132f",
+  "sourceBranch": "agent/cherri-p10r15-fn04-hosted-native-20261127",
+  "sourceNormalization": {
+    "after": {
+      "bytes": 16578,
+      "sha256": "fd8faecafab9538873d2efa8b849c0f551174dbb922457552d7a50df0febd93d"
+    },
+    "allOtherQualifiedSourceFilesUnchanged": true,
+    "before": {
+      "bytes": 16582,
+      "sha256": "057107509db856c6974f77d899cf9ee9ee4f93dbe4ea9fd1d3abddec4e420940"
+    },
+    "deltaSHA256": "7f83430f6fe9fccc793a9af9b44cfa92db8936cc11e0fe7ffafc31c9a45bf053",
+    "line": 197,
+    "nativeExecuted": false,
+    "path": "tools/shortcuts-simulator-qa/native_caller_hosted_build.py",
+    "priorDiffCheckStdoutSHA256": "c7c8bb9b9692532c727a3f2cc47867427873d2ee81a2c48f2631b9305083a4d0",
+    "priorPublisherFailureSHA256": "56db34735022901ea345874a5fec8a4a185637f7b666d9916699e51cffa33100",
+    "schema": "cherri-fn04-hosted-build-whitespace-correction/1",
+    "status": "EXACT_FOUR_BLANK_LINE_SPACES_REMOVED_AST_IDENTICAL",
+    "testsRerun": 0,
+    "wholeFileASTSHA256": "9c7dfbc2db3f7519e63b7f0705498d91f6cbe5a50c807937491790c8f6b5229e"
+  },
+  "status": "SOURCE_QUALIFIED_NATIVE_EXECUTION_PENDING"
+}

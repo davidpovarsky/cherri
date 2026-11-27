@@ -21,6 +21,7 @@ import time
 
 import function_envelope_observer as native
 import native_caller_input_observation as caller
+import native_caller_execution_context as execution
 import native_contract_fixtures as fixtures
 import owned_simulator_selection as selection
 import project_prerequisite_observation as capture
@@ -45,7 +46,8 @@ BUNDLE_INPUTS = frozenset(("canonical-go.stdout.original", "packet-go.stdout.ori
     "packet-context.original.json", "producer-result.original.json",
     "canonical-intake.original.json"))
 CRITICAL = (
-    "native_caller_input_owner.py", "native_caller_input_observation.py",
+    "native_caller_input_owner.py", "native_caller_execution_context.py",
+    "native_caller_input_observation.py",
     "native_contract_fixtures.py", "function_envelope_observer.py",
     "function_envelope_launch.py", "function_envelope_runtime.py",
     "owned_simulator_selection.py", "project_prerequisite_observation.py",
@@ -90,7 +92,7 @@ def pinned(path, pin, limit=16 * 1024 * 1024):
     return raw
 
 
-def validate_plan(plan):
+def validate_plan(plan, execution_context=None):
     require(type(plan) is dict and set(plan) == PLAN_KEYS and plan["schema"] == PLAN_SCHEMA,
             "CLOSED_NATIVE_PLAN")
     for key in ("controllerCommitSha", "compilerCommitSha", "builtHarnessCommitSha"):
@@ -107,13 +109,16 @@ def validate_plan(plan):
     roots = {}
     for key in ("repo", "root", "buildRoot", "bundleRoot"):
         value = plan[key]
-        require(type(value) is str and value.startswith("/Users/m1/") and
+        require(type(value) is str and
+                (value.startswith("/Users/m1/") if execution_context is None else Path(value).is_absolute()) and
                 len(value.encode()) <= 4096 and "\n" not in value and
                 ".." not in Path(value).parts, "OWNED_LOCAL_PATH")
         roots[key] = Path(value)
     require(len(set(roots.values())) == 4 and all(
         left not in right.parents for a, left in roots.items()
         for b, right in roots.items() if a != b), "SEPARATE_NATIVE_NAMESPACES")
+    if execution_context is not None:
+        execution.validate_plan_paths(plan, execution_context)
     owner = plan["deviceRecord"]
     require(type(owner) is dict and set(owner) == selection.RECORD_FIELDS and
             owner["schema"] == selection.SCHEMA and
@@ -159,11 +164,13 @@ def validate_build_metadata(value, before, after, plan, current_project):
     return project
 
 
-def bind_build(plan, current_source):
+def bind_build(plan, current_source, execution_context=None):
     root = native.launch.owned_root(plan["buildRoot"])
     raw = read(root / "result.original.json")
     require(sha(raw) == plan["buildResultSHA256"], "BUILD_RESULT_PIN")
     value = library.strict_json(raw)
+    if execution_context is not None:
+        execution.validate_build_origin(value, execution_context)
     before_raw = read(root / "source-before/snapshot.original.json")
     after_raw = read(root / "source-after/snapshot.original.json")
     require(sha(before_raw) == value["sourceBeforeSHA256"] and
@@ -188,7 +195,8 @@ def bind_build(plan, current_source):
     image = library.strict_json(pinned(root / "receiver-image.original.json", value["receiverImage"]))
     xct, app = Path(value["xctestrun"]), Path(value["receiverApp"])
     require(xct.is_absolute() and app.is_absolute() and
-            str(xct).startswith("/Users/m1/caches/DerivedData/") and
+            (str(xct).startswith("/Users/m1/caches/DerivedData/") if execution_context is None
+             else execution.product_scope(xct, execution_context)) and
             xct.parent == Path(products["actualProductRoot"]) and
             app == xct.parent / "Debug-iphonesimulator/CherriSimulatorQAReceiver.app",
             "CURRENT_PRODUCT_SCOPE")
@@ -296,14 +304,17 @@ def start_registered_xctest(owner, argv, env):
 
 
 class NativeCallerObservation:
-    def __init__(self, plan):
-        self.plan = validate_plan(plan)
+    def __init__(self, plan, execution_context=None):
+        self.execution_context = (execution.validate_context(execution_context)
+                                  if execution_context is not None else None)
+        self.plan = validate_plan(plan, self.execution_context)
         require(sys.platform == "darwin" and sys.version_info >= (3, 10),
                 "DARWIN_SHARED_MONOTONIC_CLOCK")
         require(sha(Path(sys.executable).resolve(strict=True).read_bytes()) ==
                 plan["pythonExecutableSHA256"], "CONSISTENT_EXISTING_PYTHON")
-        require(not any(value for key, value in os.environ.items() if key.startswith("GITHUB_")),
-                "TRUTHFUL_LOCAL_PROVENANCE")
+        if self.execution_context is None:
+            require(not any(value for key, value in os.environ.items() if key.startswith("GITHUB_")),
+                    "TRUTHFUL_LOCAL_PROVENANCE")
         self.repo = native.launch.owned_root(plan["repo"])
         self.root = Path(plan["root"])
         native.launch.owned_root(self.root.parent)
@@ -335,6 +346,10 @@ class NativeCallerObservation:
             "processes": [],
             "rawNativeTypesObserved": False, "formalAcceptanceGranted": False,
             "compilerRebuilt": False, "harnessRebuilt": False}
+        if self.execution_context is not None:
+            self.summary["executionLocation"] = "GITHUB_ACTIONS_MACOS"
+            self.summary["hostedContext"] = self.execution_context
+            record(self.root / "execution-context.original.json", self.execution_context)
         record(self.root / "plan.original.json", plan)
 
     def check_capacity(self):
@@ -495,7 +510,9 @@ class NativeCallerObservation:
             self.before = source_binding.source_inventory(self.repo,
                 self.plan["controllerCommitSha"], self.folder / "source-before", critical)
             require(self.before["completeTrackedSource"] is True, "COMPLETE_CONTROLLER_SOURCE")
-            self.build = bind_build(self.plan, self.before)
+            context = getattr(self, "execution_context", None)
+            self.build = (bind_build(self.plan, self.before) if context is None else
+                          bind_build(self.plan, self.before, context))
             record(self.folder / "build-binding.original.json", self.build)
             self.products_before = native.test_products_inventory(self.build["xctestrun"])
             record(self.folder / "products-before.original.json", self.products_before)

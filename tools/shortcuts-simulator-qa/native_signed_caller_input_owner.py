@@ -44,7 +44,7 @@ sha = base.sha
 strict = base.library.strict_json
 
 
-def validate_selection(value, plan):
+def validate_selection(value, plan, execution_context=None):
     require(type(value) is dict and set(value) ==
             {"schema", "planSHA256", "bundleRoot", "bundleIntakeSHA256"}
             and value["schema"] == SELECTION_SCHEMA, "CLOSED_SIGNING_SELECTION")
@@ -54,10 +54,13 @@ def validate_selection(value, plan):
             re.fullmatch("[0-9a-f]{64}", value["bundleIntakeSHA256"]) is not None,
             "SIGNING_INTAKE_PIN")
     path = value["bundleRoot"]
-    require(type(path) is str and path.startswith("/Users/m1/") and
+    require(type(path) is str and
+            (path.startswith("/Users/m1/") if execution_context is None else Path(path).is_absolute()) and
             len(path.encode()) <= 4096 and "\n" not in path and
             str(PurePosixPath(path)) == path and ".." not in PurePosixPath(path).parts,
             "OWNED_SIGNING_BUNDLE_PATH")
+    if execution_context is not None:
+        base.execution.validate_signing_path(path, plan, execution_context)
     bundle = Path(path)
     require(all(bundle != Path(plan[key]) and bundle not in Path(plan[key]).parents
                 and Path(plan[key]) not in bundle.parents
@@ -288,9 +291,12 @@ def bind_signed_bundle(selection, plan, checked):
 
 class SignedNativeCallerObservation(base.NativeCallerObservation):
     """Only the signature acquisition step differs from the qualified owner."""
-    def __init__(self, plan, selection):
-        self.signing_selection = validate_selection(selection, plan)
-        super().__init__(plan)
+    def __init__(self, plan, selection, execution_context=None):
+        self.signing_selection = validate_selection(selection, plan, execution_context)
+        if execution_context is None:
+            super().__init__(plan)
+        else:
+            super().__init__(plan, execution_context=execution_context)
         base.record(self.root / "signing-selection.original.json", self.signing_selection)
 
     def sign_original(self):
@@ -328,10 +334,13 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plan", required=True)
     parser.add_argument("--signing-selection", required=True)
+    parser.add_argument("--execution-context")
     args = parser.parse_args(argv)
-    plan = base.validate_plan(strict(base.read(Path(args.plan))))
-    selection = validate_selection(strict(base.read(Path(args.signing_selection))), plan)
-    owner = SignedNativeCallerObservation(plan, selection)
+    context = (base.execution.validate_context(strict(base.read(Path(args.execution_context))))
+               if args.execution_context is not None else None)
+    plan = base.validate_plan(strict(base.read(Path(args.plan))), context)
+    selection = validate_selection(strict(base.read(Path(args.signing_selection))), plan, context)
+    owner = SignedNativeCallerObservation(plan, selection, execution_context=context)
     result = owner.run()
     print(json.dumps({"status": result["status"], "runId": plan["runId"],
         "caseId": plan["caseId"], "runtimeObservationAuthenticated":
