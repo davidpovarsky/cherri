@@ -1,0 +1,57 @@
+name: FN04 Named Caller Packet Export
+
+"on": create
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fn04-caller-export-5b689c9-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  actual-fn04-packets:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-fn04-caller-export-20261127' &&
+      github.run_attempt == '1'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    steps:
+      - name: Check out the exact controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the fixed compiler source
+        uses: actions/checkout@v6
+        with:
+          ref: 5b689c938c73420ef36b3f077764d30f8946f31a
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select the existing qualified Go version
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.13'
+          cache-dependency-path: source/go.sum
+
+      - name: Execute the three named FN04 packet cases
+        timeout-minutes: 21
+        run: /usr/bin/python3 -I -B controller/tools/ci/distinct_functions/run.py
+
+      - name: Retain original source and packet export streams
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fn04-caller-export-5b689c9-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-fn04-caller-export-5b689c9
+          if-no-files-found: error
+          retention-days: 30
+          include-hidden-files: true
