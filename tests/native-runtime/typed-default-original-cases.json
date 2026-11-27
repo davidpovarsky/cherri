@@ -1,0 +1,1148 @@
+{
+  "schema": "cherri-native-typed-default-catalog/1",
+  "authorities": {
+    "p15_combined_function_defaults_test.go": "cd47a8eb52b9b963f861ae308c3eba1dcfad84997eedf8d75f3aafc01215fde2",
+    "p15_combined_parameter_forms_test.go": "237a2ea65c4b15c145af3a11996b4cd497b125014223a14ac76417110867c9ad",
+    "p15_function_transport_strict_oracle_test.go": "0ed0e1043897ffc818e1db5d83e77f292cf3fc0cb8c191c75d9fe12ced646e1c"
+  },
+  "originalParents": [
+    "TestP15RP25CombinedDefaultTransportUnit",
+    "TestP15RP25CombinedDefaultTransportNative",
+    "TestP15BRG11CombinedParameterFormsUnit",
+    "TestP15BRG11CombinedParameterFormsNative"
+  ],
+  "originalEvents": [
+    "TestP15BRG11CombinedParameterFormsNative",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/count/explicit_absent",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/count/fallback_kind",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/count/join",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/count/named_absent",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/count/omitted_present",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/count/presence_slot",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/count/slot",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/count/truthiness",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/flag/explicit_absent",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/flag/fallback_kind",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/flag/join",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/flag/named_absent",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/flag/omitted_present",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/flag/presence_slot",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/flag/slot",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/flag/truthiness",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/items/explicit_absent",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/items/fallback_kind",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/items/join",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/items/named_absent",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/items/omitted_present",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/items/presence_slot",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/items/slot",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/items/truthiness",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/label/explicit_absent",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/label/fallback_kind",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/label/join",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/label/named_absent",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/label/omitted_present",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/label/presence_slot",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/label/slot",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/label/truthiness",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/mapping/explicit_absent",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/mapping/fallback_kind",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/mapping/join",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/mapping/named_absent",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/mapping/omitted_present",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/mapping/presence_slot",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/mapping/slot",
+    "TestP15BRG11CombinedParameterFormsNative/defaults/mapping/truthiness",
+    "TestP15BRG11CombinedParameterFormsNative/forms/enum_value",
+    "TestP15BRG11CombinedParameterFormsNative/forms/final_return",
+    "TestP15BRG11CombinedParameterFormsNative/forms/literal_as_reference",
+    "TestP15BRG11CombinedParameterFormsNative/forms/literal_value",
+    "TestP15BRG11CombinedParameterFormsNative/forms/number_as_real",
+    "TestP15BRG11CombinedParameterFormsNative/forms/numeric_consumer",
+    "TestP15BRG11CombinedParameterFormsNative/forms/numeric_text_changed",
+    "TestP15BRG11CombinedParameterFormsNative/forms/reference_producer",
+    "TestP15BRG11CombinedParameterFormsNative/forms/structured_result",
+    "TestP15BRG11CombinedParameterFormsNative/forms/token_as_literal",
+    "TestP15BRG11CombinedParameterFormsNative/forms/variadic_cardinality",
+    "TestP15BRG11CombinedParameterFormsNative/forms/variadic_native_kind",
+    "TestP15BRG11CombinedParameterFormsNative/forms/variadic_order",
+    "TestP15BRG11CombinedParameterFormsNative/forms/variadic_reference",
+    "TestP15BRG11CombinedParameterFormsNative/oracle/duplicate_producer",
+    "TestP15BRG11CombinedParameterFormsNative/oracle/extra_action",
+    "TestP15BRG11CombinedParameterFormsNative/oracle/malformed_group_reconciled",
+    "TestP15BRG11CombinedParameterFormsNative/oracle/malformed_producer_reconciled",
+    "TestP15BRG11CombinedParameterFormsNative/oracle/missing_action",
+    "TestP15BRG11CombinedParameterFormsNative/oracle/real_control_code",
+    "TestP15BRG11CombinedParameterFormsNative/oracle/zero_group_reconciled",
+    "TestP15BRG11CombinedParameterFormsNative/oracle/zero_producer_reconciled",
+    "TestP15BRG11CombinedParameterFormsUnit",
+    "TestP15BRG11CombinedParameterFormsUnit/duplicate_primary",
+    "TestP15BRG11CombinedParameterFormsUnit/duplicate_variadic_pack",
+    "TestP15BRG11CombinedParameterFormsUnit/enum_invalid",
+    "TestP15BRG11CombinedParameterFormsUnit/function_reserved_slot",
+    "TestP15BRG11CombinedParameterFormsUnit/literal_binding",
+    "TestP15BRG11CombinedParameterFormsUnit/literal_runtime",
+    "TestP15BRG11CombinedParameterFormsUnit/missing_required",
+    "TestP15BRG11CombinedParameterFormsUnit/native_extra",
+    "TestP15BRG11CombinedParameterFormsUnit/native_extra_after_named",
+    "TestP15BRG11CombinedParameterFormsUnit/numeric_text_without_conversion",
+    "TestP15BRG11CombinedParameterFormsUnit/unknown_label",
+    "TestP15BRG11CombinedParameterFormsUnit/wrong_default/bool",
+    "TestP15BRG11CombinedParameterFormsUnit/wrong_default/list",
+    "TestP15BRG11CombinedParameterFormsUnit/wrong_default/map",
+    "TestP15BRG11CombinedParameterFormsUnit/wrong_default/number",
+    "TestP15BRG11CombinedParameterFormsUnit/wrong_default/text",
+    "TestP15RP25CombinedDefaultTransportNative",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/empty_clear",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/empty_inherits_input",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_list_default/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_map_default/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/empty_text/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/false",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/false/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/caller_presence_key",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/caller_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/child_nothing",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/child_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/fallback_marker",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/fallback_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/missing_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/none_unsupplied",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/positional_none",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/predicate_polarity",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/predicate_uses_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/result_absent_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/result_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_list/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/caller_presence_key",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/caller_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/child_nothing",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/child_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/fallback_marker",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/fallback_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/missing_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/none_unsupplied",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/positional_none",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/predicate_polarity",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/predicate_uses_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/result_absent_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/result_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_map/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/caller_presence_key",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/caller_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/child_nothing",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/child_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/fallback_marker",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/fallback_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/missing_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/none_unsupplied",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/positional_none",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/predicate_polarity",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/predicate_uses_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/result_absent_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/result_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_empty_text/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/caller_presence_key",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/caller_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/child_nothing",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/child_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/fallback_bool_as_number",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/fallback_marker",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/fallback_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/missing_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/none_unsupplied",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/positional_none",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/predicate_polarity",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/predicate_uses_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/result_absent_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/result_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_false/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/caller_presence_key",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/caller_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/child_nothing",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/child_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/fallback_marker",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/fallback_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/missing_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/none_unsupplied",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/positional_none",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/predicate_polarity",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/predicate_uses_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/result_absent_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/result_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_none_default/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/caller_presence_key",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/caller_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/child_nothing",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/child_truthiness",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/fallback_marker",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/fallback_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/missing_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/none_unsupplied",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/positional_none",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/predicate_polarity",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/predicate_uses_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/result_absent_value",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/result_presence",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/optional_zero/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/zero",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/argument_native_kind",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/caller_consumer",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/child_return",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/default_join",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/duplicate_producer",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/extra_action",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/fallback_branch",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/fallback_kind",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/fallback_value",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/malformed_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/malformed_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/missing_action",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/named_absent",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/omitted_present",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/payload_mirror",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/positional_absent",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/presence_reads_value",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/real_control_code",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/result_name_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/supplied_value_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/truthiness_guard",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/wrong_argument_slot",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/zero_group_reconciled",
+    "TestP15RP25CombinedDefaultTransportNative/zero/oracle/zero_producer_reconciled",
+    "TestP15RP25CombinedDefaultTransportUnit",
+    "TestP15RP25CombinedDefaultTransportUnit/empty_list",
+    "TestP15RP25CombinedDefaultTransportUnit/empty_list_default",
+    "TestP15RP25CombinedDefaultTransportUnit/empty_map",
+    "TestP15RP25CombinedDefaultTransportUnit/empty_map_default",
+    "TestP15RP25CombinedDefaultTransportUnit/empty_text",
+    "TestP15RP25CombinedDefaultTransportUnit/false",
+    "TestP15RP25CombinedDefaultTransportUnit/optional_empty_list",
+    "TestP15RP25CombinedDefaultTransportUnit/optional_empty_map",
+    "TestP15RP25CombinedDefaultTransportUnit/optional_empty_text",
+    "TestP15RP25CombinedDefaultTransportUnit/optional_false",
+    "TestP15RP25CombinedDefaultTransportUnit/optional_none_default",
+    "TestP15RP25CombinedDefaultTransportUnit/optional_zero",
+    "TestP15RP25CombinedDefaultTransportUnit/wrong_argument/bool",
+    "TestP15RP25CombinedDefaultTransportUnit/wrong_argument/list",
+    "TestP15RP25CombinedDefaultTransportUnit/wrong_argument/map",
+    "TestP15RP25CombinedDefaultTransportUnit/wrong_argument/number",
+    "TestP15RP25CombinedDefaultTransportUnit/wrong_argument/text",
+    "TestP15RP25CombinedDefaultTransportUnit/wrong_default/bool",
+    "TestP15RP25CombinedDefaultTransportUnit/wrong_default/list",
+    "TestP15RP25CombinedDefaultTransportUnit/wrong_default/map",
+    "TestP15RP25CombinedDefaultTransportUnit/wrong_default/number",
+    "TestP15RP25CombinedDefaultTransportUnit/wrong_default/text",
+    "TestP15RP25CombinedDefaultTransportUnit/zero"
+  ],
+  "cases": [
+    {
+      "id": "RP25/false",
+      "requirement": "RP25",
+      "caseId": "false",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:Bool = true)->Bool{return value}\nlet omitted=choose()\nlet positional=choose(false)\nlet named=choose(value:false)\nreturn {\"omitted\":omitted,\"positional\":positional,\"named\":named}\n",
+      "sourceCase": {
+        "type": "Bool",
+        "supplied": "false",
+        "fallback": "true",
+        "optional": false,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": true
+          },
+          "positional": {
+            "present": true,
+            "value": false
+          },
+          "named": {
+            "present": true,
+            "value": false
+          }
+        },
+        "finalKind": "Map",
+        "optionalPresenceSeparateFromValue": false,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/zero",
+      "requirement": "RP25",
+      "caseId": "zero",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:Number = 9)->Number{return value}\nlet omitted=choose()\nlet positional=choose(0)\nlet named=choose(value:0)\nreturn {\"omitted\":omitted,\"positional\":positional,\"named\":named}\n",
+      "sourceCase": {
+        "type": "Number",
+        "supplied": "0",
+        "fallback": "9",
+        "optional": false,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": 9
+          },
+          "positional": {
+            "present": true,
+            "value": 0
+          },
+          "named": {
+            "present": true,
+            "value": 0
+          }
+        },
+        "finalKind": "Map",
+        "optionalPresenceSeparateFromValue": false,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/empty_text",
+      "requirement": "RP25",
+      "caseId": "empty_text",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:Text = \"DEFAULT\")->Text{return value}\nlet omitted=choose()\nlet positional=choose(\"\")\nlet named=choose(value:\"\")\nreturn {\"omitted\":omitted,\"positional\":positional,\"named\":named}\n",
+      "sourceCase": {
+        "type": "Text",
+        "supplied": "\"\"",
+        "fallback": "\"DEFAULT\"",
+        "optional": false,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": "DEFAULT"
+          },
+          "positional": {
+            "present": true,
+            "value": ""
+          },
+          "named": {
+            "present": true,
+            "value": ""
+          }
+        },
+        "finalKind": "Map",
+        "optionalPresenceSeparateFromValue": false,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/empty_list",
+      "requirement": "RP25",
+      "caseId": "empty_list",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:List<Text> = [\"DEFAULT\"])->List<Text>{return value}\nlet omitted=choose()\nlet positional=choose([])\nlet named=choose(value:[])\nreturn {\"omitted\":omitted,\"positional\":positional,\"named\":named}\n",
+      "sourceCase": {
+        "type": "List<Text>",
+        "supplied": "[]",
+        "fallback": "[\"DEFAULT\"]",
+        "optional": false,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": [
+              "DEFAULT"
+            ]
+          },
+          "positional": {
+            "present": true,
+            "value": []
+          },
+          "named": {
+            "present": true,
+            "value": []
+          }
+        },
+        "finalKind": "Map",
+        "optionalPresenceSeparateFromValue": false,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/empty_map",
+      "requirement": "RP25",
+      "caseId": "empty_map",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:Map<Text,Number> = {\"DEFAULT\":9})->Map<Text,Number>{return value}\nlet omitted=choose()\nlet positional=choose({})\nlet named=choose(value:{})\nreturn {\"omitted\":omitted,\"positional\":positional,\"named\":named}\n",
+      "sourceCase": {
+        "type": "Map<Text,Number>",
+        "supplied": "{}",
+        "fallback": "{\"DEFAULT\":9}",
+        "optional": false,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": {
+              "DEFAULT": 9
+            }
+          },
+          "positional": {
+            "present": true,
+            "value": {}
+          },
+          "named": {
+            "present": true,
+            "value": {}
+          }
+        },
+        "finalKind": "Map",
+        "optionalPresenceSeparateFromValue": false,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/empty_list_default",
+      "requirement": "RP25",
+      "caseId": "empty_list_default",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:List<Text> = [])->List<Text>{return value}\nlet omitted=choose()\nlet positional=choose([\"SUPPLIED\"])\nlet named=choose(value:[\"SUPPLIED\"])\nreturn {\"omitted\":omitted,\"positional\":positional,\"named\":named}\n",
+      "sourceCase": {
+        "type": "List<Text>",
+        "supplied": "[\"SUPPLIED\"]",
+        "fallback": "[]",
+        "optional": false,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": []
+          },
+          "positional": {
+            "present": true,
+            "value": [
+              "SUPPLIED"
+            ]
+          },
+          "named": {
+            "present": true,
+            "value": [
+              "SUPPLIED"
+            ]
+          }
+        },
+        "finalKind": "Map",
+        "optionalPresenceSeparateFromValue": false,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/empty_map_default",
+      "requirement": "RP25",
+      "caseId": "empty_map_default",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:Map<Text,Number> = {})->Map<Text,Number>{return value}\nlet omitted=choose()\nlet positional=choose({\"SUPPLIED\":7})\nlet named=choose(value:{\"SUPPLIED\":7})\nreturn {\"omitted\":omitted,\"positional\":positional,\"named\":named}\n",
+      "sourceCase": {
+        "type": "Map<Text,Number>",
+        "supplied": "{\"SUPPLIED\":7}",
+        "fallback": "{}",
+        "optional": false,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": {}
+          },
+          "positional": {
+            "present": true,
+            "value": {
+              "SUPPLIED": 7
+            }
+          },
+          "named": {
+            "present": true,
+            "value": {
+              "SUPPLIED": 7
+            }
+          }
+        },
+        "finalKind": "Map",
+        "optionalPresenceSeparateFromValue": false,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/optional_false",
+      "requirement": "RP25",
+      "caseId": "optional_false",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:Bool? = true)->Bool?{return value}\nlet omitted=choose()\nlet positional=choose(false)\nlet named=choose(value:false)\nlet missing=choose(none)\nlet omittedPresent=omitted!=none\nlet positionalPresent=positional!=none\nlet namedPresent=named!=none\nlet missingPresent=missing!=none\nreturn f\"{omittedPresent}:{omitted}|{positionalPresent}:{positional}|{namedPresent}:{named}|{missingPresent}:{missing}\"\n",
+      "sourceCase": {
+        "type": "Bool?",
+        "supplied": "false",
+        "fallback": "true",
+        "optional": true,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": true
+          },
+          "positional": {
+            "present": true,
+            "value": false
+          },
+          "named": {
+            "present": true,
+            "value": false
+          },
+          "missing": {
+            "present": false
+          }
+        },
+        "finalKind": "Text",
+        "optionalPresenceSeparateFromValue": true,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/optional_zero",
+      "requirement": "RP25",
+      "caseId": "optional_zero",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:Number? = 9)->Number?{return value}\nlet omitted=choose()\nlet positional=choose(0)\nlet named=choose(value:0)\nlet missing=choose(none)\nlet omittedPresent=omitted!=none\nlet positionalPresent=positional!=none\nlet namedPresent=named!=none\nlet missingPresent=missing!=none\nreturn f\"{omittedPresent}:{omitted}|{positionalPresent}:{positional}|{namedPresent}:{named}|{missingPresent}:{missing}\"\n",
+      "sourceCase": {
+        "type": "Number?",
+        "supplied": "0",
+        "fallback": "9",
+        "optional": true,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": 9
+          },
+          "positional": {
+            "present": true,
+            "value": 0
+          },
+          "named": {
+            "present": true,
+            "value": 0
+          },
+          "missing": {
+            "present": false
+          }
+        },
+        "finalKind": "Text",
+        "optionalPresenceSeparateFromValue": true,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/optional_empty_text",
+      "requirement": "RP25",
+      "caseId": "optional_empty_text",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:Text? = \"DEFAULT\")->Text?{return value}\nlet omitted=choose()\nlet positional=choose(\"\")\nlet named=choose(value:\"\")\nlet missing=choose(none)\nlet omittedPresent=omitted!=none\nlet positionalPresent=positional!=none\nlet namedPresent=named!=none\nlet missingPresent=missing!=none\nreturn f\"{omittedPresent}:{omitted}|{positionalPresent}:{positional}|{namedPresent}:{named}|{missingPresent}:{missing}\"\n",
+      "sourceCase": {
+        "type": "Text?",
+        "supplied": "\"\"",
+        "fallback": "\"DEFAULT\"",
+        "optional": true,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": "DEFAULT"
+          },
+          "positional": {
+            "present": true,
+            "value": ""
+          },
+          "named": {
+            "present": true,
+            "value": ""
+          },
+          "missing": {
+            "present": false
+          }
+        },
+        "finalKind": "Text",
+        "optionalPresenceSeparateFromValue": true,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/optional_empty_list",
+      "requirement": "RP25",
+      "caseId": "optional_empty_list",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:List<Text>? = [\"DEFAULT\"])->List<Text>?{return value}\nlet omitted=choose()\nlet positional=choose([])\nlet named=choose(value:[])\nlet missing=choose(none)\nlet omittedPresent=omitted!=none\nlet positionalPresent=positional!=none\nlet namedPresent=named!=none\nlet missingPresent=missing!=none\nreturn f\"{omittedPresent}:{omitted}|{positionalPresent}:{positional}|{namedPresent}:{named}|{missingPresent}:{missing}\"\n",
+      "sourceCase": {
+        "type": "List<Text>?",
+        "supplied": "[]",
+        "fallback": "[\"DEFAULT\"]",
+        "optional": true,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": [
+              "DEFAULT"
+            ]
+          },
+          "positional": {
+            "present": true,
+            "value": []
+          },
+          "named": {
+            "present": true,
+            "value": []
+          },
+          "missing": {
+            "present": false
+          }
+        },
+        "finalKind": "Text",
+        "optionalPresenceSeparateFromValue": true,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/optional_empty_map",
+      "requirement": "RP25",
+      "caseId": "optional_empty_map",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:Map<Text,Number>? = {\"DEFAULT\":9})->Map<Text,Number>?{return value}\nlet omitted=choose()\nlet positional=choose({})\nlet named=choose(value:{})\nlet missing=choose(none)\nlet omittedPresent=omitted!=none\nlet positionalPresent=positional!=none\nlet namedPresent=named!=none\nlet missingPresent=missing!=none\nreturn f\"{omittedPresent}:{omitted}|{positionalPresent}:{positional}|{namedPresent}:{named}|{missingPresent}:{missing}\"\n",
+      "sourceCase": {
+        "type": "Map<Text,Number>?",
+        "supplied": "{}",
+        "fallback": "{\"DEFAULT\":9}",
+        "optional": true,
+        "fallbackPresent": true
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": true,
+            "value": {
+              "DEFAULT": 9
+            }
+          },
+          "positional": {
+            "present": true,
+            "value": {}
+          },
+          "named": {
+            "present": true,
+            "value": {}
+          },
+          "missing": {
+            "present": false
+          }
+        },
+        "finalKind": "Text",
+        "optionalPresenceSeparateFromValue": true,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "RP25/optional_none_default",
+      "requirement": "RP25",
+      "caseId": "optional_none_default",
+      "sourceAuthorityPath": "p15_combined_function_defaults_test.go",
+      "originalUnitTest": "TestP15RP25CombinedDefaultTransportUnit",
+      "originalNativeTest": "TestP15RP25CombinedDefaultTransportNative",
+      "originalSourceHelper": "p15RP25Source",
+      "originalGraphOracle": "p15RP25Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function choose(value:Text? = none)->Text?{return value}\nlet omitted=choose()\nlet positional=choose(\"\")\nlet named=choose(value:\"\")\nlet missing=choose(none)\nlet omittedPresent=omitted!=none\nlet positionalPresent=positional!=none\nlet namedPresent=named!=none\nlet missingPresent=missing!=none\nreturn f\"{omittedPresent}:{omitted}|{positionalPresent}:{positional}|{namedPresent}:{named}|{missingPresent}:{missing}\"\n",
+      "sourceCase": {
+        "type": "Text?",
+        "supplied": "\"\"",
+        "fallback": "none",
+        "optional": true,
+        "fallbackPresent": false
+      },
+      "expectedLanguageSemantics": {
+        "calls": {
+          "omitted": {
+            "present": false
+          },
+          "positional": {
+            "present": true,
+            "value": ""
+          },
+          "named": {
+            "present": true,
+            "value": ""
+          },
+          "missing": {
+            "present": false
+          }
+        },
+        "finalKind": "Text",
+        "optionalPresenceSeparateFromValue": true,
+        "finalTextFormatting": "observe-original-runtime"
+      },
+      "observationMode": "original-call-values-presence-and-final-return",
+      "requiredEffects": []
+    },
+    {
+      "id": "BRG11/full-original-scenario",
+      "requirement": "BRG11",
+      "caseId": "full-original-scenario",
+      "sourceAuthorityPath": "p15_combined_parameter_forms_test.go",
+      "originalUnitTest": "TestP15BRG11CombinedParameterFormsUnit",
+      "originalNativeTest": "TestP15BRG11CombinedParameterFormsNative",
+      "originalSourceHelper": "p15BRG11Source",
+      "originalGraphOracle": "p15BRG11Graph",
+      "compileFilename": "p15-function-transport.cherri",
+      "source": "function forms(flag:Bool=true,count:Number=9,label:Text=\"DEFAULT\",items:List<Text> = [\"DEFAULT\"],mapping:Map<Text,Number> = {\"DEFAULT\":9})->Map<Text,AnyContent>{\nreturn {\"flag\":flag,\"count\":count,\"label\":label,\"items\":items,\"mapping\":mapping}\n}\nlet omitted=forms()\nlet explicit=forms(false,count:0,label:\"\",items:[],mapping:{})\nlet named=forms(mapping:{},items:[],label:\"\",count:0,flag:false)\nsetBackgroundSound(sound:\"Oc\"+\"ean\")\nsetBackgroundSound(sound:.Rain)\nlet token=getText(input:\"\")\nlet source=text(\"TOKEN\")\nlet reference=getText(source)\nlet converted=number(\"-5.125\")\nlet rounded=round(converted,roundTo:.Integer)\nlet dynamic=text(\"DYNAMIC\")\nlet packed=list(listItem:[\"FIRST\",dynamic,\"LAST\"])\nreturn {\"omitted\":omitted,\"explicit\":explicit,\"named\":named,\"token\":token,\"reference\":reference,\"converted\":converted,\"rounded\":rounded,\"packed\":packed}\n",
+      "sourceCase": {},
+      "expectedLanguageSemantics": {
+        "finalKind": "Map",
+        "fields": {
+          "omitted": {
+            "flag": true,
+            "count": 9,
+            "label": "DEFAULT",
+            "items": [
+              "DEFAULT"
+            ],
+            "mapping": {
+              "DEFAULT": 9
+            }
+          },
+          "explicit": {
+            "flag": false,
+            "count": 0,
+            "label": "",
+            "items": [],
+            "mapping": {}
+          },
+          "named": {
+            "flag": false,
+            "count": 0,
+            "label": "",
+            "items": [],
+            "mapping": {}
+          },
+          "token": "",
+          "reference": "TOKEN",
+          "converted": -5.125,
+          "rounded": -5,
+          "packed": [
+            "FIRST",
+            "DYNAMIC",
+            "LAST"
+          ]
+        },
+        "nativeKindsRequireObservation": true
+      },
+      "observationMode": "original-parameter-values-side-effects-and-final-return",
+      "requiredEffects": [
+        {
+          "action": "com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundIntent",
+          "parameter": "backgroundSound",
+          "value": "Ocean"
+        },
+        {
+          "action": "com.apple.UniversalAccess.UASettingsShortcuts.UASetBackgroundSoundIntent",
+          "parameter": "backgroundSound",
+          "value": "Rain"
+        }
+      ]
+    }
+  ]
+}
