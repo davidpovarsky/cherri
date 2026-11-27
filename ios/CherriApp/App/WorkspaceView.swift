@@ -475,17 +475,6 @@ struct WorkspaceView: View {
                 analysis, request: request, generation: generation, liveBuild: liveBuild
             )
 #endif
-            guard !Task.isCancelled, generation == buildRequestGeneration,
-                  request == currentBuildRequest
-            else {
-#if DEBUG
-                CherriEditorDeliveryObservation.shared?.didDiscard(
-                    request: request, generation: generation, liveBuild: liveBuild
-                )
-#endif
-                return
-            }
-
             compiled = nil
             publishedBuildRequest = request
             lastBuildOutcome = signed ? "Signing failed" : "Build failed"
