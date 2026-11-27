@@ -90,6 +90,7 @@ class GraphModel:
         self.label_reads = 0
         self.label_value_reads = 0
         self.date_formats = 0
+        self.dictionary_field_reads = []
         self.max_steps = 2_000_000
 
     def value(self, raw):
@@ -227,11 +228,17 @@ class GraphModel:
                 if fields != []: raise ValueError("only the actual empty Dictionary type witness is modeled")
                 previous = [Native("Dictionary", {})]
             elif ident == "getvalueforkey":
-                if p.get("WFGetDictionaryValueType") != "Value": raise ValueError("unreviewed dictionary read")
                 source = scalar(self.value(p["WFInput"]), "Dictionary")
-                key = p["WFDictionaryKey"]
-                if key == "label": self.label_value_reads += 1
-                previous = list(source.value.get(key, []))
+                mode = p.get("WFGetDictionaryValueType")
+                if mode == "All Keys":
+                    previous = [text(key) for key in source.value]
+                elif mode == "Value":
+                    key = self.field(p["WFDictionaryKey"], "Text")
+                    if "." in key: raise ValueError("native dotted key path was not excluded")
+                    if key == "label": self.label_value_reads += 1
+                    self.dictionary_field_reads.append((id(source), key))
+                    previous = list(source.value.get(key, []))
+                else: raise ValueError("unreviewed dictionary read")
             elif ident == "getitemfromlist":
                 if p.get("WFItemSpecifier") != "Item At Index": raise ValueError("unreviewed list projection")
                 values = self.value(p["WFInput"])
@@ -275,6 +282,11 @@ class GraphModel:
                     raise ValueError("Base64 contains line breaks")
                 encoded = base64.b64encode(self.field(p["WFInput"], "Text").encode("utf-8")).decode("ascii")
                 previous = [text(encoded)]
+            elif ident == "text.match":
+                pattern = p["WFMatchTextPattern"]
+                subject = self.field(p["text"], "Text")
+                flags = 0 if p["WFMatchTextCaseSensitive"] else re.IGNORECASE
+                previous = [text(match.group(0)) for match in re.finditer(pattern, subject, flags)]
             elif ident == "text.combine":
                 if p.get("WFTextSeparator") != "Custom": raise ValueError("unknown separator")
                 values = self.value(p["text"])
@@ -319,6 +331,67 @@ def decode(value):
     if value["encoding"] != "base64-utf8": raise AssertionError("wrong encoding")
     return base64.b64decode(value["value"], validate=True).decode("utf-8")
 
+
+def payload_policy(redact, keys=()):
+    return ("selective-dictionary-diagnostics" if keys else "redacted") if redact else "native-scalar-and-dictionary-diagnostics"
+
+PROTECTED_KEYS = {"authorization", "proxy-authorization", "headers", "cookie", "cookies", "set-cookie",
+                  "password", "passwords", "secret", "secrets", "token", "access_token", "refresh_token",
+                  "id_token", "api_key", "apikey", "credentials", "private_key", "url", "uri", "link",
+                  "query", "querystring", "queryparameters"}
+
+def inspect_payload(row, item, include_types, redact=False, keys=(), nested=False):
+    if redact and not nested and (not keys or item.kind != "Dictionary"):
+        assert row["status"] == "REDACTED" and row["payload"] is None
+        return 0
+    if item.kind == "Text":
+        if redact:
+            assert row["status"] == "REDACTED_TEXT_CONTENT" and row["payload"] is None
+        else:
+            assert row["status"] == "TEXT_PAYLOAD_ENCODED" and decode(row["payload"]) == item.value
+        return 0
+    if item.kind == "Number":
+        assert row["status"] == "NATIVE_NUMBER_TEXT_ENCODED"
+        assert row["representation"] == "native-number-text"
+        assert decode(row["payload"]) == str(item.value)
+        return 0
+    if item.kind == "Date":
+        assert row["status"] == "DATE_ISO8601_ENCODED" and row["representation"] == "iso8601-native-format"
+        assert decode(row["payload"]) == item.value
+        return 1
+    if item.kind != "Dictionary":
+        assert row["status"] == "UNSUPPORTED_NATIVE_PAYLOAD_TYPE" and row["payload"] is None
+        return 0
+    if nested:
+        assert row["status"] == "UNSUPPORTED_NESTED_DICTIONARY" and row["payload"] is None
+        return 0
+    assert row["status"] == "DICTIONARY_FIELD_DIAGNOSTICS"
+    payload = row["payload"]
+    assert payload["encoding"] == "diagnostic-fields" and payload["lossless"] is False
+    fields = payload["fields"]
+    assert len(fields) == len(item.value)
+    date_count = 0
+    for field, (key, values) in zip(fields, item.value.items()):
+        assert decode(field["key"]) == key
+        diagnostic = field["diagnostic"]
+        if keys and key.casefold() in PROTECTED_KEYS.union(x.casefold() for x in keys):
+            assert diagnostic == {"status":"REDACTED_SENSITIVE_FIELD", "payload":None}
+        elif "." in key:
+            assert diagnostic == {"status":"UNSUPPORTED_KEY_PATH", "payload":None}
+        elif len(values) == 0:
+            assert diagnostic == {"status":"ABSENT_NULL_OR_EMPTY_COLLECTION", "payload":None}
+        elif len(values) != 1:
+            assert diagnostic == {"status":"UNSUPPORTED_MULTIPLE_NATIVE_ITEMS", "payload":None}
+        else:
+            value = values[0]
+            date_count += inspect_payload(diagnostic, value, include_types, redact, keys, nested=True)
+            if include_types:
+                assert decode(diagnostic["nativeType"]) == "native:"+value.kind
+            else:
+                assert "nativeType" not in diagnostic
+    return date_count
+
+
 def inspect(actions, items, labels, options):
     before = copy.deepcopy((items,labels))
     ids_before = ([id(x) for x in items], [id(x) for x in labels])
@@ -329,7 +402,7 @@ def inspect(actions, items, labels, options):
         document = json.loads(completed)
         assert document["schemaVersion"] == "cherri.debug-export/1"
         assert document["scope"] == "run-local-native-items"
-        assert document["payloadPolicy"] == ("redacted" if options["redact"] else "text-only-base64")
+        assert document["payloadPolicy"] == payload_policy(options["redact"])
         assert document["dates"] == ("source-creation-date" if options["dates"] else "not-collected")
         expected_labels = "not-collected"
         if options["labels"]: expected_labels = "redacted" if options["redact"] else "source-range-metadata"
@@ -342,13 +415,9 @@ def inspect(actions, items, labels, options):
         rows = [json.loads(line) for line in body.splitlines()]
     assert len(rows) == len(items), "native entry cardinality changed"
     status, ranges = label_contract(labels,len(items))
+    payload_date_formats = 0
     for position,(row,item) in enumerate(zip(rows,items),1):
-        if options["redact"]:
-            assert row["status"] == "REDACTED" and row["payload"] is None
-        elif item.kind == "Text":
-            assert row["status"] == "TEXT_PAYLOAD_ENCODED" and decode(row["payload"]) == item.value
-        else:
-            assert row["status"] == "UNSUPPORTED_PAYLOAD_TYPE" and row["payload"] is None
+        payload_date_formats += inspect_payload(row,item,options["types"],options["redact"])
         if options["types"]:
             assert decode(row["nativeType"]) == "native:"+item.kind
         else: assert "nativeType" not in row
@@ -378,10 +447,8 @@ def inspect(actions, items, labels, options):
                 else: assert label["status"] == "PRESENT" and decode(label) == found[0]
     if options["redact"] or not options["labels"]:
         assert model.label_reads == 0 and model.label_value_reads == 0, "redacted/omitted label metadata was read"
-    if not options["dates"]:
-        assert model.date_formats == 0
-    else:
-        assert model.date_formats == sum(len(item.creation)==1 and item.creation[0].kind=="Date" for item in items)
+    expected_metadata_formats = sum(len(item.creation)==1 and item.creation[0].kind=="Date" for item in items) if options["dates"] else 0
+    assert model.date_formats == expected_metadata_formats + payload_date_formats
     assert (items,labels) == before, "native inputs changed"
     assert ids_before == ([id(x) for x in items],[id(x) for x in labels]), "native identities replaced"
     assert model.executed <= 180*(len(items)+len(labels))+100, "model action growth exceeded the linear source bound"
