@@ -1,8 +1,10 @@
 package main
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -336,21 +338,40 @@ func TestP15PaginateSelectionDefaultSnapshot(t *testing.T) {
 		if e2 != nil {
 			t.Fatal(e2)
 		}
+		var before []byte
 		if dir := os.Getenv("P15_SELECTION_BASELINE"); dir != "" {
 			var path = filepath.Join(dir, fmt.Sprintf("default-legacy-%t.json", legacy))
 			if os.Getenv("P15_SELECTION_CAPTURE") == "1" {
 				if e := os.WriteFile(path, append(raw, '\n'), 0644); e != nil {
 					t.Fatal(e)
 				}
-			} else {
-				var before, e = os.ReadFile(path)
-				if e != nil {
-					t.Fatal(e)
-				}
-				if !reflect.DeepEqual(append(raw, '\n'), before) {
-					t.Fatal("default native graph differs from frozen pre-implementation source")
-				}
+				continue
 			}
+			before, e = os.ReadFile(path)
+		} else {
+			// Ordinary CI always compares the immutable pre-implementation
+			// graph. Capture writes require an explicit external override.
+			var name = "default-v2-before.original.json.gz"
+			if legacy {
+				name = "default-legacy-before.original.json.gz"
+			}
+			var file, err = os.Open(filepath.Join("docs", "language-v2", "evidence", "p15-paginate-selection-20261127", name))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer file.Close()
+			var reader, zipErr = gzip.NewReader(file)
+			if zipErr != nil {
+				t.Fatal(zipErr)
+			}
+			defer reader.Close()
+			before, e = io.ReadAll(reader)
+		}
+		if e != nil {
+			t.Fatal(e)
+		}
+		if !reflect.DeepEqual(append(raw, '\n'), before) {
+			t.Fatal("default native graph differs from frozen pre-implementation source")
 		}
 	}
 }
