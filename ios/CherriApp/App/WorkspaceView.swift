@@ -269,6 +269,9 @@ struct WorkspaceView: View {
             acceptsAction: { document.acceptsEditorAction($0) },
             startupObservationID: document.startupObservationID
         )
+#if DEBUG
+        .environment(\.rp39LivePreview, livePreview)
+#endif
     }
 
     private var previewPane: some View {

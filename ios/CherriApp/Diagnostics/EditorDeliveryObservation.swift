@@ -169,11 +169,25 @@ final class CherriEditorDeliveryObservation {
     }
 }
 
+/// An absent supplier is not an observed false setting. Only the owning
+/// Workspace injects its actual AppStorage value into this DEBUG observation.
+private struct CherriRP39LivePreviewKey: EnvironmentKey {
+    static let defaultValue: Bool? = nil
+}
+
+extension EnvironmentValues {
+    var rp39LivePreview: Bool? {
+        get { self[CherriRP39LivePreviewKey.self] }
+        set { self[CherriRP39LivePreviewKey.self] = newValue }
+    }
+}
+
 /// The witness is read-only: no delegate replacement, caret assignment, focus,
 /// keyboard event or source mutation. XCTest still uses the actual UI controls.
 @MainActor
 struct CherriRP39NativeEditorWitness: UIViewRepresentable {
     let source: String
+    @Environment(\.rp39LivePreview) private var livePreview
 
     func makeUIView(context: Context) -> Witness {
         let view = Witness()
@@ -182,16 +196,21 @@ struct CherriRP39NativeEditorWitness: UIViewRepresentable {
         view.accessibilityIdentifier = "rp39NativeEditorObservation"
         view.accessibilityLabel = "RP39 native editor observation"
         view.source = source
+        view.livePreview = livePreview
         CherriEditorDeliveryObservation.shared?.readNativeCaret = { [weak view] in
             view?.nativeSnapshot() ?? ["status": "witness-released"]
         }
         return view
     }
 
-    func updateUIView(_ view: Witness, context: Context) { view.source = source }
+    func updateUIView(_ view: Witness, context: Context) {
+        view.source = source
+        view.livePreview = livePreview
+    }
 
     final class Witness: UIView {
         var source = ""
+        var livePreview: Bool?
 
         override var accessibilityValue: String? {
             get {
@@ -236,6 +255,9 @@ struct CherriRP39NativeEditorWitness: UIViewRepresentable {
                 "utf16Length": length, "selectionLocation": selected.location,
                 "selectionLength": selected.length, "firstResponder": editor.isFirstResponder,
             ]
+            if let livePreview {
+                value["livePreviewEnabled"] = livePreview
+            }
             // Observe the current collapsed caret so XCTest can begin the real
             // press-and-drag at that caret. This never sets a text selection.
             if selected.length == 0,
