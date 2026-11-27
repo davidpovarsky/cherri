@@ -23,7 +23,7 @@ func (a *Analyzer) analyzeCacheBlock(call *syntax.CallExpr, scope *Scope, contra
 	}
 	result := a.analyzeScopedValueBody(call.Block.Body, scope)
 	if schema.CacheValueKind(result) == "" {
-		a.error("E_CACHE_VALUE_TYPE", call.Span, "cache supports present source-typed Text, Number or Bool; Optional, JSON, containers and native objects require a separately qualified persistence codec")
+		a.error("E_CACHE_VALUE_TYPE", call.Span, "cache supports present source-typed Text, Number, Bool or Date; Optional, JSON, containers and other native objects require a separately qualified persistence codec")
 	}
 	return result
 }

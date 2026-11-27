@@ -48,6 +48,8 @@ func legacyCacheKind(value tokenType) string {
 		return "number"
 	case Bool:
 		return "bool"
+	case Date:
+		return "date"
 	default:
 		return ""
 	}
@@ -86,6 +88,8 @@ func emitLegacyCacheBlock(block *legacyScopedBlock, reference *WFActionReference
 				return &backend.Reference{Kind: backend.RefActionResult, ProducerID: source.OutputUUID, ProducerName: source.OutputName}, nil
 			case "Variable":
 				return &backend.Reference{Kind: backend.RefMutableBinding, ProducerName: source.VariableName}, nil
+			case "CurrentDate":
+				return &backend.Reference{Kind: backend.RefSystemValue, ProducerName: "CurrentDate"}, nil
 			default:
 				return nil, fmt.Errorf("E_CACHE_VALUE_TYPE: unsupported native scalar source reference")
 			}

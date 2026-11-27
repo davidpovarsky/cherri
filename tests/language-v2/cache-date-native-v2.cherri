@@ -1,0 +1,38 @@
+shortcut "P15 Cache Date native probe" { version:"27" }
+storeValue("cherri.cache.v1.local.date.7c7dbac925cdd72b1b8eccb7d51c1b490ea97ac6f5bd70a24c09f1b87d2def18", "{}")
+var calls0=0
+let original0 = date("1969-12-31T23:59:59.875Z")
+let first0 = cache(key:"p15.cache.date.native.0", ttl:300) {
+calls0 += 1
+yield original0
+}
+let hit0 = cache(key:"p15.cache.date.native.0", ttl:300) {
+calls0 += 1
+yield date("2000-01-01T00:00:00Z")
+}
+let original0Stamp = formatDate(original0, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+let original0Type = getType(original0)
+let first0Stamp = formatDate(first0, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+let first0Type = getType(first0)
+let hit0Stamp = formatDate(hit0, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+let hit0Type = getType(hit0)
+deleteStoredValue("cherri.cache.v1.local.date.7c7dbac925cdd72b1b8eccb7d51c1b490ea97ac6f5bd70a24c09f1b87d2def18")
+storeValue("cherri.cache.v1.local.date.5e78de66f7afaa7b9b24c78e106ab1b6627ebc85949d234945011ba381d18cd5", "{}")
+var calls1=0
+let original1 = date("2026-11-27T14:00:00.125Z")
+let first1 = cache(key:"p15.cache.date.native.1", ttl:300) {
+calls1 += 1
+yield original1
+}
+let hit1 = cache(key:"p15.cache.date.native.1", ttl:300) {
+calls1 += 1
+yield date("2000-01-01T00:00:00Z")
+}
+let original1Stamp = formatDate(original1, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+let original1Type = getType(original1)
+let first1Stamp = formatDate(first1, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+let first1Type = getType(first1)
+let hit1Stamp = formatDate(hit1, "Custom", "yyyy-MM-dd HH:mm:ss.SSSSSSSSS XXX")
+let hit1Type = getType(hit1)
+deleteStoredValue("cherri.cache.v1.local.date.5e78de66f7afaa7b9b24c78e106ab1b6627ebc85949d234945011ba381d18cd5")
+return text("P15_CACHE_DATE_NATIVE|case0:calls={calls0};expected={original0Stamp};first={first0Stamp};hit={hit0Stamp};types={original0Type}/{first0Type}/{hit0Type}|case1:calls={calls1};expected={original1Stamp};first={first1Stamp};hit={hit1Stamp};types={original1Type}/{first1Type}/{hit1Type}")
