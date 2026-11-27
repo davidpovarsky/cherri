@@ -2580,6 +2580,13 @@ func isActionRepresentable(action *ShortcutAction, def *actionDefinition) bool {
 			// Enum parameter must match one of the enum values
 			if param.enum != "" {
 				if strVal, isStr := val.(string); isStr {
+					if isMakeArchiveFormatParameter(action.WFWorkflowActionIdentifier, param) {
+						var representable bool
+						strVal, representable = archiveFormatSourceValue(strVal)
+						if !representable {
+							return false
+						}
+					}
 					enumVals := getEnum(param.enum)
 					if len(enumVals) > 0 && !slices.Contains(enumVals, strVal) {
 						return false
@@ -2788,6 +2795,13 @@ func decompActionArguments(actionCallCode *strings.Builder, matchedAction *actio
 		}
 		if argValue == "" {
 			if value, found := action.WFWorkflowActionParameters[param.key]; found {
+				if isMakeArchiveFormatParameter(action.WFWorkflowActionIdentifier, param) {
+					if wire, literal := value.(string); literal {
+						if source, known := archiveFormatSourceValue(wire); known {
+							value = source
+						}
+					}
+				}
 				if (param.validType == String || param.validType == RawString || param.validType == Variable) && !isReferenceValue(value) {
 					if strVal, isStr := value.(string); isStr && isLiteralRawStringCandidate(strVal) {
 						argValue = fmt.Sprintf("'%s'", strVal)
