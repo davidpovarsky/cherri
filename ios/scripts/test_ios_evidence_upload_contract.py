@@ -26,6 +26,19 @@ NEW_FILES = {
 }
 
 
+# Exact synthetic collector record inventory: the original six plus RP39/RP41.
+# These transport controls do not grant native acceptance.
+EXPECTED_RECORDS = {
+    ("CherriJoinedBridgeTests/testBRG25ActualMobileRouteJoinedContract", ("BRG25",), "ios-build"),
+    ("CherriJoinedContractUITests/testBRG25ActualAppRejectedAndLiteralRoutesUI", ("BRG25",), "ios-ui"),
+    ("CherriJoinedContractUITests/testBRG27ActualEditorJoinedWorkflowUI", ("BRG27",), "ios-ui"),
+    ("CherriPreviewDocumentContextTests/testBRG28ActualPreviewTransactionPreservesDocumentAndRejectsContextRelabels", ("BRG28",), "integration"),
+    ("CherriPreviewDocumentUITests/testBRG28ActualWebKitFieldEditAndNumericRejectionUI", ("BRG28",), "ios-ui"),
+    ("CherriPreviewDocumentContextTests/testBRG28NativeSmallLargeAndEmbeddedAssetMeasurements", ("BRG28",), "benchmark"),
+    ("CherriJoinedContractUITests/testRP39ActualCombinedEditorAndDelayedAnalysisUI", ("RP39",), "ios-ui"),
+    ("CherriPreviewDocumentUITests/testRP41ActualMappedAndGeneratedPreviewSourceUI", ("RP41",), "ios-ui"),
+}
+
 def declared_uploads(text):
     blocks = re.findall(r"(?ms)^      - name: Upload iOS test evidence\n(.*?)(?=^      - name:|\Z)", text)
     if len(blocks) != 1:
@@ -61,7 +74,11 @@ class IOSEvidenceUploadContractTests(unittest.TestCase):
         cls.workflow = WORKFLOW.read_text()
 
     def required_artifacts(self):
-        self.assertEqual(len(self.records), 6)
+        self.assertEqual(len(self.records), 8)
+        self.assertCountEqual(
+            [(record["test_id"], tuple(record["requirements"]), record["tier"]) for record in self.records],
+            EXPECTED_RECORDS,
+        )
         self.assertEqual(self.diagnostics["joinedEditorEvidence"]["status"], "VERIFIED_JOINED_NATIVE")
         self.assertEqual(self.diagnostics["previewNativeEvidence"]["status"], "VERIFIED_NATIVE_PREVIEW")
         result = set()
