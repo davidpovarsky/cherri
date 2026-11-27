@@ -37,7 +37,13 @@ setClipboard(f"{before}|{result}|{system.input}|{ShortcutInput}")`
 // child payload. Only the guarded dispatcher probes inspect ExtensionInput.
 // UUID alpha names are taken from the actual graph; no semantic value is.
 func p15CallerInputGraph(actions []map[string]any, nested bool) (map[string]int, error) {
-	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}}
+	return p15CallerInputGraphForWorkflow(actions, nested, "")
+}
+
+// The existing default and every semantic graph assertion stay identical;
+// a signed native companion supplies its actual compiler-selected self name.
+func p15CallerInputGraphForWorkflow(actions []map[string]any, nested bool, workflowName string) (map[string]int, error) {
+	g := &p15FunctionGraph{actual: actions, groups: map[string]bool{}, workflowName: workflowName}
 	positions := map[string]int{}
 	envelope := g.header("inspect")
 	caller := p15FunctionVariable("_cherri_caller_input")
