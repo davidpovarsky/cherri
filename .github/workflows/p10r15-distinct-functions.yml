@@ -1,0 +1,65 @@
+name: Docs Original Publication Provider Controls
+
+"on": create
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-provider-annotation-cf42869-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-publication-controls:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-docs-provider-annotation-20261127' &&
+      github.run_attempt == '1'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    steps:
+      - name: Check out the exact controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the fixed compiler source
+        uses: actions/checkout@v6
+        with:
+          ref: cf42869ab558c0b84cd5bfc599052afb86e48d15
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the exact regression source
+        uses: actions/checkout@v6
+        with:
+          ref: 5f184cd60d26e9e683c87e4acd231912231493c1
+          path: regression
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select the existing qualified Go version
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.13'
+          cache-dependency-path: source/go.sum
+
+      - name: Qualify the original parser and preserved rejection controls
+        timeout-minutes: 21
+        run: /usr/bin/python3 -I -B controller/tools/ci/distinct_functions/run.py
+
+      - name: Retain original source and test streams
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-provider-annotation-cf42869-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-docs-provider-annotation-cf42869
+          if-no-files-found: error
+          retention-days: 30
+          include-hidden-files: true
