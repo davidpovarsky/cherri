@@ -13,7 +13,7 @@ Cherri Language v2.0 is a modern, statically typed language that compiles direct
 |---------|---------------|-------------|
 | **Variable Declaration** | `@var = value` or `const var = value` | `let var = value` (immutable), `var var = value` (mutable) |
 | **String Interpolation** | `"Hello {var}"` (ad-hoc braces) | `f"Hello {var}"` (true parsed expressions inside `{}`) |
-| **Raw Strings** | Not supported | `r"\d+\s+"` (no escape parsing) |
+| **Raw Strings** | `'\d+\s+'` (single-quoted raw text) | `r"\d+\s+"` (no escape parsing) |
 | **Multiline Strings** | Not supported | `"""line 1\nline 2"""` |
 | **Function Declarations** | Header dispatch hack | `function name(params) -> ReturnType { ... }` (AST-first) |
 | **Call Arguments** | Unlabeled positional only | Primary argument + named labels: `resizeImage(photo, width: 800)` |
