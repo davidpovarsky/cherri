@@ -222,8 +222,26 @@ func TestP15MeasureInputBoundaryOracleControls(t *testing.T) {
 					case "extra_capture_parameter":
 						bad[first.capture].WFWorkflowActionParameters["WFCoercion"] = "Text"
 					case "external_restore_consumer":
-						// A valid preceding edge still cannot disappear from the ordinary graph.
-						bad[len(bad)-1].WFWorkflowActionParameters["WFTextActionText"] = p15FunctionEdge(first.restoreID)
+						// Use a native consumer with its own parameter map. An incidental
+						// trailing action may have no parameters and cannot host this edge.
+						timerName, ok := actual[first.timer].WFWorkflowActionParameters["WFVariableName"].(string)
+						if !ok || timerName == "" {
+							t.Fatal("healthy timer has no native variable name")
+						}
+						healthy := append(p15MeasureVoidClone(t, actual), ShortcutAction{
+							WFWorkflowActionIdentifier: "is.workflow.actions.getvariable",
+							WFWorkflowActionParameters: map[string]any{
+								"WFVariable": p15FunctionVariable(timerName),
+							},
+						})
+						if _, err := p15MeasureInputProjection(healthy, 2, BuildProfileDebug); err != nil {
+							t.Fatalf("native consumer before dependency mutation: %v", err)
+						}
+						bad = p15MeasureVoidClone(t, healthy)
+						bad[len(bad)-1].WFWorkflowActionParameters["WFVariable"] = p15FunctionEdge(first.restoreID)
+						if _, err := p15MeasureInputProjection(bad, 2, BuildProfileDebug); err == nil || !strings.Contains(err.Error(), "body depends on an input producer") {
+							t.Fatalf("restore dependency must fail before body comparison: %v", err)
+						}
 					case "duplicate_helper_uuid":
 						bad[first.capture].WFWorkflowActionParameters["UUID"] = first.restoreID
 					case "orphan_capture":
