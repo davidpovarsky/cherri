@@ -75,6 +75,20 @@ The semantic evaluators check the actual emitted action edges, native-type witne
 
 The model uses explicit synthetic native values. It does not discover what Apple will actually coerce, localize, flatten, omit, or return on a supported device. Both semantic reports state `nativeRuntimeExecuted:false` and `fileClassAccepted:false`. The original File contract must remain open until an authorized signed native run demonstrates the returned class and subsequent File consumer behavior. No speculative plist class or undocumented conversion was added to make that result appear complete.
 
+## Unexecuted native File candidate and probe plan
+
+**Hypothesis only:** create an archive from the completed original Text, extract its single item, then assign the final filename. The production Encode → Decode → Set Name carrier remains unchanged and native File acceptance remains open.
+
+The canonical definitions in `actions/documents.cherri:16–20` already provide `makeArchive(files, ".zip", name)` through `is.workflow.actions.makezip` with `WFInput`, `WFArchiveFormat`, and `WFZIPName`, and `extractArchive(file)` through `is.workflow.actions.unzip` with `WFArchive`. Their entries in `docs/apple-runtime/macos-27/builtin-actions.json` declare `WFGenericFileContentItem` outputs: one archive, then multiple extracted files. Neither action requires a provider destination. These declarations do not prove actual File class, exact UTF-8 bytes, or naming behavior.
+
+Preserve the original failures recorded in `docs/apple-runtime/p10r15/debug-export-contract.md`: run `44466065158` observed `TYPE_FILE=N`, `TYPE_DICT=Y`, and `COERCED_FILE=N`; Get File of Type run `44334287258` failed. Run `44429796917` established bytes/name and relative type preservation, not independent File acceptance.
+
+A separately named `qa-file-archive-materialization-v2` experiment should compile original Text → Make Archive → Extract Archive → count-one check → first item → Set Name. Record the existing carrier baseline independently. Use fixed synthetic JSON with significant whitespace, numeric spelling, escaped characters, Unicode, and a trailing newline; independently fix its expected bytes. Require exactly one extracted item, native class observations before/after naming, exact Base64 UTF-8 bytes, and reconstructed Name plus File Extension. Preserve the original independent binary/Text/Dictionary type witnesses and alias checks. Observe the candidate before conversion consumers; retain failed observations unchanged.
+
+Hosted routing remains blocked: `.github/workflows/cherri-ios27-shortcuts-simulator-qa.yml` has a closed `sample_id` choice, and `scripts/ios27_shortcuts_simulator_qa.sh` separately allowlists selectors. The original file diagnostic binds its immutable fixture hash; `all` selects `qa-functional-v2`. The current GitHub credential rejected workflow changes for missing OAuth workflow scope. No original case may be repurposed.
+
+A separate macOS diagnostic route exists: unchanged `tools/shortcut-runtime/jxa/observe_original_action_values.js` constructs a transient, save-disabled workflow from the original compiler-emitted action array. `workflowkit-stored-values-20261127.json` and its retained originals bind the ShortcutKit prelude at `ee52c32937053268e4a035eba4b372fe77ec6411`, existing owner/process wrapper, and prior Text observation. Preserve its 16-action, 8-second engine, 20-second command, 60-second owner, and 1 MiB stream limits, source hashes, create-only records, and owned-process cleanup. Fresh owner admission and graph effect review are required; the observer itself does not restrict action effects. Archive temporary-file behavior remains unobserved. This investigation executed no candidate, created no fixture/runner, and changed no workflow. Any macOS result remains separate from original signed/iPad gates.
+
 ## Reproduction
 
 ```sh
