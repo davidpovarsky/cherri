@@ -1471,6 +1471,7 @@ func TestP10R9_SequentialMixedCompilesIsolation(t *testing.T) {
 // and verifies that both changes propagate automatically to Legacy, V2, --actions-json, schema, mobile
 // catalog, and hybrid import.
 func TestP10R9_SSoTPropagation_DeclarativeAndGoHandler(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	ws := copyIsolatedSSoTWorkspace(t)
 
 	basicPath := filepath.Join(ws, "actions", "basic.cherri")

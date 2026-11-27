@@ -58,6 +58,7 @@ func TestP15RP34RejectedMigrationPreservesOriginal(t *testing.T) {
 }
 
 func TestP15RP34ActualWriteFailurePreservesOriginal(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	// The isolated source copy changes only the final rename destination to a
 	// child of the existing source file. This creates a real OS write failure
 	// after conversion, temporary-file write, flush and close on every platform.

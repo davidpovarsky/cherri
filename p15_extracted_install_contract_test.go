@@ -451,6 +451,7 @@ func TestP15RP42ExtractedInstallPublicCLI(t *testing.T) {
 }
 
 func TestP15RP42MigrationDocumentedFlags(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	root, err := filepath.Abs(".")
 	if err != nil {
 		t.Fatal(err)

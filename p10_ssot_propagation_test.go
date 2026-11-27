@@ -552,6 +552,7 @@ func copyIsolatedSSoTWorkspace(t *testing.T) string {
 // running `go run ./tools/language-schema`, and verifying automatic propagation across all 17 stages
 // and consumers (plus parameter addition propagation) without touching any other source file.
 func TestP10_RealSSoTSourceToConsumersPropagation(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	ws := copyIsolatedSSoTWorkspace(t)
 	basicPath := filepath.Join(ws, "actions", "basic.cherri")
 	origBasicBytes, err := os.ReadFile(basicPath)
@@ -905,6 +906,7 @@ func extractFirstActionForParamTest(t *testing.T, plistBytes []byte) map[string]
 // .cherri declarations, generated_registry.go, facets, emitter ownership, and Pack modules
 // each fail closed deterministically.
 func TestP10_SSoTNegativeDriftDetection(t *testing.T) {
+	p15FullSuiteSubprocessParallel(t)
 	ws := copyIsolatedSSoTWorkspace(t)
 	basicPath := filepath.Join(ws, "actions", "basic.cherri")
 	genRegPath := filepath.Join(ws, "internal", "language", "schema", "generated_registry.go")
