@@ -1,0 +1,67 @@
+name: P10R15 Original Canonical C1 Refresh
+
+# The authentic raw505/C0 successor is fixed below. One reviewed create event,
+# separate controller and producer, no remote write token or retry.
+"on": create
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cherri-canonical-c1-a763-20261127
+  cancel-in-progress: false
+
+jobs:
+  original-c1:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-canonical-c1-a763-20261127' &&
+      github.ref == 'refs/heads/probe/cherri-p10r15-canonical-c1-a763-20261127' &&
+      github.run_attempt == '1'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    steps:
+      - name: Check out the exact event controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the fixed original C0 successor
+        uses: actions/checkout@v6
+        with:
+          ref: a7631a04b36e3a4ed0dffbb919d6508252024365
+          path: producer
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source and exact public Go prerequisites
+        id: prerequisites
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_c1/prepare.py
+
+      - name: Execute the original C1 refresh once
+        id: refresh
+        timeout-minutes: 30
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_c1/run.py
+
+      - name: Audit actual C1 originals and prepare the three-file adoption bundle
+        if: ${{ !cancelled() && steps.refresh.outcome == 'success' }}
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_c1/adopt.py
+
+      - name: Seal original receipts and complete streams
+        if: always()
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_c1/prepare.py --seal
+
+      - name: Retain original C1 products and the adoption bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-c1-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-canonical-c1-${{ github.run_id }}-1/evidence
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
