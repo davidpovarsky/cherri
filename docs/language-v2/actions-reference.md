@@ -8564,7 +8564,7 @@ url(url: Text)
 
 ## Compiler macros
 
-**Compiler Macro Fingerprint:** `bfa446ea152ef48e9a2b7f7177ef0c54409bc98bc2d1dfcf9b8e282e1f3c580e`
+**Compiler Macro Fingerprint:** `ce784c321463b31e50773d31ae44b660b5afad32e7a49e9435ade5d8b593cc7e`
 
 **Compiler Macros:** 16
 
@@ -8574,7 +8574,7 @@ Build profile `--build-profile=debug|release` defaults to debug. Release removes
 
 ### `cache`
 
-Legacy and V2 scalar scoped block with no block parameters. Lazy iOS27 Stored Content cache for source-typed Text, Number and Bool. The body must return one supported scalar; Void and complex/native objects are rejected. Literal key/ttl/scope; ttl0 bypasses storage. Versioned scalar envelope, post-body expiry, clock rollback and changed-policy misses. Sensitive values require explicit opt-in. Complex/native objects, atomic compare-and-set and recoverable native parser/storage errors are not supported; native cache acceptance remains pending.
+Legacy and V2 scalar scoped block with no block parameters. Lazy iOS27 Stored Content cache for source-typed Text, Number, Bool and Date. Date uses an epoch-offset archive with exact native reconstruction guards; its original object is returned on a miss. The body must return one supported value; Void and unqualified complex/native objects are rejected. Literal key/ttl/scope; ttl0 bypasses storage. Versioned scalar envelope, post-body expiry, clock rollback and changed-policy misses. Sensitive values require explicit opt-in. Dictionary/List/Optional/JsonNull/File, atomic compare-and-set and recoverable native parser/storage errors are not supported; native cache acceptance remains pending.
 
 ```cherri
 cache(key: Text, ttl: Number, global?: Bool, sensitive?: Bool, allowSensitive?: Bool) { <#body#> } -> AnyContent
@@ -8611,10 +8611,10 @@ debugClearLogs()
 
 ### `debugExport`
 
-Return one local JSON/text File without saving, sharing or uploading. Fully redacts payloads by default. Explicit redactSensitive:false exports only Text as base64-encoded UTF-8; other payloads report UNSUPPORTED_PAYLOAD_TYPE. includeDates:true reads each native item's Creation Date with explicit absent/ambiguous/unsupported statuses. includeLabels:true reads source-owned label ranges only when redactSensitive:false; otherwise labels remain redacted. Options are compile-time literals. Native runtime acceptance remains required.
+Return one local JSON/text artifact without saving, sharing or uploading. Payloads remain fully redacted by default. Explicit redactSensitive:false exports Text, native Number display text, ISO 8601 Dates and bounded Dictionary field diagnostics. Source Bool, null and List boundaries are not reconstructed. Nonempty literal redactKeys opts into structural field filtering, including credential and URL/query keys; with redactSensitive:true Text and non-Dictionary top-level payloads stay redacted. Empty keys preserve default disclosure. Unsupported native/nested values have explicit statuses. Dates and labels remain opt-in. Native File acceptance is separate.
 
 ```cherri
-debugExport(format?: Text = "json", includeDates?: Bool = false, includeTypes?: Bool = true, redactSensitive?: Bool = true, includeLabels?: Bool = false) -> File
+debugExport(format?: Text = "json", includeDates?: Bool = false, includeTypes?: Bool = true, redactSensitive?: Bool = true, includeLabels?: Bool = false, redactKeys?: List<Text>) -> File
 ```
 
 | Parameter | Type | Optional | Literal required | Default |
@@ -8624,6 +8624,7 @@ debugExport(format?: Text = "json", includeDates?: Bool = false, includeTypes?: 
 | `includeTypes` | `Bool` | true | true | true |
 | `redactSensitive` | `Bool` | true | true | true |
 | `includeLabels` | `Bool` | true | true | false |
+| `redactKeys` | `List<Text>` | true | true | - |
 
 ### `debugExportTrace`
 
@@ -8756,10 +8757,10 @@ measure(label: text) { <#body#> } -> AnyContent
 
 ### `paginate`
 
-Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Default URL mode accepts same-origin absolute URLs or simple sibling filenames. Optional cursor/page/offset modes use a fixed authored URL and replace one configured query value; cursor Text is encoded and roundtrip-checked, numeric next markers are exact bounded integers. Query byte order and unrelated query values remain unchanged. Exact marker and resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. An optional { page in ... } body receives the immutable native page Dictionary once per validated page, preserves lexical captured writes and must be Void; either zero cap skips it. Typed item selectors/returned items, Link parsing, HTTP status verification, retry and transport timeout remain separate contracts. Native runtime acceptance remains required.
+Traverse native Dictionary page bodies with ordered Dictionary items and a body next marker. Default URL mode accepts same-origin absolute URLs or simple sibling filenames. Optional cursor/page/offset modes use a fixed authored URL and replace one configured query value; cursor Text is encoded and roundtrip-checked, numeric next markers are exact bounded integers. Query byte order and unrelated query values remain unchanged. Exact marker and resolved-URL hash cycles, absent/empty next and literal caps stop traversal; either zero cap emits no GET. Optional headers use the native HTTP Dictionary codec with runtime leaf values. An optional { page in ... } body receives the immutable native page Dictionary once per validated page, preserves lexical captured writes and must be Void; either zero cap skips it. Optional itemKey selects a required Dictionary field and itemType determines List<Dictionary>, List<Text>, List<Number> or List<Bool> with native singleton/type guards. Values keep their original native reference. Number and Boolean modes fail before any GET when native Boolean and Number witnesses are indistinguishable. Empty/absent values and standalone nested Lists are not declared lossless result shapes. Link parsing, HTTP status verification, retry and transport timeout remain separate contracts. Native runtime acceptance remains required.
 
 ```cherri
-paginate(startURL: Text, itemsKey?: Text = "items", nextKey?: Text = "next", maxPages?: Number = 20, maxItems?: Number = 1000, headers?: Map<Text, AnyContent>, mode?: Text = "url", queryKey?: Text) { <#body#> } -> List<Map<Text, AnyContent>>
+paginate(startURL: Text, itemsKey?: Text = "items", nextKey?: Text = "next", maxPages?: Number = 20, maxItems?: Number = 1000, headers?: Map<Text, AnyContent>, mode?: Text = "url", queryKey?: Text, itemKey?: Text, itemType?: Text = "dictionary") { <#body#> } -> List<Map<Text, AnyContent>>
 ```
 
 | Parameter | Type | Optional | Literal required | Default |
@@ -8772,6 +8773,8 @@ paginate(startURL: Text, itemsKey?: Text = "items", nextKey?: Text = "next", max
 | `headers` | `Map<Text, AnyContent>` | true | true | - |
 | `mode` | `Text` | true | true | url |
 | `queryKey` | `Text` | true | true | - |
+| `itemKey` | `Text` | true | true | - |
+| `itemType` | `Text` | true | true | dictionary |
 
 ### `require`
 
