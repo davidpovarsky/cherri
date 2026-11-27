@@ -351,7 +351,7 @@ func collectLegacyScopedBody(name string, definition *actionDefinition, argument
 		block.resultType = Nil
 	}
 	if cacheOptions != nil && legacyCacheKind(block.resultType) == "" {
-		parserError("E_CACHE_VALUE_TYPE: cache supports present Text, Number or Bool; complex and native objects require a qualified persistence codec")
+		parserError("E_CACHE_VALUE_TYPE: cache supports present Text, Number, Bool or Date; complex and other native objects require a qualified persistence codec")
 	}
 	definition.outputType = block.resultType
 	if pageCallback {

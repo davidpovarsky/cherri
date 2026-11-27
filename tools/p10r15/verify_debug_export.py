@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Source-bound local debug export validation; the graph model is NOT Apple runtime."""
 import argparse, base64, copy, hashlib, json, os, pathlib, re, subprocess, sys, tempfile, textwrap, time
+import verify_debug_export_metadata as metadata_oracle
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PREFIX = "is.workflow.actions."
-ALLOWED = {"gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "setitemname"}
+ALLOWED = {"gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "setitemname",
+           "getvariable", "number", "dictionary", "getvalueforkey", "count", "text.match", "format.date"}
 ALLOWED_IDENTIFIERS = frozenset(PREFIX + name for name in ALLOWED)
 
 def extract_export_graph(actions, *, legacy):
@@ -148,17 +150,45 @@ class GraphModel:
             index += 1
         return previous
 
+def _native_items(value):
+    if isinstance(value, Value):
+        if value.kind == "Dictionary":
+            return [metadata_oracle.Native("Dictionary", {key: _native_items(item) for key,item in value.data.items()})]
+        return [metadata_oracle.Native(value.kind, value.data)]
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [item for raw in value for item in _native_items(raw)]
+    if isinstance(value, dict):
+        return [metadata_oracle.Native("Dictionary", {key: _native_items(item) for key,item in value.items()})]
+    if isinstance(value, bool):
+        return [metadata_oracle.Native("Bool", value)]
+    if isinstance(value, (int,float)):
+        return [metadata_oracle.number(value)]
+    if isinstance(value, str):
+        return [metadata_oracle.text(value)]
+    raise ValueError("unsupported model fixture type")
+
 def inspect_artifact(graph, items, fmt, redact, include_types):
-    model = GraphModel(items)
     before = [(id(v),v.kind,copy.deepcopy(v.data)) for v in items]
-    output = model.run(graph)
-    if output.kind != "File":
-        raise AssertionError("export does not return File")
-    content = output.data.decode("utf-8")
+    expanded = any(action["WFWorkflowActionIdentifier"] == PREFIX+"dictionary" for action in graph)
+    native_items = [native for value in items for native in _native_items(value)]
+    if expanded:
+        model = metadata_oracle.GraphModel(native_items, [])
+        boundary = metadata_oracle.content_boundary(graph)
+        content = metadata_oracle.scalar(model.run(graph,end=boundary+1),"Text").value
+        output = Value("TextEnvelope",content.encode("utf-8"))
+    else:
+        model = GraphModel(items)
+        output = model.run(graph)
+        if output.kind != "File":
+            raise AssertionError("export does not reach its historical modeled carrier")
+        content = output.data.decode("utf-8")
     if fmt == "json":
         decoded = json.loads(content)
         assert decoded["schemaVersion"] == "cherri.debug-export/1"
-        assert decoded["payloadPolicy"] == ("redacted" if redact else "text-only-base64")
+        expected_policy = metadata_oracle.payload_policy(redact) if expanded else ("redacted" if redact else "text-only-base64")
+        assert decoded["payloadPolicy"] == expected_policy
         assert decoded["dates"] == decoded["labels"] == "not-collected"
         entries = decoded["entries"]
     else:
@@ -166,13 +196,15 @@ def inspect_artifact(graph, items, fmt, redact, include_types):
         assert header.startswith("Cherri Debug Export 1\n")
         entries = [json.loads(line) for line in body.splitlines()]
     assert len(entries) == len(items), "entry count changed"
-    for entry, item in zip(entries,items):
+    for entry, item, native in zip(entries,items,native_items):
         if include_types:
             assert entry["nativeType"]["encoding"] == "base64-utf8"
             assert base64.b64decode(entry["nativeType"]["value"],validate=True).decode("utf-8") == "native:"+item.kind
         else:
             assert "nativeType" not in entry
-        if redact:
+        if expanded:
+            metadata_oracle.inspect_payload(entry,native,include_types,redact)
+        elif redact:
             assert entry["status"] == "REDACTED" and entry["payload"] is None
         elif item.kind == "Text":
             assert entry["status"] == "TEXT_PAYLOAD_ENCODED"
@@ -181,14 +213,15 @@ def inspect_artifact(graph, items, fmt, redact, include_types):
         else:
             assert entry["status"] == "UNSUPPORTED_PAYLOAD_TYPE" and entry["payload"] is None
     assert before == [(id(v),v.kind,v.data) for v in items], "model raw log mutated"
-    return {"entries":len(entries),"bytes":len(output.data),"modelExecutedActions":model.executed}
+    return {"entries":len(entries),"bytes":len(output.data),"modelExecutedActions":model.executed,
+            "nativeRuntimeExecuted":False,"fileClassAccepted":False}
 
 def run(command,cwd=ROOT,timeout=180):
     p = subprocess.run([str(v) for v in command],cwd=cwd,capture_output=True,text=True,encoding="utf-8",timeout=timeout)
     return p
 
 def fingerprint():
-    paths = [*ROOT.glob("*.go"),*ROOT.joinpath("internal/language").rglob("*.go"),*ROOT.joinpath("actions").glob("*.cherri"),*ROOT.joinpath("tools/shortcuts-simulator-qa/fixtures/p15-export-probes").glob("*.cherri"),ROOT/"tools/shortcuts-simulator-qa/fixtures/p15-export-probes/manifest.json",ROOT/"docs/apple-runtime/macos-27/builtin-actions.json",ROOT/"go.mod",ROOT/"go.sum",pathlib.Path(__file__).resolve()]
+    paths = [*ROOT.glob("*.go"),*ROOT.joinpath("internal/language").rglob("*.go"),*ROOT.joinpath("actions").glob("*.cherri"),*ROOT.joinpath("tools/shortcuts-simulator-qa/fixtures/p15-export-probes").glob("*.cherri"),ROOT/"tools/shortcuts-simulator-qa/fixtures/p15-export-probes/manifest.json",ROOT/"docs/apple-runtime/macos-27/builtin-actions.json",ROOT/"go.mod",ROOT/"go.sum",pathlib.Path(__file__).resolve(),ROOT/"tools/p10r15/verify_debug_export_metadata.py"]
     digest = hashlib.sha256()
     for path in sorted(set(paths)):
         digest.update(path.relative_to(ROOT).as_posix().encode()+b"\0"+path.read_bytes()+b"\0")
@@ -296,7 +329,7 @@ def main():
     base=graphs[(False,"json",False,True)]
     default=graphs[(False,"json",True,True)]
     def mutate_linebreak(g):
-        next(a for a in g if a["WFWorkflowActionIdentifier"]==PREFIX+"base64encode" and a["WFWorkflowActionParameters"]["WFInput"]["Value"].get("VariableName")=="Repeat Item")["WFWorkflowActionParameters"]["WFBase64LineBreakMode"]="Every 76 Characters"
+        next(a for a in g if a["WFWorkflowActionIdentifier"]==PREFIX+"base64encode" and a["WFWorkflowActionParameters"].get("WFEncodeMode")=="Encode")["WFWorkflowActionParameters"]["WFBase64LineBreakMode"]="Every 76 Characters"
     def mutate_redaction(g):
         next(a for a in g if a["WFWorkflowActionIdentifier"]==PREFIX+"base64encode")["WFWorkflowActionParameters"]["WFInput"]={"WFSerializationType":"WFTextTokenAttachment","Value":{"Type":"Variable","VariableName":"Repeat Item"}}
     def mutate_witness(g):
@@ -354,7 +387,7 @@ def main():
       "sourceFingerprint":before,"compilerSha256":hashlib.sha256(exe.read_bytes()).hexdigest(),
       "schemaFingerprint":caps.get("schemaFingerprint"),"macroFingerprint":caps.get("macroFingerprint"),
       "nativeMetadata":verify_native_metadata(),
-      "scope":["macro produces one File; main fallthrough is verified separately; no provider save/share/network","default full payload redaction","opt-in Text payloads explicitly base64-utf8","non-Text payloads explicitly unsupported","dates/labels not collected"],
+      "scope":["local artifact carrier; native File acceptance remains open; no provider save/share/network","default full payload redaction","opt-in Text, native Number presentation and ISO 8601 Date payloads","Dictionary field diagnostics explicitly not lossless; source Bool/null/List boundaries not reconstructed","unsupported nested/native/cardinality cases have explicit statuses","this historical CLI cohort keeps dates/labels disabled except admitted date sources"],
       "nativeAssumptionsStillRequiringSignedRuntime":["empty cleared log Repeat cardinality","native Text Base64 UTF-8 including empty Text and controls","Text envelope Base64 Encode/Decode byte conversion","Set Name on newly produced File","Repeat and If result collection for 0/1/1000 items"],
       "summary":{"cliCompiles":len(checks),"exactNativeActionRoundtrips":len(checks),"independentModelCases":sum(len(c["models"]) for c in checks),"cliNegatives":len(negatives),"causalFaults":len(faults),"nativeProbeCompiles":len(native_probes),"admittedHistoricalDateSourceCases":len(admitted_date_sources),"nativeExecuted":0,"elapsedSeconds":round(time.monotonic()-started,3)},
       "compiles":checks,"cliNegatives":negatives,"admittedHistoricalDateSources":admitted_date_sources,"causalFaults":faults,"nativeProbes":native_probes,

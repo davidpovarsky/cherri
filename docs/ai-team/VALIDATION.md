@@ -25,5 +25,10 @@ This document outlines the automated and manual verification procedures for the 
    - Perform safe read -> meaningful write -> read-back test on designated setup tasks.
    - Verify task completion gating (tasks without physical device proof remain open).
 
-## 3. Branch Diagnostic Tool
-Run `tools/ai-team/ensure-team.ps1 -Check` to verify configuration integrity on any branch.
+## 3. File Presence Precheck
+
+Run `tools/ai-team/ensure-team.ps1 -Check` from PowerShell to check the required configuration files in the current worktree. Omitting `-Check` performs the same read-only precheck.
+
+The command succeeds only when every listed path is a file. Missing files and directories occupying a required file path fail the precheck. Existing paths are never modified. `-Apply` is unsupported and exits with an error without changing files; this script does not restore missing files.
+
+A successful precheck establishes file presence only. It does not validate YAML or TOML syntax, rule triggers or size, relative links, policy contents, role activation, or Asana behavior. **Every static validation and runtime smoke-test requirement in sections 1 and 2 remains required.**

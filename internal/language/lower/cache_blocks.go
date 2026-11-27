@@ -30,7 +30,7 @@ func (l *Lowerer) lowerCacheBlock(call *syntax.CallExpr) (any, error) {
 	resultExpr := syntax.BlockResultExpression(body)
 	kind := schema.CacheValueKind(l.exprTypes[call])
 	if resultExpr == nil || kind == "" || schema.CacheValueKind(l.exprTypes[resultExpr]) != kind {
-		return nil, fmt.Errorf("E_CACHE_VALUE_TYPE: cache result requires a matching present scalar source type")
+		return nil, fmt.Errorf("E_CACHE_VALUE_TYPE: cache result requires a matching present persistent source type")
 	}
 	previousBinding, previousStatement := l.currentBindingName, l.inExprStmt
 	l.currentBindingName, l.inExprStmt = "", false
@@ -70,10 +70,10 @@ func (l *Lowerer) lowerCacheBlock(call *syntax.CallExpr) (any, error) {
 				return nil, fmt.Errorf("E_CACHE_VALUE_TYPE: cache body has no native scalar value")
 			}
 			switch token.Type {
-			case "ActionOutput":
-				return &backend.Reference{Kind: backend.RefActionResult, ProducerID: token.OutputUUID, ProducerName: token.OutputName}, nil
-			case "Variable":
-				return &backend.Reference{Kind: backend.RefMutableBinding, ProducerName: token.OutputName}, nil
+			case "ActionOutput", "Variable", "CurrentDate":
+				// The authored source type may depend on reference coercions.
+				// Preserve them through the existing canonical adapter.
+				return l.toSemanticValue(token).Ref, nil
 			default:
 				return nil, fmt.Errorf("E_CACHE_VALUE_TYPE: unsupported native scalar source reference %q", token.Type)
 			}

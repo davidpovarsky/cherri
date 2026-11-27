@@ -60,7 +60,7 @@ REQUIREMENTS = (
     ("export", "1220544665232213", "Local debugExport", ("debugExport",),
      "Local returned file; typed JSON/text or explicit opaque placeholders; safe escaping and default redaction.",
      "PARTIAL_IMPLEMENTATION", ("Apple returned-file/UTF-8/cardinality runtime evidence",),
-     ("Local export source supports full default redaction, explicit Text-only base64 payloads, guarded item Creation Date and separately opt-in labels. Structured payloads, selective redaction, native Date/label behavior and returned File acceptance remain open. QA debugExportTrace is separate.",)),
+     ("Local export source preserves full default redaction. Explicit disclosure supports Text, native Number display text, ISO 8601 Dates and bounded Dictionary field diagnostics; nonempty literal redactKeys filters fields before value access. Source Bool/null/List boundaries, nested containers, native Date/label behavior and returned File acceptance remain open. Separate feature tests do not grant runtime credit to this ledger; QA debugExportTrace is separate.",)),
     ("blocks", "1220544718901241", "Shared typed block facility", ("measure",),
      "Scoped typed block/IR, one evaluation, shadowing, value/void, nesting and explicit unavailable-dialect diagnostics.",
      "PARTIAL_IMPLEMENTATION", (),
@@ -76,7 +76,7 @@ REQUIREMENTS = (
     ("cache", "1220544665232085", "Persistent TTL cache", ("cache",),
      "Explicit namespace/scope/TTL and honest serialization, invalidation, clock and permission behavior.",
      "IMPLEMENTATION_GAP_AND_NATIVE_PREREQUISITE", ("Stored Content cross-run/restart/global-local readback", "Physical iPad persistence/background proof"),
-     ("These ledger cases do not exercise cache persistence, payload round trips, expiry, invalidation or native error behavior.",)),
+     ("Shared source supports Text/Number/Bool and guarded Date epoch-offset archives. Dictionary/List/Optional/JsonNull/File persistence remains unsupported. This ledger does not exercise persistence, payload round trips, expiry, invalidation or native error behavior; invalid numeric Date archives may abort in native Adjust Date before reconstruction guards.",)),
     ("retry", "1220544651247273", "Bounded retry", ("retry",),
      "Bounded attempts/backoff with actual transport/status/permission/cancel classification and idempotence safeguards.",
      "IMPLEMENTATION_GAP_AND_NATIVE_PREREQUISITE", ("Recoverable native error/status contract and signed synthetic endpoint probes",),
@@ -84,7 +84,7 @@ REQUIREMENTS = (
     ("paginate", "1220544665232021", "Bounded pagination", ("paginate",),
      "Explicit limits/cursor termination, typed aggregation and malformed/error/rate-limit/credential safeguards.",
      "BOUNDED_GET_IMPLEMENTATION", ("Signed synthetic multi-page HTTP/schema/error observation",),
-     ("The shared bounded GET/body-cursor implementation has page/item limits and cycle guards. Response headers/status, transport recovery, redirect limits and generic retry remain outside its proven contract.",)),
+     ("The shared bounded GET implementation has page/item limits, cycle guards, page callbacks and literal Dictionary/Text/Number/Bool item selection with optional key projection. These ledger cases exercise the default Dictionary route only; separate typed-selection tests do not establish native list shape. Response headers/status, transport recovery, redirect limits and generic retry remain outside its proven contract.",)),
     ("profiles", "1220544607463126", "Debug and Release", ("debugLog", "require", "measure"),
      "Compile-time diagnostic removal while retaining semantic require checks and original native producers.",
      "PARTIAL_IMPLEMENTATION", ("Native result equivalence and debug-mode acceptance",),
@@ -310,23 +310,25 @@ def origin_matches(actions, producer, dialect):
 
 
 def empty_measure_void_graph_matches(actions, profile, dialect):
-    # Independent empty-body contract from EmitScopedMeasureVoid and the existing
-    # p15MeasureVoidGraphError oracle: start clock, elapsed diagnostic, then one
-    # parameter-free Nothing. Bind only opaque producer/slot identities; compare
-    # every action, parameter, token wrapper and reference without normalizing
-    # or deleting any observed graph element.
-    if profile != "debug" or dialect not in ("legacy", "v2") or type(actions) is not list or len(actions) != 5:
+    # Independent complete empty-body contract from EmitScopedMeasureVoid and
+    # its canonical Previous boundary: capture native input, start the timer,
+    # restore the owned input, then elapsed/log/forward and parameter-free Nothing.
+    # Bind only opaque identities; retain every action, field and reference.
+    if profile != "debug" or dialect not in ("legacy", "v2") or type(actions) is not list or len(actions) != 7:
         return False
-    if any(type(a) is not dict for a in actions) or any(type(a.get("WFWorkflowActionParameters")) is not dict for a in actions[:4]):
+    if any(type(a) is not dict for a in actions) or any(type(a.get("WFWorkflowActionParameters")) is not dict for a in actions[:6]):
         return False
-    timer = params(actions[0]).get("WFVariableName")
-    elapsed = params(actions[1]).get("UUID")
-    forwarded = params(actions[3]).get("UUID")
+    input_name = params(actions[0]).get("WFVariableName")
+    timer = params(actions[1]).get("WFVariableName")
+    restored = params(actions[2]).get("UUID")
+    elapsed = params(actions[3]).get("UUID")
+    forwarded = params(actions[5]).get("UUID")
     uuid = r"[0-9A-Fa-f]{8}-(?:[0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}"
-    if (type(timer) is not str or not timer.startswith("__cherri_debug_timer_") or
-        len(timer) <= len("__cherri_debug_timer_") or
-        any(type(value) is not str or re.fullmatch(uuid, value) is None for value in (elapsed, forwarded)) or
-        elapsed == forwarded):
+    identities = (restored, elapsed, forwarded)
+    if (type(input_name) is not str or re.fullmatch(r"__cherri_block_[0-9A-Fa-f]{32}_input", input_name) is None or
+        type(timer) is not str or re.fullmatch(r"__cherri_debug_timer_[0-9a-f]{16}", timer) is None or
+        any(type(value) is not str or re.fullmatch(uuid, value) is None for value in identities) or
+        len({value.lower() for value in identities}) != len(identities)):
         return False
     def attachment(value):
         return {"WFSerializationType": "WFTextTokenAttachment", "Value": value}
@@ -337,7 +339,9 @@ def empty_measure_void_graph_matches(actions, profile, dialect):
         return {"WFWorkflowActionIdentifier": NATIVE_PREFIX + suffix, "WFWorkflowActionParameters": parameters}
     elapsed_ref = {"Type": "ActionOutput", "OutputUUID": elapsed, "OutputName": "Time Between Dates"}
     expected = [
+        action("setvariable", {"WFVariableName": input_name}),
         action("setvariable", {"WFVariableName": timer, "WFInput": attachment({"Type": "CurrentDate"})}),
+        action("getvariable", {"UUID": restored, "WFVariable": attachment({"Type": "Variable", "VariableName": input_name})}),
         action("gettimebetweendates", {"UUID": elapsed, "WFTimeUntilUnit": "Seconds",
             "WFTimeUntilFromDate": date_string({"Type": "Variable", "VariableName": timer}),
             "WFInput": date_string({"Type": "CurrentDate"})}),
@@ -521,6 +525,12 @@ MUTATION_SCENARIOS = (
         "void_wrong_elapsed_log", "void_wrong_elapsed_forward", "void_elapsed_coercion",
         "void_wrong_unit", "void_missing_boundary", "void_boundary_payload",
         "void_extra_value", "void_duplicate_elapsed_id", "void_extra_action",
+    )) + tuple((case, mutation, "emptyVoidWholeGraph")
+    for case in ("measure_legacy_empty_rejected", "measure_v2_empty_statement")
+    for mutation in (
+        "void_input_capture_has_input", "void_input_capture_order", "void_missing_input_capture",
+        "void_input_restore_wrong_slot", "void_input_restore_coercion", "void_input_restore_order",
+        "void_input_restore_missing_id", "void_input_restore_duplicate_id", "void_missing_input_restore",
     ))
 
 
@@ -532,31 +542,59 @@ def check_mutations(outputs):
         if actual is None:
             rows.append({"case": case_id, "mutation": mutation, "verdict": "FAIL", "reason": "positive compile missing"})
             continue
-        changed = copy.deepcopy(actual)
         spec = specs[case_id]
+        original = structural_checks(spec["kind"], spec["profile"], actual, spec["dialect"])
+        if not all(original.values()) or not original.get(expected, False):
+            rows.append({"case": case_id, "mutation": mutation, "intendedCheck": expected,
+                         "positiveControl": False, "faultRejected": False, "verdict": "FAIL",
+                         "reason": "positive graph contract failed before mutation"})
+            continue
+        changed = copy.deepcopy(actual)
         consumer = final_consumer_index(changed, spec["dialect"])
-        if mutation == "void_wrong_start_clock":
-            params(changed[0])["WFInput"]["Value"]["Type"] = "Clipboard"
+        if spec["kind"] == "measure-void":
+            # The complete positive oracle above establishes these exact roles
+            # and boundaries before any causal corruption is attempted.
+            captured, timer, restored, elapsed, logged, forwarded, boundary = changed
+        if mutation == "void_input_capture_has_input":
+            params(captured)["WFInput"] = {"WFSerializationType": "WFTextTokenAttachment", "Value": {"Type": "Clipboard"}}
+        elif mutation == "void_input_capture_order":
+            changed[0], changed[1] = timer, captured
+        elif mutation == "void_missing_input_capture":
+            changed.remove(captured)
+        elif mutation == "void_input_restore_wrong_slot":
+            params(restored)["WFVariable"]["Value"]["VariableName"] += "_unowned"
+        elif mutation == "void_input_restore_coercion":
+            params(restored)["WFVariable"]["Value"]["Aggrandizements"] = [{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}]
+        elif mutation == "void_input_restore_order":
+            changed[2], changed[3] = elapsed, restored
+        elif mutation == "void_input_restore_missing_id":
+            del params(restored)["UUID"]
+        elif mutation == "void_input_restore_duplicate_id":
+            params(restored)["UUID"] = params(elapsed)["UUID"]
+        elif mutation == "void_missing_input_restore":
+            changed.remove(restored)
+        elif mutation == "void_wrong_start_clock":
+            params(timer)["WFInput"]["Value"]["Type"] = "Clipboard"
         elif mutation == "void_wrong_stop_origin":
-            params(changed[1])["WFTimeUntilFromDate"]["Value"]["attachmentsByRange"]["{0, 1}"]["VariableName"] += "_unowned"
+            params(elapsed)["WFTimeUntilFromDate"]["Value"]["attachmentsByRange"]["{0, 1}"]["VariableName"] += "_unowned"
         elif mutation == "void_wrong_stop_clock":
-            params(changed[1])["WFInput"]["Value"]["attachmentsByRange"]["{0, 1}"]["Type"] = "Clipboard"
+            params(elapsed)["WFInput"]["Value"]["attachmentsByRange"]["{0, 1}"]["Type"] = "Clipboard"
         elif mutation == "void_wrong_elapsed_log":
-            params(changed[2])["WFInput"]["Value"]["OutputUUID"] = params(changed[3])["UUID"]
+            params(logged)["WFInput"]["Value"]["OutputUUID"] = params(forwarded)["UUID"]
         elif mutation == "void_wrong_elapsed_forward":
-            params(changed[3])["WFVariable"]["Value"]["OutputUUID"] = params(changed[3])["UUID"]
+            params(forwarded)["WFVariable"]["Value"]["OutputUUID"] = params(forwarded)["UUID"]
         elif mutation == "void_elapsed_coercion":
-            params(changed[3])["WFVariable"]["Value"]["Aggrandizements"] = [{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}]
+            params(forwarded)["WFVariable"]["Value"]["Aggrandizements"] = [{"Type": "WFCoercionVariableAggrandizement", "CoercionItemClass": "WFStringContentItem"}]
         elif mutation == "void_wrong_unit":
-            params(changed[1])["WFTimeUntilUnit"] = "Minutes"
+            params(elapsed)["WFTimeUntilUnit"] = "Minutes"
         elif mutation == "void_missing_boundary":
-            changed.pop()
+            changed.remove(boundary)
         elif mutation == "void_boundary_payload":
-            changed[-1]["WFWorkflowActionParameters"] = {"WFInput": "invented value"}
+            boundary["WFWorkflowActionParameters"] = {"WFInput": "invented value"}
         elif mutation == "void_extra_value":
-            changed.insert(4, {"WFWorkflowActionIdentifier": NATIVE_PREFIX + "number", "WFWorkflowActionParameters": {"WFNumberActionNumber": 0}})
+            changed.insert(changed.index(boundary), {"WFWorkflowActionIdentifier": NATIVE_PREFIX + "number", "WFWorkflowActionParameters": {"WFNumberActionNumber": 0}})
         elif mutation == "void_duplicate_elapsed_id":
-            params(changed[3])["UUID"] = params(changed[1])["UUID"]
+            params(forwarded)["UUID"] = params(elapsed)["UUID"]
         elif mutation == "void_extra_action":
             changed.append({"WFWorkflowActionIdentifier": NATIVE_PREFIX + "nothing"})
         elif mutation == "wrong_type_action":
@@ -579,13 +617,12 @@ def check_mutations(outputs):
         elif mutation == "wrong_final_consumer":
             changed[consumer]["WFWorkflowActionIdentifier"] = NATIVE_PREFIX + "count"
         elif mutation == "original_uuid_replaced":
-            original = next(a for a in named(changed, "gettext") if params(a).get("WFTextActionText") == MARKER)
-            params(original)["UUID"] = "replaced-original-producer"
+            original_producer = next(a for a in named(changed, "gettext") if params(a).get("WFTextActionText") == MARKER)
+            params(original_producer)["UUID"] = "replaced-original-producer"
         elif mutation == "page_budget_changed":
             next(a for a in named(changed, "repeat.count") if str(params(a).get("WFControlFlowMode")) == "0")["WFWorkflowActionParameters"]["WFRepeatCount"] = 4
         else:
             changed.insert(consumer, {"WFWorkflowActionIdentifier": NATIVE_PREFIX + "gettimebetweendates", "WFWorkflowActionParameters": {}})
-        original = structural_checks(spec["kind"], spec["profile"], actual, spec["dialect"])
         altered = structural_checks(spec["kind"], spec["profile"], changed, spec["dialect"])
         ok = all(original.values()) and original[expected] and not altered[expected]
         rows.append({"case": case_id, "mutation": mutation, "intendedCheck": expected,

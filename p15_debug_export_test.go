@@ -111,7 +111,8 @@ func TestP15DebugExportBothFrontendsPrivacyAndIdentity(t *testing.T) {
 					p := a.WFWorkflowActionParameters
 					id := strings.TrimPrefix(a.WFWorkflowActionIdentifier, "is.workflow.actions.")
 					switch id {
-					case "gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "setitemname":
+					case "gettext", "getitemtype", "base64encode", "repeat.each", "conditional", "text.combine", "setitemname",
+						"number", "dictionary", "getvariable", "count", "getvalueforkey", "format.date", "text.match":
 					default:
 						t.Fatalf("export performs unexpected external effect or mutation: %s", id)
 					}

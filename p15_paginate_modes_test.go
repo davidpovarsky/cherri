@@ -267,14 +267,14 @@ func TestP15PaginateTraversalSchemaPreservesTypedContract(t *testing.T) {
 		!macro.OutputType.Equals(types.NewList(types.NewMap(types.Text, types.AnyContent))) {
 		t.Fatal("typed macro boundary changed")
 	}
-	want := []string{"startURL", "itemsKey", "nextKey", "maxPages", "maxItems", "headers", "mode", "queryKey"}
+	want := []string{"startURL", "itemsKey", "nextKey", "maxPages", "maxItems", "headers", "mode", "queryKey", "itemKey", "itemType"}
 	var ids []string
 	for _, parameter := range macro.Parameters {
 		ids = append(ids, parameter.ID)
 		if !parameter.Literal {
 			t.Fatalf("dynamic unbounded traversal option %s", parameter.ID)
 		}
-		if parameter.ID == "mode" || parameter.ID == "queryKey" {
+		if parameter.ID == "mode" || parameter.ID == "queryKey" || parameter.ID == "itemKey" || parameter.ID == "itemType" {
 			if !parameter.Optional || !parameter.Type.Equals(types.Text) {
 				t.Fatalf("additive literal mode contract lost: %+v", parameter)
 			}

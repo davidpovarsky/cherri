@@ -4,13 +4,13 @@ All eleven existing Asana children remain OPEN.
 
 This generated ledger records actual synthetic CLI compilation, native graph checks and exact lossless native-action roundtrip. It does not establish signed runtime, physical-device or installed-consumer acceptance.
 
-- Compiler source: b54e7eb1bc7fecc8b22ba543896873b1d1e4e18e
-- Source fingerprint: b4d9cc88483ed0521a8265e21d3b79dc98d571a03c46adab91fc5bb727d84158
-- Macro fingerprint: bfa446ea152ef48e9a2b7f7177ef0c54409bc98bc2d1dfcf9b8e282e1f3c580e
+- Compiler source: 54d6457295ef4c6bf106f743cc2b93ca32735760
+- Source fingerprint: 8f9d4c675199ff288ead426c3f7f43d9b415993fae47494d844be8254f3dc578
+- Macro fingerprint: ce784c321463b31e50773d31ae44b660b5afad32e7a49e9435ade5d8b593cc7e
 - Canonical compiler macros: 16
 - Structural execution: PASS
 - Compile checks: 21/21
-- Causal mutation checks: 38
+- Causal mutation checks: 56
 - Separate label compile checks: 12
 - Separate label causal mutation checks: 314
 
@@ -36,18 +36,18 @@ This generated ledger records actual synthetic CLI compilation, native graph che
 | require_v2_release | v2/release | 21 | True | PASS |
 | require_legacy_debug | legacy/debug | 21 | True | PASS |
 | require_legacy_release | legacy/release | 20 | True | PASS |
-| measure_v2_debug | v2/debug | 8 | True | PASS |
+| measure_v2_debug | v2/debug | 10 | True | PASS |
 | measure_v2_release | v2/release | 4 | True | PASS |
-| measure_legacy_debug | legacy/debug | 7 | True | PASS |
+| measure_legacy_debug | legacy/debug | 9 | True | PASS |
 | measure_legacy_release | legacy/release | 3 | True | PASS |
 | collect_v2_0 | v2/debug | 9 | True | PASS |
 | collect_v2_1 | v2/debug | 8 | True | PASS |
 | collect_v2_100 | v2/debug | 107 | True | PASS |
 | collect_v2_dictionary | v2/debug | 9 | True | PASS |
-| measure_legacy_empty_rejected | legacy/debug | 5 | True | PASS |
+| measure_legacy_empty_rejected | legacy/debug | 7 | True | PASS |
 | measure_legacy_control_value_rejected | legacy/debug | - | expected unavailable/invalid diagnostic | PASS |
 | measure_v2_empty_rejected | v2/debug | - | expected unavailable/invalid diagnostic | PASS |
-| measure_v2_empty_statement | v2/debug | 5 | True | PASS |
+| measure_v2_empty_statement | v2/debug | 7 | True | PASS |
 | measure_legacy_empty_binding_rejected | legacy/debug | - | expected unavailable/invalid diagnostic | PASS |
 | paginate_v2 | v2/debug | 183 | True | PASS |
 | paginate-zero_v2 | v2/debug | 4 | True | PASS |
@@ -58,7 +58,7 @@ measure_legacy_empty_rejected: Original rejected suffix retained; exact source i
 
 ## Separate label CLI component
 
-These twelve reviewed fixtures use the same freshly built compiler. Their existing helper verifies real graphs and 314 causal mutations. They are separate from the 21 cases and 38 mutations above; no label roundtrip, signed execution or native value/cardinality result is claimed. Native execution remains NOT_RUN and formal acceptance remains false.
+These twelve reviewed fixtures use the same freshly built compiler. Their existing helper verifies real graphs and 314 causal mutations. They are separate from the 21 cases and 56 mutations above; no label roundtrip, signed execution or native value/cardinality result is claimed. Native execution remains NOT_RUN and formal acceptance remains false.
 
 | Reviewed fixture | Native actions in unsigned graph | Rejected causal mutations | Native execution |
 |---|---:|---:|---|
@@ -79,13 +79,13 @@ These twelve reviewed fixtures use the same freshly built compiler. Their existi
 
 - Typed require: Full false/zero/null/empty/native-object matrix and native failure/cancel proof are not established by this ledger.
 - debugLog labels: Per-entry metadata and bounded source contracts are implemented; signed File-carrier byte identity still requires repair and acceptance. External prerequisites: Native file/object identity and six-mode label acceptance.
-- Local debugExport: Local export source supports full default redaction, explicit Text-only base64 payloads, guarded item Creation Date and separately opt-in labels. Structured payloads, selective redaction, native Date/label behavior and returned File acceptance remain open. QA debugExportTrace is separate. External prerequisites: Apple returned-file/UTF-8/cardinality runtime evidence.
+- Local debugExport: Local export source preserves full default redaction. Explicit disclosure supports Text, native Number display text, ISO 8601 Dates and bounded Dictionary field diagnostics; nonempty literal redactKeys filters fields before value access. Source Bool/null/List boundaries, nested containers, native Date/label behavior and returned File acceptance remain open. Separate feature tests do not grant runtime credit to this ledger; QA debugExportTrace is separate. External prerequisites: Apple returned-file/UTF-8/cardinality runtime evidence.
 - Shared typed block facility: V2 and Legacy share once-only typed-value and Void measure bodies with explicit empty-result boundaries. General parameterized blocks, control-result declarations and full early-error/cancellation semantics remain open.
 - Measure typed value: Legacy uses a final yield or value-producing call through existing structured tokens. Structural UUID/timer checks are not native elapsed-time, abort or cancellation proof. External prerequisites: Apple timing accuracy and error/cancel observation.
 - Typed collection: No standalone collect alias is introduced. Compiled Repeat Results does not prove runtime flattening behavior. External prerequisites: Native empty/mixed/nested collection shape and performance observation.
-- Persistent TTL cache: These ledger cases do not exercise cache persistence, payload round trips, expiry, invalidation or native error behavior. External prerequisites: Stored Content cross-run/restart/global-local readback; Physical iPad persistence/background proof.
+- Persistent TTL cache: Shared source supports Text/Number/Bool and guarded Date epoch-offset archives. Dictionary/List/Optional/JsonNull/File persistence remains unsupported. This ledger does not exercise persistence, payload round trips, expiry, invalidation or native error behavior; invalid numeric Date archives may abort in native Adjust Date before reconstruction guards. External prerequisites: Stored Content cross-run/restart/global-local readback; Physical iPad persistence/background proof.
 - Bounded retry: No evidence establishes catchable transport failures; Alert plus Stop Shortcut is not exception handling. External prerequisites: Recoverable native error/status contract and signed synthetic endpoint probes.
-- Bounded pagination: The shared bounded GET/body-cursor implementation has page/item limits and cycle guards. Response headers/status, transport recovery, redirect limits and generic retry remain outside its proven contract. External prerequisites: Signed synthetic multi-page HTTP/schema/error observation.
+- Bounded pagination: The shared bounded GET implementation has page/item limits, cycle guards, page callbacks and literal Dictionary/Text/Number/Bool item selection with optional key projection. These ledger cases exercise the default Dictionary route only; separate typed-selection tests do not establish native list shape. Response headers/status, transport recovery, redirect limits and generic retry remain outside its proven contract. External prerequisites: Signed synthetic multi-page HTTP/schema/error observation.
 - Debug and Release: The controlled compiler comparisons cover declared fixtures; they do not establish every diagnostic or runtime path. External prerequisites: Native result equivalence and debug-mode acceptance.
 - Macro QA and consumers: This ledger builds and tests a compiler; it does not install a Skill, update a provider or execute on Apple. External prerequisites: Final pinned consumer tuple and signed/physical acceptance evidence.
 
