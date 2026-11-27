@@ -1,0 +1,62 @@
+name: P10R15 Original Canonical C2
+
+# The single reviewed creation of this branch is the activation. This workflow
+# is intentionally not registered through main and has no second trigger.
+"on": create
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cherri-canonical-c2-6509ae2df85b7b0384274c2a22c5b02785f5d189
+  cancel-in-progress: false
+
+jobs:
+  original-c2:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-canonical-c2-a763-20261127' &&
+      github.ref == 'refs/heads/probe/cherri-p10r15-canonical-c2-a763-20261127' &&
+      github.run_attempt == '1'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    steps:
+      - name: Check out the exact event controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out the original canonical producer
+        uses: actions/checkout@v6
+        with:
+          ref: 6509ae2df85b7b0384274c2a22c5b02785f5d189
+          path: producer
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source and exact public Go prerequisites
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_c2/prepare.py
+
+      - name: Execute original C2 once within its 600-second owner
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_c2/run.py
+
+      - name: Validate seven originals and prepare the C2 adoption bundle
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_c2/adopt.py
+
+      - name: Seal all original phase receipts and streams
+        if: always()
+        run: /usr/bin/python3 -I -B controller/tools/ci/canonical_c2/prepare.py --seal
+
+      - name: Retain original C2 products and prerequisite Git bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-c2-fb1-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cherri-canonical-c2-${{ github.run_id }}-1/evidence
+          if-no-files-found: error
+          retention-days: 30
