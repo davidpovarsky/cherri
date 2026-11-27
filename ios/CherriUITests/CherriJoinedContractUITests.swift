@@ -475,7 +475,20 @@ final class CherriJoinedContractUITests: XCTestCase {
         let dy = try XCTUnwrap(native["targetDY"] as? Double)
         try require(native["targetOffset"] as? Int == offset && (0...1).contains(dx) && (0...1).contains(dy),
                     "RP39 caret coordinate must come from this exact native source and target")
-        editor.coordinate(withNormalizedOffset: CGVector(dx: CGFloat(dx), dy: CGFloat(dy))).tap()
+        let startOffset = try XCTUnwrap(native["currentCaretOffset"] as? Int)
+        let startDX = try XCTUnwrap(native["currentCaretDX"] as? Double)
+        let startDY = try XCTUnwrap(native["currentCaretDY"] as? Double)
+        try require(native["selectionLength"] as? Int == 0
+                    && native["selectionLocation"] as? Int == startOffset
+                    && startDX.isFinite && startDY.isFinite
+                    && (0...1).contains(startDX) && (0...1).contains(startDY),
+                    "RP39 drag must begin at the observed current collapsed native caret")
+        let start = editor.coordinate(withNormalizedOffset: CGVector(dx: CGFloat(startDX), dy: CGFloat(startDY)))
+        let target = editor.coordinate(withNormalizedOffset: CGVector(dx: CGFloat(dx), dy: CGFloat(dy)))
+        // Use a real caret-placement gesture for an interior Unicode offset.
+        // The post-gesture source/selection/focus predicate and five seconds
+        // remain unchanged; no programmatic caret assignment is permitted.
+        start.press(forDuration: 1.0, thenDragTo: target)
         var lastNative: [String: Any]?
         var observedPolls = 0
         let selected = wait {
@@ -488,12 +501,14 @@ final class CherriJoinedContractUITests: XCTestCase {
                 && value["firstResponder"] as? Bool == true
         }
         if !selected {
-            // Reuse the real pre-tap and in-wait observations. This adds no AX
+            // Reuse the real pre-gesture and in-wait observations. This adds no AX
             // query, source text, event, deadline, or acceptance condition.
             let fields = ["status", "editorCount", "sourceSHA256", "utf16Length",
                           "selectionLocation", "selectionLength", "firstResponder",
                           "targetOffset", "targetDX", "targetDY", "targetEditorPoint",
-                          "targetWindowPoint", "editorWindowFrame", "targetClosestUTF16Offset"]
+                          "targetWindowPoint", "editorWindowFrame", "targetClosestUTF16Offset",
+                          "currentCaretOffset", "currentCaretDX", "currentCaretDY",
+                          "currentCaretEditorPoint", "currentCaretWindowPoint"]
             func retained(_ observation: [String: Any]?) -> [String: Any] {
                 guard let observation else { return ["status": "not-observed"] }
                 return Dictionary(uniqueKeysWithValues: fields.compactMap { key in
@@ -503,6 +518,7 @@ final class CherriJoinedContractUITests: XCTestCase {
             let observation: [String: Any] = [
                 "schema": "cherri-rp39-caret-failure-observation/1",
                 "diagnosticOnly": true, "requestedUTF16Offset": offset,
+                "gesture": "press-current-caret-then-drag-to-target", "pressDurationSeconds": 1.0,
                 "observedPolls": observedPolls, "waitCompleted": selected,
                 "before": retained(native), "last": retained(lastNative),
             ]
