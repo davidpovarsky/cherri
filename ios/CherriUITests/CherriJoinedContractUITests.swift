@@ -594,6 +594,66 @@ final class CherriJoinedContractUITests: XCTestCase {
         try require(alert.waitForNonExistence(timeout: 5), "The real Rename dialog must finish")
     }
 
+    /// Retain only dictionaries already read by the bounded observation waits.
+    /// No extra AX query, UI event or wait occurs after an assertion fails.
+    private func rp39RetainObservationFailure(_ boundary: String,
+                                              first: [String: Any]?, last: [String: Any]?,
+                                              observedPolls: Int) {
+        let value: [String: Any] = [
+            "schema": "cherri-rp39-delivery-failure-observation/1",
+            "diagnosticOnly": true, "boundary": boundary, "observedPolls": observedPolls,
+            "first": first as Any? ?? NSNull(), "last": last as Any? ?? NSNull(),
+        ]
+        if let data = try? JSONSerialization.data(withJSONObject: value, options: [.sortedKeys]),
+           data.count <= 24576 {
+            let attachment = XCTAttachment(data: data, uniformTypeIdentifier: "public.json")
+            attachment.name = "RP39 delivery failure observation"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    private func rp39ExpectLivePreview(_ enabled: Bool, source: String) throws {
+        var first: [String: Any]?
+        var last: [String: Any]?
+        var observedPolls = 0
+        let matched = wait {
+            guard let observation = self.rp39Observation() else { return false }
+            if first == nil { first = observation }
+            last = observation
+            observedPolls += 1
+            guard let native = observation["native"] as? [String: Any] else { return false }
+            return native["status"] as? String == "observed"
+                && native["editorCount"] as? Int == 1
+                && native["sourceSHA256"] as? String == CherriJoinedContract.digest(source)
+                && native["utf16Length"] as? Int == source.utf16.count
+                && native["livePreviewEnabled"] as? Bool == enabled
+        }
+        if !matched {
+            rp39RetainObservationFailure(enabled ? "live-preview-on" : "live-preview-off",
+                                          first: first, last: last, observedPolls: observedPolls)
+        }
+        try require(matched, "RP39 requires the actual Workspace Live Preview state to match its real UI setup")
+    }
+
+    private func rp39PrepareLivePreviewOff(_ editor: XCUIElement) throws {
+        let source = try observedSource(editor)
+        let native = try rp39Native(source)
+        let initiallyEnabled = try XCTUnwrap(native["livePreviewEnabled"] as? Bool,
+                                            "RP39 requires the actual Workspace setting supplier")
+        if initiallyEnabled {
+            let options = app.buttons["workspaceOptionsButton"]
+            try require(options.waitForExistence(timeout: 3) && options.isHittable,
+                        "RP39 requires the actual Live Preview initial-state option")
+            options.tap()
+            let toggles = app.descendants(matching: .any).matching(identifier: "livePreviewToggle")
+            try require(wait { toggles.count == 1 && toggles.element(boundBy: 0).isHittable },
+                        "RP39 initial state requires one actual Live Preview toggle")
+            toggles.element(boundBy: 0).tap()
+        }
+        try rp39ExpectLivePreview(false, source: source)
+    }
+
     private func rp39ExpectedDiagnostics(_ fixture: JoinedFixture) throws -> [[String: Any]] {
         try XCTUnwrap(fixture.diagnostics).map {
             ["code": $0.code, "severity": $0.severity,
@@ -634,12 +694,25 @@ final class CherriJoinedContractUITests: XCTestCase {
         // A dedicated test launch enables read-only native observations and a
         // bounded delivery gate; all other original UI methods stay unchanged.
         app.terminate()
+        // This method must change Live Preview through its actual UI. An
+        // argument-domain override would take precedence over those app writes.
+        // The other original methods retain their manual-Build launch setting.
+        let previewArguments = app.launchArguments.indices.filter {
+            app.launchArguments[$0] == "-Cherri.livePreview"
+        }
+        try require(previewArguments.count == 1, "RP39 requires the one inherited Live Preview override")
+        let previewArgument = try XCTUnwrap(previewArguments.first)
+        try require(previewArgument + 1 < app.launchArguments.count
+                    && app.launchArguments[previewArgument + 1] == "NO",
+                    "RP39 must remove only the inherited disabled-value pair")
+        app.launchArguments.removeSubrange(previewArgument...(previewArgument + 1))
         app.launchEnvironment["CHERRI_RP39_UI_OBSERVATION"] = String(
             decoding: try JSONSerialization.data(withJSONObject: configuration, options: [.sortedKeys]),
             as: UTF8.self
         )
         app.launch()
         let editor = try openedEditor()
+        try rp39PrepareLivePreviewOff(editor)
         try replaceSource(editor, format.source)
         try rp39Format(editor, fixture: format)
         try stage(contract, "first-actual-format", fixture: format, editor: editor)
@@ -664,16 +737,27 @@ final class CherriJoinedContractUITests: XCTestCase {
         try require(wait { toggles.count == 1 && toggles.element(boundBy: 0).isHittable },
                     "RP39 requires one actual Live Preview toggle")
         toggles.element(boundBy: 0).tap()
+        try rp39ExpectLivePreview(true, source: older.source)
         try rp39Select(editor, source: older.source, offset: older.source.utf16.count)
         let buildButton = app.buttons["buildButton"]
         try require(wait { buildButton.exists && buildButton.isHittable && buildButton.isEnabled },
                     "The delayed older request must start from the real manual Build")
         buildButton.tap()
-        try require(wait(8) {
-            guard let delivery = self.rp39Observation()?["delivery"] as? [String: Any] else { return false }
+        var heldObservation: [String: Any]?
+        var heldPolls = 0
+        let heldInTime = wait(8) {
+            guard let observation = self.rp39Observation() else { return false }
+            heldObservation = observation
+            heldPolls += 1
+            guard let delivery = observation["delivery"] as? [String: Any] else { return false }
             return delivery["nonce"] as? String == nonce
                 && delivery["phase"] as? String == "older-real-analysis-held"
-        }, "The gate must hold an actual completed older analysis inside the original Build allowance")
+        }
+        if !heldInTime {
+            rp39RetainObservationFailure("older-analysis-hold", first: nil,
+                                          last: heldObservation, observedPolls: heldPolls)
+        }
+        try require(heldInTime, "The gate must hold an actual completed older analysis inside the original Build allowance")
         try expectSource(editor, older.source)
         try stage(contract, "older-real-analysis-held", fixture: older, editor: editor)
 
@@ -687,13 +771,23 @@ final class CherriJoinedContractUITests: XCTestCase {
         editor.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 5) + "Newer)\n")
         try expectSource(editor, current.source)
         var delivered: [String: Any]?
-        try require(wait(8) {
-            guard let delivery = self.rp39Observation()?["delivery"] as? [String: Any],
+        var lastDeliveryObservation: [String: Any]?
+        var deliveryPolls = 0
+        let deliveredInTime = wait(8) {
+            guard let observation = self.rp39Observation() else { return false }
+            lastDeliveryObservation = observation
+            deliveryPolls += 1
+            guard let delivery = observation["delivery"] as? [String: Any],
                   delivery["nonce"] as? String == nonce,
                   delivery["phase"] as? String == "older-analysis-discarded" else { return false }
             delivered = delivery
             return true
-        }, "A real newer result must publish before the unchanged guard rejects the delayed older result")
+        }
+        if !deliveredInTime {
+            rp39RetainObservationFailure("newer-publish-before-older-reject", first: heldObservation,
+                                          last: lastDeliveryObservation, observedPolls: deliveryPolls)
+        }
+        try require(deliveredInTime, "A real newer result must publish before the unchanged guard rejects the delayed older result")
         let delivery = try XCTUnwrap(delivered)
         let oldIdentity = try XCTUnwrap(delivery["older"] as? [String: Any])
         let newIdentity = try XCTUnwrap(delivery["current"] as? [String: Any])
