@@ -2,6 +2,7 @@
 """Seal a bounded, source-owned iOS xcresult summary without interpreting issues."""
 import argparse
 import contextlib
+import ctypes
 import datetime
 import hashlib
 import io
@@ -148,6 +149,130 @@ class PrepareFailureObservation:
 
 
 _prepare_observation = None
+_owned_git = None
+_first_interruption = None
+
+# This bootstrap permits only these already-qualified process primitives before
+# the first Git read. The normal immutable Git/blob/physical checks still follow.
+BOOTSTRAP_PINS = {
+    "tools/shortcuts-simulator-qa/simulator_session_recovery.py": {
+        "bytes": 19628, "sha256": "99f0cb92dc9ec32b2727f671f851053d53ae8e204b02d9405d0af85f188c230d"},
+    "tools/shortcuts-simulator-qa/qa_terminal_receipts.py": {
+        "bytes": 41639, "sha256": "cdeaf46fdcb81073fb6267ff2db54c94782b57660d5b61e1630af8ba1f804aa5"},
+    "tools/shortcuts-simulator-qa/project_prerequisite.py": {
+        "bytes": 4717, "sha256": "6c0bed088dc53e73af138221ce72a6faff0dfa0bc0279cc254ae622dd54bd843"},
+    "tools/shortcuts-simulator-qa/project_prerequisite_observation.py": {
+        "bytes": 69826, "sha256": "65148ffb9d2df8fd83c2887d1e56060d96ff2e7a978b9718753b74ab6ffdc24e"},
+}
+
+
+class OwnedGitReads:
+    """Opt-in diagnostic ownership; no source authority is granted by capture."""
+    def __init__(self, repo, output):
+        self.repo, self.output = Path(repo), Path(output)
+        self.helper = load_primitives(repo, None)
+        self.records = []
+        self.selected_developer_directory = None
+        self.output.mkdir(mode=0o700)
+
+    @staticmethod
+    def process_image(pid):
+        # Inspect only the just-created owned child. Absence is not an exec claim.
+        try:
+            if sys.platform == "darwin":
+                lib = ctypes.CDLL("/usr/lib/libproc.dylib")
+                lib.proc_pidpath.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_uint32]
+                lib.proc_pidpath.restype = ctypes.c_int
+                buffer = ctypes.create_string_buffer(4096)
+                count = lib.proc_pidpath(pid, buffer, len(buffer))
+                path = buffer.value.decode("utf-8", "replace") if count > 0 else None
+            else:
+                path = os.readlink("/proc/%d/exe" % pid)
+            return {"state": "OBSERVED" if path else "NOT_OBSERVED", "path": path}
+        except (OSError, ValueError):
+            return {"state": "NOT_OBSERVED", "path": None}
+
+    def run(self, args, env, deadline):
+        env = dict(env)
+        if sys.platform == "darwin" and not env.get("DEVELOPER_DIR"):
+            if self.selected_developer_directory is None:
+                selection = self.capture_command("selected_developer_directory",
+                    ["/usr/bin/xcode-select", "--print-path"], deadline)
+                try:
+                    value = selection.stdout.decode("utf-8").removesuffix("\n")
+                except UnicodeDecodeError:
+                    raise Rejected("SOURCE_CHANGED")
+                require(0 < len(value.encode("utf-8")) <= 4096 and
+                        not any(ord(c) < 32 or ord(c) == 127 for c in value), "SOURCE_CHANGED")
+                directory = Path(value)
+                require(directory.is_absolute() and directory.is_dir(), "SOURCE_CHANGED")
+                self.selected_developer_directory = value
+            env["DEVELOPER_DIR"] = self.selected_developer_directory
+        argv = ["/usr/bin/env", "-i", *[k + "=" + v for k, v in sorted(env.items())],
+                "/usr/bin/git", "--no-replace-objects", "-C", str(self.repo), *args]
+        return self.capture_command("git", argv, deadline)
+
+    def capture_command(self, operation, argv, deadline):
+        require(operation in ("git", "selected_developer_directory") and
+                _first_interruption is None and len(self.records) < 24,
+                "DIAGNOSTIC_DEADLINE")
+        now = time.monotonic()
+        require(deadline - now > 2, "DIAGNOSTIC_DEADLINE")
+        directory = self.output / ("command-%02d" % (len(self.records) + 1))
+        directory.mkdir(mode=0o700)
+        row = {"operation": operation, "argv": argv, "executionDeadlineMonotonic": deadline - 2,
+               "hardDeadlineMonotonic": deadline, "observed": None, "capture": None,
+               "processImage": None}
+        self.records.append(row)
+        write_json(directory / "intent.original.json", row)
+
+        def journal(phase, detail):
+            # A Popen-return observation is not an assertion that exec completed.
+            if phase == "started":
+                row["processImage"] = self.process_image(detail["pid"])
+            image = row["processImage"]
+            value = {"operation": operation, "phase": phase, "popenReturned": detail["pid"] is not None,
+                     "gitImageObserved": image is not None and image["path"] is not None
+                         and image["path"].endswith("/git"),
+                     "processImage": image, "capture": detail}
+            write_json(directory / (phase + ".original.json"), value)
+            row["capture"] = json.loads(canonical(detail))
+
+        with (directory / "stdout.original").open("xb") as stdout, \
+                (directory / "stderr.original").open("xb") as stderr:
+            observed, detail = self.helper.capture(
+                argv, deadline - now - 2, output=stdout, error_output=stderr,
+                execution_deadline=deadline - 2, hard_deadline=deadline,
+                stream_limit=METADATA_LIMIT, journal=journal)
+        row.update(observed=observed, capture=detail)
+        write_json(directory / "result.original.json", row)
+        require(observed["result"] == "PASS" and detail["cleanupParentReaped"] is True
+                and detail["groupAfterCleanup"]["state"] == "ABSENT",
+                "SOURCE_CHANGED")
+        return subprocess.CompletedProcess(argv, observed["exitCode"],
+            read_regular(directory / "stdout.original", METADATA_LIMIT),
+            read_regular(directory / "stderr.original", METADATA_LIMIT))
+
+    def emit(self):
+        rows = []
+        for item in self.records:
+            detail = item["capture"]
+            image = item["processImage"]
+            rows.append({"operation": item["operation"], "pid": None if detail is None else detail["pid"],
+                         "popenReturned": detail is not None and detail["pid"] is not None,
+                         "gitImageObserved": image is not None and image["path"] is not None
+                             and image["path"].endswith("/git"),
+                         "returnCode": None if detail is None else detail["returnCodeObserved"],
+                         "parentReaped": None if detail is None or "finishedAt" not in detail
+                             else detail["cleanupParentReaped"],
+                         "groupAfterCleanup": None if detail is None or detail["groupAfterCleanup"] is None
+                             else detail["groupAfterCleanup"]["state"],
+                         "result": None if item["observed"] is None else item["observed"]["result"]})
+        value = {"schema": "cherri-ios-owned-git-diagnostic/1", "commands": rows,
+                 "formalAcceptanceGranted": False, "firstInterruption": _first_interruption}
+        raw = canonical(value)
+        require(len(raw) <= 16384, "OUTPUT_LIMIT")
+        sys.stderr.write("IOS_XCRESULT_OWNED_GIT_DIAGNOSTIC:" + raw.decode())
 
 
 def observe_prepare(stage, file_index=None):
@@ -322,14 +447,18 @@ def directory_identity(path):
 def local_git(repo, args, deadline):
     remaining = deadline - time.monotonic()
     require(remaining > 0, "DIAGNOSTIC_DEADLINE")
-    env = {k: os.environ[k] for k in ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR") if k in os.environ}
+    env = {k: os.environ[k] for k in ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "DEVELOPER_DIR") if k in os.environ}
     env.update({"GIT_NO_REPLACE_OBJECTS": "1", "GIT_OPTIONAL_LOCKS": "0",
                 "GIT_TERMINAL_PROMPT": "0"})
     if _prepare_observation is not None:
         _prepare_observation.git_started(args, remaining)
-    process = subprocess.run(["/usr/bin/git", "--no-replace-objects", "-C", str(repo), *args],
-                             stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, timeout=remaining, env=env)
+    if _owned_git is None:
+        process = subprocess.run(["/usr/bin/git", "--no-replace-objects", "-C", str(repo), *args],
+                                 stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE, timeout=remaining, env=env)
+    else:
+        require(Path(repo) == _owned_git.repo, "SOURCE_CHANGED")
+        process = _owned_git.run(args, env, deadline)
     if _prepare_observation is not None:
         _prepare_observation.git_returned(process)
     require(process.returncode == 0 and len(process.stdout) <= METADATA_LIMIT and
@@ -404,7 +533,8 @@ def load_primitives(repo, sources):
     for name, relative in zip(HELPERS, HELPER_FILES):
         require(sys.modules.get(name) is None, "SOURCE_CHANGED")
         raw = read_regular(Path(repo) / relative, SOURCE_LIMIT)
-        require(digest_record(raw) == {k: sources["files"][relative][k]
+        expected = BOOTSTRAP_PINS if sources is None else sources["files"]
+        require(digest_record(raw) == {k: expected[relative][k]
                                       for k in ("bytes", "sha256")}, "SOURCE_CHANGED")
         verified[name] = raw
     try:
@@ -725,8 +855,14 @@ class FixedParser(argparse.ArgumentParser):
 
 @contextlib.contextmanager
 def envelope(seconds):
+    global _first_interruption
+    _first_interruption = None
     def expired(signum, frame):
-        raise EnvelopeExpired()
+        global _first_interruption
+        if _first_interruption is None:
+            _first_interruption = signum
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            raise EnvelopeExpired()
     previous = {kind: signal.signal(kind, expired)
                 for kind in (signal.SIGALRM, signal.SIGTERM, signal.SIGINT)}
     signal.setitimer(signal.ITIMER_REAL, seconds)
@@ -739,11 +875,13 @@ def envelope(seconds):
 
 
 def main(argv=None):
+    global _owned_git
     observe_prepare("arguments")
     parser = FixedParser(prog="collect_ios_xcresult_summary.py", description=__doc__)
     parser.add_argument("mode", choices=("prepare", "collect"))
     parser.add_argument("--repo", required=True)
     parser.add_argument("--reservation-sha")
+    parser.add_argument("--owned-git-diagnostic", action="store_true")
     args = parser.parse_args(argv)
     require(sys.flags.isolated == 1, "ARGUMENTS_REJECTED")
     observe_prepare("context")
@@ -757,6 +895,10 @@ def main(argv=None):
     observe_prepare("envelope")
     with envelope(15 if args.mode == "prepare" else 60):
         start = time.monotonic()
+        if args.owned_git_diagnostic:
+            require(os.environ.get("RP39_DIAGNOSTIC_ONLY") == "true" and
+                    context["event"] == "workflow_dispatch", "CONTEXT_REJECTED")
+            _owned_git = OwnedGitReads(repo, root.parent / (root.name + "-git-" + args.mode))
         if args.mode == "prepare":
             if _prepare_observation is not None:
                 _prepare_observation.envelope_started = start
@@ -784,3 +926,6 @@ if __name__ == "__main__":
             except (Exception, EnvelopeExpired):
                 print("IOS_XCRESULT_PREPARE_DIAGNOSTIC_UNAVAILABLE", file=sys.stderr)
         raise SystemExit(70)
+    finally:
+        if _owned_git is not None:
+            _owned_git.emit()

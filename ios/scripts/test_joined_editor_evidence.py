@@ -81,15 +81,16 @@ class JoinedEvidenceControls(unittest.TestCase):
         return diagnostic, records, output
 
     def test_exact_three_native_tiers_and_no_lsp_or_benchmark_inheritance(self):
-        diagnostic, records, output = self.collect()
+        original_four = [joined.BRG25_BRIDGE, joined.BRG27_BRIDGE, joined.BRG25_UI, joined.BRG27_UI]
+        diagnostic, records, output = self.collect(model_log(original_four))
         self.assertEqual({(row["requirements"][0], row["tier"], row["test_id"]) for row in records},
                          {("BRG25", "ios-build", joined.BRG25_BRIDGE),
                           ("BRG25", "ios-ui", joined.BRG25_UI),
                           ("BRG27", "ios-ui", joined.BRG27_UI)})
         self.assertEqual(diagnostic["joinedEditorEvidence"]["status"], "VERIFIED_JOINED_NATIVE")
-        self.assertEqual((output / "xcodetest.log").read_text(), model_log())
+        self.assertEqual((output / "xcodetest.log").read_text(), model_log(original_four))
         proof = json.loads((output / "joined-editor-proof.json").read_bytes())
-        self.assertEqual(set(proof["methods"]), set(joined.PROFILES))
+        self.assertEqual(set(proof["methods"]), set(original_four))
         self.assertEqual(proof["runAttempt"], 7)
         self.assertTrue(proof["noCrossTierInheritance"])
         for row in records:
@@ -219,7 +220,66 @@ class JoinedEvidenceControls(unittest.TestCase):
             path.parent.mkdir(parents=True);path.write_text(json.dumps(changed))
             with self.assertRaisesRegex(joined.Rejected, "FIXTURE_HASH"):
                 joined.load_contract(root)
-        self.assertEqual(joined.digest(raw), "8d28cbde2ad7ae1c967cb4c4e177a10cc12b10223e070b78ee44977725224474")
+        self.assertEqual(joined.digest(raw), "40eafedc112df29500ccf5eaa7e29fb726c2d433c8d526b1d00445e10c7a4f0d")
+
+    def test_rp39_rp41_only_their_dedicated_complete_ui_records(self):
+        selected = [joined.RP39_UI, joined.RP41_UI]
+        diagnostic, records, output = self.collect(model_log(selected))
+        self.assertEqual(
+            {(row["requirements"][0], row["tier"], row["test_id"]) for row in records},
+            {("RP39", "ios-ui", joined.RP39_UI), ("RP41", "ios-ui", joined.RP41_UI)},
+        )
+        proof = json.loads((output / "joined-editor-proof.json").read_bytes())
+        self.assertEqual(set(proof["methods"]), set(selected))
+        self.assertEqual(diagnostic["joinedEditorEvidence"]["recordTestIds"], sorted(selected))
+        self.assertTrue(proof["noCrossTierInheritance"])
+        for row in records:
+            self.assertEqual(row["assertions"], joined.PROFILES[row["test_id"]]["assertions"])
+            self.assertEqual(len(row["artifacts"]), 4)
+
+    def test_rp39_rp41_critical_stage_and_checkpoint_cannot_be_omitted(self):
+        for test, stage in [
+            (joined.RP39_UI, "delayed-old-rejected-caret-preserved"),
+            (joined.RP41_UI, "generated-edit-explained-source-preserved"),
+        ]:
+            original = model_log([test])
+            line = next(line for line in original.splitlines()
+                        if line.startswith(joined.PREFIX)
+                        and json.loads(line[len(joined.PREFIX):])["stage"] == stage)
+            marker = "[CHECKPOINT:" + joined.PROFILES[test]["checkpoint"] + "]"
+            for fault, changed in [
+                ("missing-critical-stage", original.replace(line + "\n", "", 1)),
+                ("duplicated-critical-stage", original.replace(line, line + "\n" + line, 1)),
+                ("missing-checkpoint", original.replace(marker + "\n", "", 1)),
+                ("failed-case", original.replace(" passed (", " failed (", 1)),
+            ]:
+                with self.subTest(test=test, fault=fault):
+                    diagnostic, records, _ = self.collect(changed)
+                    self.assertEqual(records, [])
+                    self.assertNotEqual(diagnostic["joinedEditorEvidence"]["status"], "VERIFIED_JOINED_NATIVE")
+
+    def test_rp39_rp41_cannot_borrow_generic_editor_or_preview_case(self):
+        original_four = [joined.BRG25_BRIDGE, joined.BRG27_BRIDGE, joined.BRG25_UI, joined.BRG27_UI]
+        _, old_records, _ = self.collect(model_log(original_four))
+        self.assertEqual({row["requirements"][0] for row in old_records}, {"BRG25", "BRG27"})
+        for test, borrowed in [
+            (joined.RP39_UI, joined.BRG27_UI),
+            (joined.RP41_UI, "CherriEditorUITests/testE07VisualParameterEditingCanvasUI"),
+        ]:
+            raw = model_log([test])
+            suite, method = test.split("/")
+            other_suite, other_method = borrowed.split("/")
+            changed = raw.replace(f"CherriUITests.{suite} {method}]",
+                                  f"CherriUITests.{other_suite} {other_method}]")
+            _, records, _ = self.collect(changed)
+            self.assertEqual(records, [])
+
+    def test_rp39_rp41_selected_diagnostic_or_failed_process_grants_no_native_tier(self):
+        raw = model_log([joined.RP39_UI, joined.RP41_UI])
+        for options in ({"diagnostic_only": True}, {"exit_code": "65"}, {"attempt": ""}):
+            with self.subTest(options=options):
+                _, records, _ = self.collect(raw, **options)
+                self.assertEqual(records, [])
 
 
 if __name__ == "__main__":

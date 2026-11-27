@@ -98,6 +98,12 @@ struct CherriEditorView: View {
                         .allowsHitTesting(false)
                         .accessibilityHidden(true)
                 }
+#if DEBUG
+                if CherriEditorDeliveryObservation.shared != nil {
+                    CherriRP39NativeEditorWitness(source: text)
+                        .frame(width: 1, height: 1)
+                }
+#endif
             }
             .onAppear {
                 CherriStartupLifecycleObserver.shared?.record(.editorAppeared, documentID: startupObservationID)

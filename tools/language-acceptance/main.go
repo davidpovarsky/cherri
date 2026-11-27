@@ -977,7 +977,7 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateAppIntegrationRecord(reqID, rec, manifest); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
-			if err := validatePreviewEditRecord(reqID, rec); err != nil {
+			if err := validatePreviewEditRecordWithManifest(reqID, rec, manifest); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
 			if err := validateEditorPerformanceRecord(reqID, rec); err != nil {
@@ -1047,7 +1047,7 @@ func ValidateEvidenceManifest(manifest *EvidenceManifest, contracts *ContractsSe
 			if err := validateStructuralMigrationRecord(reqID, rec); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
-			if err := validateCombinedEditorRecord(reqID, rec); err != nil {
+			if err := validateCombinedEditorRecordWithManifest(reqID, rec, manifest); err != nil {
 				validationErrors = append(validationErrors, err.Error())
 			}
 			if err := validateJoinedPublicRecord(reqID, rec, manifest); err != nil {

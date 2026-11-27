@@ -28,6 +28,41 @@ SOURCE_FILES = (
     "ios/scripts/record_workspace_presentation_source.py",
 )
 SCHEMA = "cherri-workspace-presentation-source/1"
+JOINED_SCHEMA = "cherri-joined-editor-component-source/1"
+JOINED_METHODS = METHODS + (
+    "CherriUITests/CherriJoinedContractUITests/testRP39ActualCombinedEditorAndDelayedAnalysisUI",
+    "CherriUITests/CherriPreviewDocumentUITests/testRP41ActualMappedAndGeneratedPreviewSourceUI",
+)
+JOINED_SOURCE_FILES = SOURCE_FILES + (
+    "ios/CherriApp/Diagnostics/EditorDeliveryObservation.swift",
+    "ios/CherriApp/Compiler/CherriCompiler.swift",
+    "ios/CherriApp/Compiler/CherriDocumentCompileContext.swift",
+    "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+    "ios/CherriApp/Preview/CherriPreviewEditTransaction.swift",
+    "ios/CherriApp/Preview/CherriPreviewRenderState.swift",
+    "ios/CherriUITests/CherriJoinedContractUITests.swift",
+    "ios/CherriUITests/CherriPreviewDocumentUITests.swift",
+    "ios/TestFixtures/joined-editor-contract.json",
+    "ios/scripts/joined_editor_evidence.py",
+    "ios/scripts/test_record_workspace_presentation_source.py",
+)
+RP39_SCHEMA = "cherri-rp39-diagnostic-source/1"
+RP39_METHODS = (JOINED_METHODS[3],)
+RP39_SOURCE_FILES = JOINED_SOURCE_FILES + (
+    "ios/scripts/collect_ios_xcresult_summary.py",
+    "ios/scripts/verify_ios_xcresult_summary.py",
+    "ios/scripts/test_ios_xcresult_summary.py",
+    "ios/scripts/seal_rp39_diagnostic.py",
+    "ios/scripts/test_rp39_diagnostic_transport.py",
+    "tools/shortcuts-simulator-qa/simulator_session_recovery.py",
+    "tools/shortcuts-simulator-qa/qa_terminal_receipts.py",
+    "tools/shortcuts-simulator-qa/project_prerequisite.py",
+    "tools/shortcuts-simulator-qa/project_prerequisite_observation.py",
+    "tools/shortcuts-simulator-qa/xcode_environment_inventory_recipient.pem",
+    "ios/CherriUITests/CherriEditorUITests.swift",
+    "ios/CherriTests/CherriEditorInputTests.swift",
+    "ios/CherriUITests/EditorStartupDeadline.swift",
+)
 
 
 def require(condition, code):
@@ -35,10 +70,14 @@ def require(condition, code):
         raise ValueError(code)
 
 
-def validate_mode(documentation, startup, presentation):
-    require(all(value in ("true", "false") for value in (documentation, startup, presentation)),
+def validate_mode(documentation, startup, presentation, joined="false", rp39="false"):
+    require(all(value in ("true", "false") for value in (documentation, startup, presentation, joined, rp39)),
             "COMPONENT_MODE_VALUE")
     require(presentation != "true" or (documentation == "false" and startup == "false"),
+            "COMPONENT_MODE_CONFLICT")
+    require(joined != "true" or (documentation == startup == presentation == "false"),
+            "COMPONENT_MODE_CONFLICT")
+    require(rp39 != "true" or documentation == startup == presentation == joined == "false",
             "COMPONENT_MODE_CONFLICT")
 
 
@@ -67,14 +106,15 @@ def git(repo, args, deadline):
     return result.stdout
 
 
-def source_snapshot(repo, context):
+def source_snapshot(repo, context, source_files=SOURCE_FILES):
+    require(source_files in (SOURCE_FILES, JOINED_SOURCE_FILES, RP39_SOURCE_FILES), "COMPONENT_SOURCE_PROFILE")
     deadline = time.monotonic() + 20
     require(repo == repo.resolve(strict=True), "COMPONENT_SOURCE_ROOT")
     require(git(repo, ["rev-parse", "HEAD"], deadline).decode().strip() == context["source"],
             "COMPONENT_SOURCE_CHANGED")
     tree = git(repo, ["rev-parse", context["source"] + "^{tree}"], deadline).decode().strip()
     require(re.fullmatch(r"[0-9a-f]{40}", tree) is not None, "COMPONENT_TREE")
-    raw = git(repo, ["ls-tree", "-r", "-z", context["source"], "--", *SOURCE_FILES], deadline)
+    raw = git(repo, ["ls-tree", "-r", "-z", context["source"], "--", *source_files], deadline)
     entries = {}
     for row in raw.split(b"\0"):
         if not row:
@@ -84,9 +124,9 @@ def source_snapshot(repo, context):
         require(path not in entries and kind == "blob" and mode in ("100644", "100755"),
                 "COMPONENT_TRACKED_FILE")
         entries[path] = (mode, blob)
-    require(set(entries) == set(SOURCE_FILES), "COMPONENT_SOURCE_SET")
+    require(set(entries) == set(source_files), "COMPONENT_SOURCE_SET")
     files = {}
-    for name in SOURCE_FILES:
+    for name in source_files:
         path = repo / name
         info = path.lstat()
         require(stat.S_ISREG(info.st_mode) and not path.is_symlink()
@@ -100,20 +140,23 @@ def source_snapshot(repo, context):
                 and stat.S_IMODE(info.st_mode) == expected_mode, "COMPONENT_SOURCE_CHANGED")
         files[name] = {"gitBlob": blob, "sha256": hashlib.sha256(data).hexdigest(),
                        "bytes": len(data), "mode": mode}
-    require(not git(repo, ["status", "--porcelain", "--untracked-files=no", "--", *SOURCE_FILES],
+    require(not git(repo, ["status", "--porcelain", "--untracked-files=no", "--", *source_files],
                     deadline).strip(), "COMPONENT_SOURCE_CHANGED")
     require(git(repo, ["rev-parse", "HEAD"], deadline).decode().strip() == context["source"],
             "COMPONENT_SOURCE_CHANGED")
     return {"tree": tree, "files": files}
 
 
-def record(repo, phase, context):
+def record(repo, phase, context, *, joined=False, rp39=False):
+    require(type(joined) is bool and type(rp39) is bool and not (joined and rp39), "COMPONENT_SOURCE_PROFILE")
     require(phase in ("before", "after"), "COMPONENT_PHASE")
-    snapshot = source_snapshot(repo, context)
-    value = {"schema": SCHEMA, "context": context, "source": snapshot,
-             "methods": list(METHODS), "scope": "declared-ui-component-source-only",
+    snapshot = source_snapshot(repo, context, RP39_SOURCE_FILES if rp39 else JOINED_SOURCE_FILES if joined else SOURCE_FILES)
+    value = {"schema": RP39_SCHEMA if rp39 else JOINED_SCHEMA if joined else SCHEMA, "context": context, "source": snapshot,
+             "methods": list(RP39_METHODS if rp39 else JOINED_METHODS if joined else METHODS),
+             "scope": "declared-rp39-diagnostic-source-only" if rp39 else "declared-joined-editor-component-source-only" if joined else "declared-ui-component-source-only",
              "nativeAcceptanceGranted": False}
-    output = repo / "ios/.build/workspace-presentation-source"
+    output = repo / ("ios/.build/rp39-diagnostic-source" if rp39 else "ios/.build/joined-editor-component-source" if joined else
+                     "ios/.build/workspace-presentation-source")
     require(not output.parent.is_symlink() and not output.is_symlink(), "COMPONENT_OUTPUT_ALIAS")
     output.mkdir(parents=True, exist_ok=True)
     require(output.resolve() == output, "COMPONENT_OUTPUT_ALIAS")
@@ -142,11 +185,15 @@ def main():
     args = parser.parse_args()
     validate_mode(os.environ.get("DOCUMENTATION_COMPONENT_ONLY", "false"),
                   os.environ.get("STARTUP_OBSERVATION_ONLY", "false"),
-                  os.environ.get("WORKSPACE_PRESENTATION_ONLY", "false"))
+                  os.environ.get("WORKSPACE_PRESENTATION_ONLY", "false"),
+                  os.environ.get("JOINED_EDITOR_COMPONENT_ONLY", "false"),
+                  os.environ.get("RP39_DIAGNOSTIC_ONLY", "false"))
     if args.phase == "mode":
         return
-    require(os.environ.get("WORKSPACE_PRESENTATION_ONLY") == "true", "COMPONENT_MODE_REQUIRED")
-    record(Path(__file__).resolve().parents[2], args.phase, context_from_environment(os.environ))
+    joined = os.environ.get("JOINED_EDITOR_COMPONENT_ONLY", "false") == "true"
+    rp39 = os.environ.get("RP39_DIAGNOSTIC_ONLY", "false") == "true"
+    require(os.environ.get("WORKSPACE_PRESENTATION_ONLY") == "true" or joined or rp39, "COMPONENT_MODE_REQUIRED")
+    record(Path(__file__).resolve().parents[2], args.phase, context_from_environment(os.environ), joined=joined, rp39=rp39)
 
 
 if __name__ == "__main__":

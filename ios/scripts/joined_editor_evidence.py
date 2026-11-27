@@ -1,7 +1,7 @@
-"""Strict source-bound intake for the four dedicated joined native editor cases.
+"""Strict source-bound intake for six dedicated joined native editor cases.
 
-Only three records are emitted: BRG25 ios-build, BRG25 ios-ui and BRG27 ios-ui.
-The BRG27 bridge case is required companion proof, never LSP/service evidence.
+BRG25 has ios-build and ios-ui records; BRG27, RP39 and RP41 each have
+one dedicated ios-ui record. The BRG27 bridge remains companion proof only.
 """
 import hashlib
 import json
@@ -16,6 +16,8 @@ BRG25_BRIDGE = "CherriJoinedBridgeTests/testBRG25ActualMobileRouteJoinedContract
 BRG27_BRIDGE = "CherriJoinedBridgeTests/testBRG27ActualEditorBridgeJoinedContract"
 BRG25_UI = "CherriJoinedContractUITests/testBRG25ActualAppRejectedAndLiteralRoutesUI"
 BRG27_UI = "CherriJoinedContractUITests/testBRG27ActualEditorJoinedWorkflowUI"
+RP39_UI = "CherriJoinedContractUITests/testRP39ActualCombinedEditorAndDelayedAnalysisUI"
+RP41_UI = "CherriPreviewDocumentUITests/testRP41ActualMappedAndGeneratedPreviewSourceUI"
 BRIDGE_PATH = "ios/CherriTests/CherriJoinedBridgeTests.swift"
 UI_PATH = "ios/CherriUITests/CherriJoinedContractUITests.swift"
 PROFILES = {
@@ -51,8 +53,35 @@ PROFILES = {
                        "comments_literals_preserved": "true"},
         "scope": "Dedicated XCUITest drives current Unicode diagnostics, shared parameter and enum completion edits, rapid edits, Hover, Rename, Format and unsigned Build on an opened document; same-run dedicated native bridge proof supplies exact stale-version and request-identity controls. Actual LSP and performance tiers remain separate.",
     },
+    RP39_UI: {
+        "requirement": "RP39", "producer": "ios-ui", "tier": "ios-ui",
+        "checkpoint": "RP39_NATIVE_COMBINED_EDITOR_UI_VERIFIED", "sourcePath": "ios/CherriUITests/CherriJoinedContractUITests.swift",
+        "assertions": {"actual_combined_editor_ui":"true","format_twice_idempotent_ui":"true","scoped_unicode_rename_ui":"true","comments_literals_preserved":"true","real_analysis_reordered_ui":"true","current_revision_only":"true","actual_utf16_caret_observed":"true","exact_rendered_utf16_diagnostics":"true","no_fabricated_compiler_results":"true"},
+        "scope": "Dedicated XCUITest performs two real Format operations, outer and inner Unicode semantic Rename, and actual UITextView caret observations in one document. A DEBUG delivery gate holds the unchanged real older analysis only after compiler completion; a real newer live analysis publishes before the unchanged stale guard rejects the older response. Exact diagnostic spans, comments, literals, current source and recovery Build are observed. Local service proofs, generic editor tests and native Shortcut runtime remain separate.",
+    },
+    RP41_UI: {
+        "requirement": "RP41", "producer": "ios-ui", "tier": "ios-ui",
+        "checkpoint": "RP41_NATIVE_MAPPED_GENERATED_PREVIEW_UI_VERIFIED", "sourcePath": "ios/CherriUITests/CherriPreviewDocumentUITests.swift",
+        "assertions": {"actual_mapped_generated_preview_ui":"true","rich_graph_mapped_parameter_edit":"true","exact_source_region_preserved":"true","actual_generated_edit_rejected_ui":"true","readonly_explanation_rendered":"true","native_rebuild_source_authority":"true","no_convenience_edit_or_fake_index":"true"},
+        "scope": "Dedicated XCUITest builds the authored expanded source through the real app, edits the actual mapped Wait DOM parameter, and observes only the exact authored source region and new native graph changing. Editing the real compiler-generated Number field must show the source-map read-only explanation and preserve the complete source; an independent actual rebuild retains the original generated value. Generic E07, BRG28, CLI source graphs and convenience preview buttons grant no RP41 UI credit.",
+    },
 }
 SOURCE_PATHS = sorted({
+    "ios/CherriApp/Diagnostics/EditorDeliveryObservation.swift",
+    "ios/CherriApp/Compiler/CherriDocumentCompileContext.swift",
+    "ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+    "ios/CherriApp/Preview/CherriPreviewEditTransaction.swift",
+    "ios/CherriApp/Preview/CherriPreviewRenderState.swift",
+    "ios/CherriApp/Preview/ShortcutPlistEditor.swift",
+    "ios/CherriApp/Preview/ShortcutPreviewView.swift",
+    "ios/CherriUITests/CherriPreviewDocumentUITests.swift",
+    "ios/WebPreview/package-lock.json",
+    "ios/WebPreview/package.json",
+    "ios/WebPreview/src/main.ts",
+    "ios/WebPreview/src/primitive-parameter-editing.mjs",
+    "preview_source_mapping.go",
+    "language_emit_adapter.go",
+    "mobile_document_context.go",
     CONTRACT_PATH, BRIDGE_PATH, UI_PATH, "ios/TestSupport/CherriJoinedContract.swift",
     "ios/CherriUITests/EditorStartupDeadline.swift", "ios/project.yml",
     "ios/CherriApp/App/WorkspaceView.swift", "ios/CherriApp/Compiler/CherriCompiler.swift",
@@ -210,7 +239,8 @@ class LogGuard:
                 return line
             except (Rejected, KeyError, TypeError):
                 return self.reject("INVALID_EVENT")
-        if stripped.startswith(("[CHECKPOINT:BRG25_NATIVE_", "[CHECKPOINT:BRG27_NATIVE_")):
+        if stripped.startswith(("[CHECKPOINT:BRG25_NATIVE_", "[CHECKPOINT:BRG27_NATIVE_",
+                                "[CHECKPOINT:RP39_NATIVE_", "[CHECKPOINT:RP41_NATIVE_")):
             if self.active not in PROFILES or self.active not in self.events:
                 return self.reject("CHECKPOINT_OWNER")
             checkpoint = "[CHECKPOINT:" + PROFILES[self.active]["checkpoint"] + "]"

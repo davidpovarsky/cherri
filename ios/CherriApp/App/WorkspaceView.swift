@@ -186,6 +186,7 @@ struct WorkspaceView: View {
 
                     Divider()
                     Toggle("Live Preview", isOn: $livePreview)
+                        .accessibilityIdentifier("livePreviewToggle")
                 } label: {
                     Label("Options", systemImage: "ellipsis.circle")
                 }
@@ -466,9 +467,21 @@ struct WorkspaceView: View {
                   request == currentBuildRequest
             else { return }
             let analysis = try? await CherriCompiler.analyze(source: request.source)
+#if DEBUG
+            await CherriEditorDeliveryObservation.shared?.afterRealAnalysis(
+                analysis, request: request, generation: generation, liveBuild: liveBuild
+            )
+#endif
             guard !Task.isCancelled, generation == buildRequestGeneration,
                   request == currentBuildRequest
-            else { return }
+            else {
+#if DEBUG
+                CherriEditorDeliveryObservation.shared?.didDiscard(
+                    request: request, generation: generation, liveBuild: liveBuild
+                )
+#endif
+                return
+            }
 
             compiled = nil
             publishedBuildRequest = request
@@ -494,6 +507,11 @@ struct WorkspaceView: View {
                 diagnostics = [compilerError]
             }
             signedURL = nil
+#if DEBUG
+            CherriEditorDeliveryObservation.shared?.didPublish(
+                analysis, request: request, generation: generation, liveBuild: liveBuild
+            )
+#endif
         } catch {
             guard !Task.isCancelled, generation == buildRequestGeneration,
                   request == currentBuildRequest

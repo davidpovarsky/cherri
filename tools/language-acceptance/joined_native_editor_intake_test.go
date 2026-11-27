@@ -420,3 +420,126 @@ func TestJoinedNativeEditorTerminalTargetOnlyRelabels(t *testing.T) {
 		})
 	}
 }
+
+// Two new synthetic native-intake models exercise only the new dedicated
+// records. They are not exported as executions of XCTest or actual app UI.
+func newRP39RP41NativeIntakeModel(t *testing.T, test string) *joinedNativeIntakeModel {
+	t.Helper()
+	m := newJoinedNativeIntakeModel(t, test)
+	raw, contractRaw := joinedNativeSyntheticLog(t, []string{test})
+	contract, err := loadJoinedNativeContract(contractRaw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	methods, err := parseJoinedNativeLog(raw, contract, nativeEncodingDigest(contractRaw))
+	if err != nil {
+		t.Fatal(err)
+	}
+	verified, records := joinedNativeMethodInventory(methods)
+	m.changeLog(string(raw))
+	m.proof["methods"] = methods
+	m.diagnostic["testResults"] = []any{map[string]any{"testId": test, "observedStatus": "passed"}}
+	summary := m.diagnostic["joinedEditorEvidence"].(map[string]any)
+	summary["verifiedTests"], summary["recordTestIds"] = verified, records
+	m.seal(t)
+	return m
+}
+
+func TestJoinedNativeEditorRP39RP41DedicatedRecords(t *testing.T) {
+	for _, row := range []struct{ id, test string }{{"RP39", joinedRP39UI}, {"RP41", joinedRP41UI}} {
+		t.Run(row.id, func(t *testing.T) {
+			m := newRP39RP41NativeIntakeModel(t, row.test)
+			validate := validateCombinedEditorRecordWithManifest
+			if row.id == "RP41" {
+				validate = validatePreviewEditRecordWithManifest
+			}
+			if err := validate(row.id, m.record, m.manifest); err != nil {
+				t.Fatal("healthy synthetic native boundary:", err)
+			}
+			if err := validate(row.id, m.record, nil); err == nil {
+				t.Fatal("a native row acquired credit without actual run authority")
+			}
+			if !reflect.DeepEqual(joinedNativeEditorTestIDs(row.id), []string{row.test}) {
+				t.Fatal("generic or auxiliary producer entered dedicated inventory")
+			}
+			ids := []string{}
+			assertions := map[string]string{}
+			applyRuntimeAndUIMappings(row.id, []string{"ios-ui"}, &ids, map[string]string{}, assertions)
+			if !reflect.DeepEqual(ids, []string{row.test}) || !reflect.DeepEqual(assertions, m.record.Assertions) {
+				t.Fatal("current requirement mapping detached from dedicated UI scope")
+			}
+		})
+	}
+}
+
+func TestJoinedNativeEditorRP39RP41OriginalBoundaryControls(t *testing.T) {
+	for _, row := range []struct{ id, test, borrowed string }{
+		{"RP39", joinedRP39UI, joinedBRG27UI},
+		{"RP41", joinedRP41UI, "CherriEditorUITests/testE07VisualParameterEditingCanvasUI"},
+	} {
+		t.Run(row.id, func(t *testing.T) {
+			for _, fault := range []string{"borrowed_case", "wrong_tier", "record_source", "missing_stage",
+				"missing_observer_pin", "failed_run", "failed_outcome", "local_producer_relabel"} {
+				t.Run(fault, func(t *testing.T) {
+					m := newRP39RP41NativeIntakeModel(t, row.test)
+					validate := validateCombinedEditorRecordWithManifest
+					if row.id == "RP41" {
+						validate = validatePreviewEditRecordWithManifest
+					}
+					if err := validate(row.id, m.record, m.manifest); err != nil {
+						t.Fatal("causal healthy model:", err)
+					}
+					reseal := false
+					switch fault {
+					case "borrowed_case":
+						m.record.TestID = row.borrowed
+					case "wrong_tier":
+						m.record.Tier = "integration"
+					case "record_source":
+						m.record.ImplementationSHA = strings.Repeat("b", 40)
+					case "missing_stage":
+						lines := strings.Split(string(m.raw), "\n")
+						for index, line := range lines {
+							if strings.HasPrefix(line, joinedNativePrefix) {
+								lines = append(lines[:index], lines[index+1:]...)
+								break
+							}
+						}
+						m.changeLog(strings.Join(lines, "\n"))
+						reseal = true
+					case "missing_observer_pin":
+						pins := m.proof["sourcePins"].([]any)
+						found := false
+						for index, item := range pins {
+							if item.(map[string]any)["path"] == "ios/CherriApp/Diagnostics/EditorDeliveryObservation.swift" {
+								m.proof["sourcePins"] = append(pins[:index], pins[index+1:]...)
+								found = true
+								break
+							}
+						}
+						if !found {
+							t.Fatal("new observer was absent from the healthy source authority")
+						}
+						reseal = true
+					case "failed_run":
+						m.manifest.Runs[0].Conclusion = "failure"
+					case "failed_outcome":
+						m.diagnostic["testResults"].([]any)[0].(map[string]any)["observedStatus"] = "failed"
+						reseal = true
+					case "local_producer_relabel":
+						m.record.TestID = combinedEditorTestIDs()[0]
+						if row.id == "RP41" {
+							m.record.TestID = previewEditTestIDs()[0]
+						}
+					}
+					if reseal {
+						m.seal(t)
+					}
+					if err := validate(row.id, m.record, m.manifest); err == nil {
+						t.Fatalf("new dedicated native boundary accepted %s", fault)
+					}
+				})
+			}
+		})
+	}
+}

@@ -22,6 +22,9 @@ const joinedBRG25Bridge = "CherriJoinedBridgeTests/testBRG25ActualMobileRouteJoi
 const joinedBRG27Bridge = "CherriJoinedBridgeTests/testBRG27ActualEditorBridgeJoinedContract"
 const joinedBRG25UI = "CherriJoinedContractUITests/testBRG25ActualAppRejectedAndLiteralRoutesUI"
 const joinedBRG27UI = "CherriJoinedContractUITests/testBRG27ActualEditorJoinedWorkflowUI"
+const joinedRP39UI = "CherriJoinedContractUITests/testRP39ActualCombinedEditorAndDelayedAnalysisUI"
+const joinedRP41UI = "CherriPreviewDocumentUITests/testRP41ActualMappedAndGeneratedPreviewSourceUI"
+const joinedNativePreviewUIPath = "ios/CherriUITests/CherriPreviewDocumentUITests.swift"
 const joinedNativeBridgePath = "ios/CherriTests/CherriJoinedBridgeTests.swift"
 const joinedNativeUIPath = "ios/CherriUITests/CherriJoinedContractUITests.swift"
 
@@ -55,11 +58,21 @@ func joinedNativeProfileFor(test string) (joinedNativeProfile, bool) {
 			map[string]string{"actual_editor_joined_workflow_ui": "true", "shared_textedit_applied_ui": "true",
 				"current_diagnostics_exact_utf16_ui": "true", "current_revision_only": "true", "hover_rename_format_ui": "true",
 				"same_run_native_bridge_proof": "true", "comments_literals_preserved": "true"}}, true
+	case joinedRP39UI:
+		return joinedNativeProfile{"RP39", "ios-ui", "ios-ui", "RP39_NATIVE_COMBINED_EDITOR_UI_VERIFIED", joinedNativeUIPath,
+			"Dedicated XCUITest performs two real Format operations, outer and inner Unicode semantic Rename, and actual UITextView caret observations in one document. A DEBUG delivery gate holds the unchanged real older analysis only after compiler completion; a real newer live analysis publishes before the unchanged stale guard rejects the older response. Exact diagnostic spans, comments, literals, current source and recovery Build are observed. Local service proofs, generic editor tests and native Shortcut runtime remain separate.",
+			map[string]string{"actual_combined_editor_ui": "true", "format_twice_idempotent_ui": "true", "scoped_unicode_rename_ui": "true", "comments_literals_preserved": "true", "real_analysis_reordered_ui": "true", "current_revision_only": "true", "actual_utf16_caret_observed": "true", "exact_rendered_utf16_diagnostics": "true", "no_fabricated_compiler_results": "true"},
+		}, true
+	case joinedRP41UI:
+		return joinedNativeProfile{"RP41", "ios-ui", "ios-ui", "RP41_NATIVE_MAPPED_GENERATED_PREVIEW_UI_VERIFIED", joinedNativePreviewUIPath,
+			"Dedicated XCUITest builds the authored expanded source through the real app, edits the actual mapped Wait DOM parameter, and observes only the exact authored source region and new native graph changing. Editing the real compiler-generated Number field must show the source-map read-only explanation and preserve the complete source; an independent actual rebuild retains the original generated value. Generic E07, BRG28, CLI source graphs and convenience preview buttons grant no RP41 UI credit.",
+			map[string]string{"actual_mapped_generated_preview_ui": "true", "rich_graph_mapped_parameter_edit": "true", "exact_source_region_preserved": "true", "actual_generated_edit_rejected_ui": "true", "readonly_explanation_rendered": "true", "native_rebuild_source_authority": "true", "no_convenience_edit_or_fake_index": "true"},
+		}, true
 	}
 	return joinedNativeProfile{}, false
 }
 
-// These IDs enroll only the three dedicated records. The BRG27 bridge is
+// These IDs enroll only dedicated records. The BRG27 bridge is
 // companion evidence inside the UI proof, never an interchangeable LSP tier.
 func joinedNativeEditorTestIDs(id string) []string {
 	switch id {
@@ -67,12 +80,16 @@ func joinedNativeEditorTestIDs(id string) []string {
 		return []string{joinedBRG25Bridge, joinedBRG25UI}
 	case "BRG27":
 		return []string{joinedBRG27UI}
+	case "RP39":
+		return []string{joinedRP39UI}
+	case "RP41":
+		return []string{joinedRP41UI}
 	}
 	return nil
 }
 
 func joinedNativeEditorUIAssertions(id string) map[string]string {
-	test := map[string]string{"BRG25": joinedBRG25UI, "BRG27": joinedBRG27UI}[id]
+	test := map[string]string{"BRG25": joinedBRG25UI, "BRG27": joinedBRG27UI, "RP39": joinedRP39UI, "RP41": joinedRP41UI}[id]
 	profile, ok := joinedNativeProfileFor(test)
 	if !ok {
 		return nil
@@ -81,6 +98,21 @@ func joinedNativeEditorUIAssertions(id string) map[string]string {
 }
 
 var joinedNativeSourcePaths = []string{
+	"ios/CherriApp/Diagnostics/EditorDeliveryObservation.swift",
+	"ios/CherriApp/Compiler/CherriDocumentCompileContext.swift",
+	"ios/CherriApp/Editor/CherriEditorBuildRequest.swift",
+	"ios/CherriApp/Preview/CherriPreviewEditTransaction.swift",
+	"ios/CherriApp/Preview/CherriPreviewRenderState.swift",
+	"ios/CherriApp/Preview/ShortcutPlistEditor.swift",
+	"ios/CherriApp/Preview/ShortcutPreviewView.swift",
+	"ios/CherriUITests/CherriPreviewDocumentUITests.swift",
+	"ios/WebPreview/package-lock.json",
+	"ios/WebPreview/package.json",
+	"ios/WebPreview/src/main.ts",
+	"ios/WebPreview/src/primitive-parameter-editing.mjs",
+	"preview_source_mapping.go",
+	"language_emit_adapter.go",
+	"mobile_document_context.go",
 	".github/workflows/ios-build.yml",
 	"ios/CherriApp/App/WorkspaceView.swift",
 	"ios/CherriApp/Compiler/CherriCompiler.swift",
@@ -129,7 +161,7 @@ func loadJoinedNativeContract(raw []byte) (*joinedNativeContract, error) {
 	if err := json.Unmarshal(raw, &contract); err != nil {
 		return nil, fmt.Errorf("JOINED_CONTRACT: %w", err)
 	}
-	if len(contract.Methods) != 4 || len(contract.Fixtures) == 0 || len(contract.Fixtures) > 64 {
+	if len(contract.Methods) != 6 || len(contract.Fixtures) == 0 || len(contract.Fixtures) > 64 {
 		return nil, fmt.Errorf("JOINED_CONTRACT: exact method inventory required")
 	}
 	for _, fixture := range contract.Fixtures {
@@ -236,7 +268,8 @@ func parseJoinedNativeLog(raw []byte, contract *joinedNativeContract, contractSH
 			events[active] = append(events[active], event)
 			continue
 		}
-		if strings.HasPrefix(line, "[CHECKPOINT:BRG25_NATIVE_") || strings.HasPrefix(line, "[CHECKPOINT:BRG27_NATIVE_") {
+		if strings.HasPrefix(line, "[CHECKPOINT:BRG25_NATIVE_") || strings.HasPrefix(line, "[CHECKPOINT:BRG27_NATIVE_") ||
+			strings.HasPrefix(line, "[CHECKPOINT:RP39_NATIVE_") || strings.HasPrefix(line, "[CHECKPOINT:RP41_NATIVE_") {
 			profile, owned := joinedNativeProfileFor(active)
 			if !owned || checkpoint[active] || len(events[active]) != len(contract.Methods[active].Stages) ||
 				line != "[CHECKPOINT:"+profile.Checkpoint+"]" {
@@ -314,7 +347,7 @@ func joinedNativeStrings(values []string) []any {
 // aggregate XCTest count, old partial probe or source-equivalent run cannot
 // replace this candidate's dedicated method and companion native proof.
 func validateJoinedNativeEditorRecord(id string, record EvidenceRecord, manifest *EvidenceManifest) error {
-	if id != "BRG25" && id != "BRG27" {
+	if id != "BRG25" && id != "BRG27" && id != "RP39" && id != "RP41" {
 		return nil
 	}
 	profile, known := joinedNativeProfileFor(record.TestID)
