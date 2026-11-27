@@ -28,17 +28,36 @@ these carriers for arbitrary user Dictionaries.
 | --- | --- | --- |
 | `require` | Without a `type` or `nonEmpty` guard, an actual Bool is tested once; false alerts and stops, and success forwards the same value. Typed presence guards remain separate. Both profiles keep the semantic guard. | Do not infer truthiness from Number, Text, Optional or AnyContent. `require(false)` is a false condition; `require(false, nonEmpty: true)` checks presence. Native failure/dialog/cancel behavior needs actual runtime evidence. |
 | `measure` | Shared Legacy/V2 value-or-Void body executes once in source order. Debug adds timers; Release preserves body effects. A Void body has no fabricated result and cannot be consumed as a value. | A native stop can prevent timer completion. This is not try/finally or a cancellation handler. |
-| `cache` | A literal key and finite nonnegative TTL select the implemented Text/Number/Bool archive. A hit skips the body; a miss executes once. TTL zero bypasses storage and clocks. Positive TTL preserves authored Previous across its helper sequence. | Requires the version-27 Stored Content actions. Complex values, File/Date/object persistence, storage-error recovery, concurrent atomicity and general serialization are not implemented by the scalar archive. Missing-key, clock and persistence behavior require native qualification. Sensitive values need explicit author marking and opt-in. |
-| `paginate` | Bounded GET pagination supports URL, cursor, page and offset markers, request headers, item/page caps, origin/cycle guards and an optional immutable page/Void callback. The callback receives the validated page once, before the next marker; zero budgets execute no callback. | A callback cannot silently return selected items. Typed selectors/returned items, Link headers, HTTP status/recovery/redirect policy, generic cancellation and complete native runtime remain separate obligations. |
+| `cache` | A literal key and finite nonnegative TTL select the Text/Number/Bool/Date archive. A hit skips the body; a miss executes once. Date uses an epoch-offset archive with type, cardinality and reconstruction guards. TTL zero bypasses storage, clocks and archive helpers; positive TTL preserves authored Previous. | Requires version-27 Stored Content actions. Dictionary/List/Optional/JsonNull/File and arbitrary-object persistence, recoverable native parser/storage errors and atomic concurrency guarantees remain unsupported. Date precision, reconstruction, fresh missing-key, expiry and cross-run persistence require Apple qualification. Invalid numeric Date archives can abort before guards. Sensitive values need explicit author marking and opt-in. |
+| `paginate` | Bounded GET supports URL/cursor/page/offset markers, request headers, item/page caps, origin/cycle guards and an immutable page/Void callback. Literal `itemKey` selects an exact required Dictionary field; literal `itemType` selects dictionary/text/number/bool items with a corresponding typed List result. Selected values retain their native references after singleton/category guards. The callback runs after item validation and before next-marker processing. Zero budgets execute no request or callback. | The page callback cannot return selected items. Number/Bool modes stop before GET when their native type witnesses are indistinguishable. General selector callbacks, standalone nested Lists, Optional/null and absent/empty native-value preservation remain outside this contract. Link/response status/headers, redirect/recovery policy, generic cancellation and complete native runtime acceptance remain separate obligations. |
 | `retry` | The planned general retry contract remains unqualified. | Do not advertise generic error catching or status/cancel recovery by wrapping an arbitrary native action. Use an explicitly supported, tested workflow for the actual operation. |
 
 `debugLog`/`debugLabel` preview modes retain their dedicated native evidence
 and object-preservation rules in [debug logging](debug-logging.md).
-`debugExport` offers explicit payload/redaction controls and opt-in label/item
-Creation Date metadata. Creation Date is item metadata, not the log execution
-timestamp; absent, ambiguous and unsupported metadata remain observable.
-Generated JSON/envelope structure is not proof of a returned native File, File
-byte identity, or successful native date extraction.
+
+### Local debug export
+
+`debugExport` preserves the original native log. With `redactSensitive:true`
+and `redactKeys` omitted or empty, all payloads remain redacted. A nonempty
+literal `redactKeys` explicitly enables selective Dictionary diagnostics:
+protected fields are checked before their values are read, other Text field
+values remain redacted, and non-Dictionary top-level payloads remain redacted.
+With `redactSensitive:false`, Text, native Number display text, ISO 8601 Date
+presentations and bounded Dictionary field diagnostics are enabled; nonempty
+`redactKeys` still filters protected fields.
+
+Dictionary output is explicitly nonlossless diagnostic data. Unsupported native
+or nested values, multiple-item fields and absence/null/empty ambiguity have
+explicit statuses. Source Bool, List and null distinctions are not reconstructed.
+Field names and unprotected values in explicit unredacted mode may contain
+sensitive content; selective filtering does not detect every secret.
+
+Labels and item Creation Date metadata remain separately opt-in. Labels stay
+redacted with `redactSensitive:true`. Creation Date is item metadata, not the log
+execution timestamp; absent, ambiguous and unsupported metadata remain observable.
+No upload, share, save-to-provider or sync action is implicit. Generated JSON,
+a filename or a declared File return type does not prove a returned native File,
+exact File bytes or successful native date extraction.
 
 ## Verification and delivery
 
