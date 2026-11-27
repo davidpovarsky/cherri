@@ -24,6 +24,7 @@ import project_prerequisite_observation as bounded
 METADATA_SECONDS = 10
 CLOSING_SECONDS = 15
 WHOLE_SECONDS = 120
+FAILURE_CLEANUP_SECONDS = 2
 MAX_METADATA_BYTES = 2 * 1024 * 1024
 MAX_CRITICAL_BYTES = 2 * 1024 * 1024
 
@@ -173,6 +174,7 @@ def source_inventory(repo, commit, output, critical_paths):
     report = {"schema": "cherri-complete-source-binding-observation/1", "status": "SOURCE_UNVERIFIED",
               "commit": commit, "repo": str(repo), "startedUTC": utc(), "metadataSeconds": METADATA_SECONDS,
               "closingSeconds": CLOSING_SECONDS, "wholeSeconds": WHOLE_SECONDS,
+              "failureCleanupSeconds": FAILURE_CLEANUP_SECONDS,
               "sourceMutation": False, "nativeInvocation": False, "processes": []}
     git = shutil.which("git")
     env_prefix = ["/usr/bin/env"]
@@ -184,7 +186,12 @@ def source_inventory(repo, commit, output, critical_paths):
         folder = output / label
         folder.mkdir(mode=0o700)
         argv = env_prefix + list(args)
-        receipt = {"argv": argv, "observation": None, "process": None}
+        # Execution retains the original phase cutoff. Only failed cleanup may
+        # use two further seconds, still capped by the original whole deadline.
+        cleanup_deadline = min(whole_deadline, deadline + FAILURE_CLEANUP_SECONDS)
+        receipt = {"argv": argv, "observation": None, "process": None,
+                   "executionDeadlineMonotonic": deadline,
+                   "cleanupDeadlineMonotonic": cleanup_deadline}
         def journal(event, value):
             record(folder / ("process-" + event + ".original.json"), value)
             receipt["process"] = json.loads(canonical(value))
@@ -192,7 +199,8 @@ def source_inventory(repo, commit, output, critical_paths):
         try:
             with (folder / "stdout.original").open("xb") as stdout, (folder / "stderr.original").open("xb") as stderr:
                 observation, process = bounded.capture(argv, max(0, deadline - time.monotonic()), output=stdout,
-                    error_output=stderr, hard_deadline=deadline, stream_limit=MAX_METADATA_BYTES, journal=journal)
+                    error_output=stderr, execution_deadline=deadline, hard_deadline=cleanup_deadline,
+                    stream_limit=MAX_METADATA_BYTES, journal=journal)
             receipt.update(observation=observation, process=process)
         except BaseException as error:
             receipt.update(errorType=type(error).__name__, error=str(error)[:2048])

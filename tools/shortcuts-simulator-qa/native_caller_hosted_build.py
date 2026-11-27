@@ -69,7 +69,7 @@ def main(argv=None, *, parent_deadline=None, parent_interruption=None):
     record(O/"compiled-inputs.expected.original.json",{"source":PACKET_SOURCE,"files":PROJECT_PINS})
     raw(O/"owner.original.py",Path(__file__).read_bytes())
     require(sha((QA/"project_prerequisite_observation.py").read_bytes())=="0d60de3707650e3f48f5023eeb92759abfaf0f5152cc96afa7c6d8a9a2059315","QUALIFIED_CAPTURE_PIN")
-    require(sha((QA/"source_binding_observation.py").read_bytes())=="704e3b8c8902683dfd29784686cdcfba73f81ad0067d797994f21f332af84ded","SOURCE_GUARD_PIN")
+    require(sha((QA/"source_binding_observation.py").read_bytes())=="3c70e78347abeea9d84ff2c32b0f9c1b593bef0774f09d1fba9f9519d998f318","SOURCE_GUARD_PIN")
     sys.path.insert(0,str(QA))
     import project_prerequisite_observation as capture
     import source_binding_observation as binding
