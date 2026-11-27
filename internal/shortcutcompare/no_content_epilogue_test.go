@@ -22,8 +22,10 @@ func noContentComparatorEnvelope(body, main []any) map[string]any {
 	}
 	outer := control("outer-dispatch", 0)
 	outer["WFWorkflowActionParameters"].(map[string]any)["WFInput"] = map[string]any{
-		"WFSerializationType": "WFTextTokenAttachment",
-		"Value":               map[string]any{"Type": "Variable", "VariableName": "_cherri_is_fn"},
+		"Variable": map[string]any{
+			"WFSerializationType": "WFTextTokenAttachment",
+			"Value":               map[string]any{"Type": "Variable", "VariableName": "_cherri_is_fn"},
+		},
 	}
 	fn := control("selected-function", 0)
 	fn["WFWorkflowActionParameters"].(map[string]any)["WFCondition"] = 4
@@ -61,6 +63,17 @@ func TestFunctionNoContentEpilogueNormalization(t *testing.T) {
 	assertComparison := func(t *testing.T, a, b map[string]any, wantEqual bool) {
 		t.Helper()
 		originalA, originalB := deepCloneMap(a), deepCloneMap(b)
+		for side, document := range []map[string]any{a, b} {
+			actions := document["WFWorkflowActions"].([]any)
+			first, _ := actions[0].(map[string]any)
+			if first["WFWorkflowActionIdentifier"] == "is.workflow.actions.setvariable" {
+				functions, _ := parseFunctionsV2(actions)
+				function, found := functions["sample"]
+				if !found || len(functions) != 1 || len(function.Body) == 0 {
+					t.Fatalf("side %d: fixture must retain one parsed sample function with an observable body", side)
+				}
+			}
+		}
 		for direction, documents := range [][2]map[string]any{{a, b}, {b, a}} {
 			got := CompareDocumentsNormalized(documents[0], documents[1])
 			if got.Equal != wantEqual || (!wantEqual && (len(got.Differences) == 0 || got.Truncated)) {
