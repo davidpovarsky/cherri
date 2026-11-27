@@ -453,6 +453,11 @@ func makeActionParamsWithOrigins(arguments []actionArgument, params map[string]a
 		if (currentAction.identifier == "editEvent" || currentAction.identifier == "editReminder") && param.name == "newValue" {
 			continue
 		}
+		// A translated enum is not a direct source-to-wire preview edit origin.
+		if value, handled := canonicalArchiveFormatValue(getFullActionIdentifier(), param, arguments[i]); handled {
+			params[param.key] = value
+			continue
+		}
 		if observe != nil {
 			observe(i, param.key)
 		}

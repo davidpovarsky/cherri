@@ -1,0 +1,10 @@
+// Compile-only fixture: the public dotted spellings serialize native archive IDs.
+// Native execution, File output and platform acceptance are separate gates.
+makeArchive(Ask, ".zip")
+makeArchive(Ask, ".tar.gz")
+makeArchive(Ask, ".tar.bz2")
+makeArchive(Ask, ".tar.xz")
+makeArchive(Ask, ".tar")
+makeArchive(Ask, ".gz")
+makeArchive(Ask, ".cpio")
+makeArchive(Ask, ".iso")
