@@ -323,5 +323,97 @@ class NativeCallerInputTests(unittest.TestCase):
             imported.assert_not_called()
 
 
+    def test_launched_receipt_omits_completion_fields_until_actual_owned_exit(self):
+        with control_directory("launched-receipt-contract") as name:
+            owner = SimpleNamespace(folder=Path(name), deadline=time.monotonic() + 70)
+            real = subject.differential.atomic_json
+            rows = []
+            def publish(path, value):
+                real(path, value)
+                if path.name == "dispatch-phase.json":
+                    rows.append(copy.deepcopy(value))
+            with mock.patch.object(subject.differential, "atomic_json", side_effect=publish):
+                result = subject.dispatch_ui(owner, "phase", "runtime", "Workflow", ["/bin/true"])
+            launched = [row for row in rows if row["outcome"] == "LAUNCHED"]
+            subject.record(owner.folder / "launch-receipts.original.json", launched)
+            self.assertEqual(len(launched), 2)
+            for row in launched:
+                self.assertNotIn("parentReaped", row,
+                    "The original Swift reader requires completion state absent while LAUNCHED")
+                for field in ("processReturncode", "exitObservedUTC", "completedUTC", "elapsedSeconds"):
+                    self.assertNotIn(field, row)
+                self.assertIsNone(row["exitCode"])
+            self.assertEqual(result["outcome"], "EXITED")
+            self.assertIs(result["parentReaped"], True)
+            process = json.loads((owner.folder / "dispatch-phase/result.original.json").read_bytes())
+            self.assertEqual(result["command"], process["argv"])
+            self.assertTrue(process["details"]["cleanupParentReaped"])
+            self.assertEqual(process["details"]["groupAfterCleanup"]["state"], "ABSENT")
+
+    def test_literal_import_command_executes_verified_binary_and_preserves_actual_argv(self):
+        with control_directory("literal-import-command") as name:
+            folder = Path(name)
+            tools = folder / "synthetic-tools"; tools.mkdir()
+            harmless = Path("/bin/true").resolve(strict=True)
+            (tools / "xcrun").symlink_to(harmless)
+            signed = folder / "synthetic-only.shortcut"
+            signed.write_bytes(b"SYNTHETIC PROCESS CONTROL; NOT A SHORTCUT")
+            owner = SimpleNamespace(folder=folder, deadline=time.monotonic() + 70,
+                                    device="synthetic-device")
+            real = subject.differential.atomic_json
+            rows = []
+            def publish(path, value):
+                real(path, value)
+                if path.name == "dispatch-phase.json":
+                    rows.append(copy.deepcopy(value))
+            with mock.patch.object(subject, "IMPORT_XCRUN", harmless), \
+                 mock.patch.dict(os.environ, {"PATH": str(tools) + os.pathsep + os.environ.get("PATH", "")}), \
+                 mock.patch.object(subject.differential, "atomic_json", side_effect=publish):
+                argv = subject.import_dispatch_argv(owner, "phase", signed)
+                self.assertEqual(argv, ["xcrun", "simctl", "openurl", owner.device, signed.as_uri()])
+                result = subject.dispatch_ui(owner, "phase", "import", "SyntheticWorkflow", argv)
+            provenance = json.loads((folder / "dispatch-phase-executable.original.json").read_bytes())
+            process = json.loads((folder / "dispatch-phase/result.original.json").read_bytes())
+            self.assertEqual(provenance["resolvedPath"], str(harmless))
+            self.assertEqual(provenance["sha256"], fixtures.sha(harmless.read_bytes()))
+            self.assertEqual(provenance["argv"], process["argv"])
+            self.assertEqual(result["command"], process["argv"])
+            self.assertEqual(result["outcome"], "EXITED")
+            self.assertEqual(process["observation"]["exitCode"], 0)
+            self.assertTrue(process["details"]["cleanupParentReaped"])
+            self.assertEqual(process["details"]["groupAfterCleanup"]["state"], "ABSENT")
+            subject.record(folder / "launch-receipts.original.json",
+                           [row for row in rows if row["outcome"] == "LAUNCHED"])
+            subject.record(folder / "synthetic-control-scope.original.json",
+                           {"nativeExecuted": False, "actualExecutable": str(harmless),
+                            "actualExecutableSHA256": provenance["sha256"],
+                            "sourceConstantOverriddenOnlyInUnitControl": True})
+
+    def test_missing_relative_shadowed_or_untrusted_import_executable_cannot_dispatch(self):
+        with control_directory("import-executable-rejections") as name:
+            folder = Path(name)
+            owner = SimpleNamespace(folder=folder, deadline=time.monotonic() + 70,
+                                    device="synthetic-device")
+            signed = folder / "synthetic-only.shortcut"; signed.write_bytes(b"control")
+            harmless = Path("/bin/true").resolve(strict=True)
+            other = str(Path("/bin/false").resolve(strict=True))
+            for label, resolved in (("missing", None), ("relative", "xcrun"), ("shadowed", other)):
+                with self.subTest(case=label), mock.patch.object(subject, "IMPORT_XCRUN", harmless), \
+                     mock.patch.object(subject.shutil, "which", return_value=resolved), \
+                     mock.patch.object(subject.process_capture, "capture") as capture:
+                    with self.assertRaisesRegex(fixtures.FixtureRejected, "IMPORT_XCRUN_RESOLUTION"):
+                        subject.import_dispatch_argv(owner, label, signed)
+                    capture.assert_not_called()
+            untrusted = folder / "untrusted-xcrun"
+            untrusted.write_bytes(b"control"); untrusted.chmod(0o777)
+            with mock.patch.object(subject, "IMPORT_XCRUN", untrusted), \
+                 mock.patch.object(subject.shutil, "which", return_value=str(untrusted)), \
+                 mock.patch.object(subject.process_capture, "capture") as capture:
+                with self.assertRaisesRegex(fixtures.FixtureRejected, "IMPORT_XCRUN_FILE"):
+                    subject.import_dispatch_argv(owner, "untrusted", signed)
+                capture.assert_not_called()
+            self.assertFalse(any(folder.glob("dispatch-*")))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

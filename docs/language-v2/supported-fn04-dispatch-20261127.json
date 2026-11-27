@@ -1,0 +1,74 @@
+{
+  "base": "ac2daa690b0d95bb42da70d74330c9107ebc0a55",
+  "consumerChanged": false,
+  "formalAcceptanceGranted": false,
+  "foundationQualified": false,
+  "harnessRebuildRequired": false,
+  "manifest": {
+    "baseSource": "12702585f48c1e24b3f211841a4c23cfdfc34e8d",
+    "consumerChanged": false,
+    "files": [
+      {
+        "after": {
+          "bytes": 28455,
+          "sha256": "d1d04d3b405dd03b3d7d9cb7fe2e798f8bd53166f238bd96b3e106182c00e60b"
+        },
+        "before": {
+          "bytes": 26792,
+          "sha256": "e6a8c04a752d497b904b16cc92666555db98808a308f6745df8c8ca70432c878"
+        },
+        "path": "tools/shortcuts-simulator-qa/native_caller_input_observation.py"
+      },
+      {
+        "after": {
+          "bytes": 25756,
+          "sha256": "bb06d0b3155ee503fc1f7dad3745366c6f40fa66a8a5c8366550afbde64831c8"
+        },
+        "before": {
+          "bytes": 19513,
+          "sha256": "3f8eb5c7896372c3f1b0d09ca5f3c384fe927c54067a83b0c9624438d6c74d23"
+        },
+        "path": "tools/shortcuts-simulator-qa/test_native_caller_input_observation.py"
+      },
+      {
+        "after": {
+          "bytes": 4317,
+          "sha256": "bf8062fdbbc0c3d4f9b2a28b60cc0dbd246ad8ce92e1e1cef4755f299fc8d624"
+        },
+        "before": null,
+        "path": "tools/shortcuts-simulator-qa/verify_caller_import_dispatch.swift"
+      }
+    ],
+    "harnessRebuildRequired": false,
+    "nativeExecuted": false,
+    "originalFailureIntakeSHA256": "902bf90e7e9354762788ec84f64197a6ed6fba9fa8646b8411d6f73fa9fc9498",
+    "originalNativeBoundsChanged": false,
+    "patch": {
+      "bytes": 15334,
+      "sha256": "42bdb04e11b4503be886bd0ba0bbbc463bae9012af702d27b5a84e49c2dd1e25"
+    },
+    "schema": "cherri-fn04-original-import-dispatch-proposal/1",
+    "sourceOwner": "/root/apple_runtime"
+  },
+  "nativeBudgetsChanged": false,
+  "nativeExecutedForSuccessor": false,
+  "originalConsumerSHA256": "3ce8143ff4b591a82ab26de94ba19a45a4e32731210c3a6fa23add4ecf13baea",
+  "originalController": "12702585f48c1e24b3f211841a4c23cfdfc34e8d",
+  "originalFailureSemanticIntakeSHA256": "902bf90e7e9354762788ec84f64197a6ed6fba9fa8646b8411d6f73fa9fc9498",
+  "preservedFailures": [
+    "Actual native IMPORT_DISPATCH_RECEIPT_MALFORMED remains FAIL.",
+    "Initial qualification owner file-only EOF assertion remains FAIL.",
+    "Proposal02 manifest metadata erratum remains retained."
+  ],
+  "pythonOriginalIntakeSHA256": "58df39df7f5994663c3a705b957d67b6a09e9747c7309f17a3cade8fbb2a7308",
+  "schema": "cherri-supported-fn04-dispatch-source-component/1",
+  "scope": "Producer invokes literal xcrun only after fixed /usr/bin/xcrun executable provenance verification; LAUNCHED receipts omit completion state until actual owned termination. No UI or timing relaxation.",
+  "sourceReviewSHA256": "40cf2552116757481d93ac53fb2341a10122a34a7aa10b6147b0bff9bb174860",
+  "status": "SOURCE_AND_PYTHON_CONTROLS_QUALIFIED_FOUNDATION_AND_NATIVE_PENDING",
+  "syntheticOriginals": {
+    "bytes": 43385,
+    "file": "docs/language-v2/supported-fn04-dispatch-originals-20261127.zip",
+    "members": 51,
+    "sha256": "93968e88162a6fe95196f454ba24703255e2c6e0007e2db307135ce001c515f4"
+  }
+}
