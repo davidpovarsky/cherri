@@ -617,8 +617,8 @@ def check_mutations(outputs):
         elif mutation == "wrong_final_consumer":
             changed[consumer]["WFWorkflowActionIdentifier"] = NATIVE_PREFIX + "count"
         elif mutation == "original_uuid_replaced":
-            original = next(a for a in named(changed, "gettext") if params(a).get("WFTextActionText") == MARKER)
-            params(original)["UUID"] = "replaced-original-producer"
+            original_producer = next(a for a in named(changed, "gettext") if params(a).get("WFTextActionText") == MARKER)
+            params(original_producer)["UUID"] = "replaced-original-producer"
         elif mutation == "page_budget_changed":
             next(a for a in named(changed, "repeat.count") if str(params(a).get("WFControlFlowMode")) == "0")["WFWorkflowActionParameters"]["WFRepeatCount"] = 4
         else:
