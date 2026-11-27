@@ -212,6 +212,86 @@
       "source": "let typed: Text = 123\nshow(typed)\n",
       "sourceSha256": "629e6656b1f38effcf94bb8947b0f3e68f921155b7a3f7cacd86177ce415857a"
     },
+    "rp39-analysis-new": {
+      "diagnostics": [
+        {
+          "code": "E_UNKNOWN_NAME",
+          "range": {
+            "end": {
+              "character": 17,
+              "line": 16
+            },
+            "start": {
+              "character": 5,
+              "line": 16
+            }
+          },
+          "severity": "ERROR"
+        }
+      ],
+      "expectedSource": "// ערך 🙂 é stays\nlet סכום = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let פנים = 8\n    show(f\"🙂{פנים}\")\n}\n\nshow(f\"שלום🙂{סכום}\")\n\nshow(סכום)\n\nshow(literal)\n\nshow(missingNewer)\n",
+      "expectedSourceSha256": "edc364d13d903747b719c09ca41b1c6207852572b13bf3bbcc2250827b8e3d2e",
+      "source": "// ערך 🙂 é stays\nlet סכום = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let פנים = 8\n    show(f\"🙂{פנים}\")\n}\n\nshow(f\"שלום🙂{סכום}\")\n\nshow(סכום)\n\nshow(literal)\n\nshow(missingNewer)\n",
+      "sourceSha256": "edc364d13d903747b719c09ca41b1c6207852572b13bf3bbcc2250827b8e3d2e"
+    },
+    "rp39-analysis-old": {
+      "diagnostics": [
+        {
+          "code": "E_UNKNOWN_NAME",
+          "range": {
+            "end": {
+              "character": 15,
+              "line": 16
+            },
+            "start": {
+              "character": 5,
+              "line": 16
+            }
+          },
+          "severity": "ERROR"
+        }
+      ],
+      "expectedSource": "// ערך 🙂 é stays\nlet סכום = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let פנים = 8\n    show(f\"🙂{פנים}\")\n}\n\nshow(f\"שלום🙂{סכום}\")\n\nshow(סכום)\n\nshow(literal)\n\nshow(missingOld)\n",
+      "expectedSourceSha256": "03672238eccbd2b0bfd816d48815cb700062db9568c64894ab6db9648a1574dd",
+      "source": "// ערך 🙂 é stays\nlet סכום = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let פנים = 8\n    show(f\"🙂{פנים}\")\n}\n\nshow(f\"שלום🙂{סכום}\")\n\nshow(סכום)\n\nshow(literal)\n\nshow(missingOld)\n",
+      "sourceSha256": "03672238eccbd2b0bfd816d48815cb700062db9568c64894ab6db9648a1574dd"
+    },
+    "rp39-format": {
+      "expectedSource": "// ערך 🙂 é stays\nlet ערך = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let ערך = 8\n    show(f\"🙂{ערך}\")\n}\n\nshow(f\"שלום🙂{ערך}\")\n\nshow(ערך)\n\nshow(literal)\n",
+      "expectedSourceSha256": "de978352588ef65f7272d037bbba917df315ea09bf5afc9c99e34130e89ba514",
+      "source": "// ערך 🙂 é stays\nlet ערך=7\nlet literal=\"ערך 🙂 é\"\nif true{\nlet ערך=8\nshow(f\"🙂{ערך}\")\n}\nshow(f\"שלום🙂{ערך}\")\nshow(ערך)\nshow(literal)\n",
+      "sourceSha256": "93fb831b64e646b2483ae886160ffd87613c15ccd04de134f55a12ef0d9439bb"
+    },
+    "rp39-format-idempotent": {
+      "expectedSource": "// ערך 🙂 é stays\nlet ערך = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let ערך = 8\n    show(f\"🙂{ערך}\")\n}\n\nshow(f\"שלום🙂{ערך}\")\n\nshow(ערך)\n\nshow(literal)\n",
+      "expectedSourceSha256": "de978352588ef65f7272d037bbba917df315ea09bf5afc9c99e34130e89ba514",
+      "source": "// ערך 🙂 é stays\nlet ערך = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let ערך = 8\n    show(f\"🙂{ערך}\")\n}\n\nshow(f\"שלום🙂{ערך}\")\n\nshow(ערך)\n\nshow(literal)\n",
+      "sourceSha256": "de978352588ef65f7272d037bbba917df315ea09bf5afc9c99e34130e89ba514"
+    },
+    "rp39-inner-rename": {
+      "expectedSource": "// ערך 🙂 é stays\nlet סכום = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let פנים = 8\n    show(f\"🙂{פנים}\")\n}\n\nshow(f\"שלום🙂{סכום}\")\n\nshow(סכום)\n\nshow(literal)\n",
+      "expectedSourceSha256": "bf581c5ff27e4503fcb272d73a3bd5b03b181f89e7ffe2a73b0632c231009c13",
+      "source": "// ערך 🙂 é stays\nlet סכום = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let ערך = 8\n    show(f\"🙂{ערך}\")\n}\n\nshow(f\"שלום🙂{סכום}\")\n\nshow(סכום)\n\nshow(literal)\n",
+      "sourceSha256": "2badcc2239e63e4ce4c2fa39f4dfb6dad59ad239c8ee7bbfbac1267e0bf3609e"
+    },
+    "rp39-outer-rename": {
+      "expectedSource": "// ערך 🙂 é stays\nlet סכום = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let ערך = 8\n    show(f\"🙂{ערך}\")\n}\n\nshow(f\"שלום🙂{סכום}\")\n\nshow(סכום)\n\nshow(literal)\n",
+      "expectedSourceSha256": "2badcc2239e63e4ce4c2fa39f4dfb6dad59ad239c8ee7bbfbac1267e0bf3609e",
+      "source": "// ערך 🙂 é stays\nlet ערך = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let ערך = 8\n    show(f\"🙂{ערך}\")\n}\n\nshow(f\"שלום🙂{ערך}\")\n\nshow(ערך)\n\nshow(literal)\n",
+      "sourceSha256": "de978352588ef65f7272d037bbba917df315ea09bf5afc9c99e34130e89ba514"
+    },
+    "rp39-recovery": {
+      "expectedSource": "// ערך 🙂 é stays\nlet סכום = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let פנים = 8\n    show(f\"🙂{פנים}\")\n}\n\nshow(f\"שלום🙂{סכום}\")\n\nshow(סכום)\n\nshow(literal)\n",
+      "expectedSourceSha256": "bf581c5ff27e4503fcb272d73a3bd5b03b181f89e7ffe2a73b0632c231009c13",
+      "source": "// ערך 🙂 é stays\nlet סכום = 7\n\nlet literal = \"ערך 🙂 é\"\n\nif true {\n    let פנים = 8\n    show(f\"🙂{פנים}\")\n}\n\nshow(f\"שלום🙂{סכום}\")\n\nshow(סכום)\n\nshow(literal)\n",
+      "sourceSha256": "bf581c5ff27e4503fcb272d73a3bd5b03b181f89e7ffe2a73b0632c231009c13"
+    },
+    "rp41-expanded-preview": {
+      "expectedSource": "// Preserve the original comment: שלום 🍒\nif (true) {\n\twait(1)\n}\n\n// Only the next authored Wait parameter may change.\nwait(9) // editable call\nwait(3)\nwait(4)\nwait(5)\nwait(6)\nwait(7)\nwait(8)\n// Preserve the final comment and all unrelated calls.\n",
+      "expectedSourceSha256": "6848dcd72823f5c88b00d167f2e374edf4b7a80b9c1371b781704e6bbb7cbc2b",
+      "source": "// Preserve the original comment: שלום 🍒\nif (true) {\n\twait(1)\n}\n\n// Only the next authored Wait parameter may change.\nwait(2) // editable call\nwait(3)\nwait(4)\nwait(5)\nwait(6)\nwait(7)\nwait(8)\n// Preserve the final comment and all unrelated calls.\n",
+      "sourceSha256": "199883274257cf08221da7311a6b70d5c5ae5765a06f7a44d0a12785d8674ae7"
+    },
     "stale-version": {
       "expectedSource": "let stale: Text = 123\n",
       "expectedSourceSha256": "bace264601ce68c6353f48e5d52776b610bcfc1b94449a7262db782cd1188611",
@@ -443,6 +523,103 @@
           "fixtureId": "current-source",
           "id": "current-source-compiled",
           "observedSourceField": "source"
+        }
+      ]
+    },
+    "CherriJoinedContractUITests/testRP39ActualCombinedEditorAndDelayedAnalysisUI": {
+      "assertions": [
+        "actual Format twice preserves the exact formatted source and native caret",
+        "actual Unicode caret selects independent outer and inner rename scopes",
+        "comments literals emoji and combining marks remain byte-exact",
+        "a real manual older analysis is held only after compiler completion",
+        "a real newer live analysis publishes before the unchanged stale guard rejects the older result",
+        "both real diagnostic values retain independently authored UTF16 spans",
+        "actual native caret and current source remain unchanged through stale delivery",
+        "subsequent actual valid Build clears old diagnostics; no fabricated compiler result"
+      ],
+      "checkpoint": "RP39_NATIVE_COMBINED_EDITOR_UI_VERIFIED",
+      "producer": "ios-ui",
+      "requirement": "RP39",
+      "stages": [
+        {
+          "fixtureId": "rp39-format",
+          "id": "first-actual-format",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "rp39-format-idempotent",
+          "id": "second-format-idempotent-caret",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "rp39-outer-rename",
+          "id": "outer-scope-unicode-rename",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "rp39-inner-rename",
+          "id": "inner-scope-unicode-rename",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "rp39-analysis-old",
+          "id": "older-real-analysis-held",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "rp39-analysis-new",
+          "id": "current-real-analysis-published",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "rp39-analysis-new",
+          "id": "delayed-old-rejected-caret-preserved",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "rp39-recovery",
+          "id": "current-source-recovery-built",
+          "observedSourceField": "expectedSource"
+        }
+      ]
+    },
+    "CherriPreviewDocumentUITests/testRP41ActualMappedAndGeneratedPreviewSourceUI": {
+      "assertions": [
+        "actual expanded source compiled through the app Build control",
+        "actual mapped WFDelayTime DOM edit changes only the exact authored source region",
+        "new native graph renders the committed mapped value",
+        "actual compiler-generated Number DOM edit is explained and preserves the complete source",
+        "independent app rebuild confirms the unchanged generated value",
+        "no convenience preview button, injected compiler result or generic E07/BRG28 inheritance"
+      ],
+      "checkpoint": "RP41_NATIVE_MAPPED_GENERATED_PREVIEW_UI_VERIFIED",
+      "producer": "ios-ui",
+      "requirement": "RP41",
+      "stages": [
+        {
+          "fixtureId": "rp41-expanded-preview",
+          "id": "expanded-native-source-built",
+          "observedSourceField": "source"
+        },
+        {
+          "fixtureId": "rp41-expanded-preview",
+          "id": "only-mapped-source-region-published",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "rp41-expanded-preview",
+          "id": "mapped-native-graph-rendered",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "rp41-expanded-preview",
+          "id": "generated-edit-explained-source-preserved",
+          "observedSourceField": "expectedSource"
+        },
+        {
+          "fixtureId": "rp41-expanded-preview",
+          "id": "unchanged-source-native-rebuild-confirmed",
+          "observedSourceField": "expectedSource"
         }
       ]
     }

@@ -446,4 +446,229 @@ final class CherriJoinedContractUITests: XCTestCase {
         try stage(contract, "current-source-compiled", fixture: current, editor: editor)
         try contract.finish()
     }
+    private func rp39Observation() -> [String: Any]? {
+        let element = app.otherElements["rp39NativeEditorObservation"]
+        guard element.exists, let text = element.value as? String,
+              text.utf8.count <= 8192, let data = text.data(using: .utf8),
+              let value = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              Set(value.keys) == ["native", "delivery"] else { return nil }
+        return value
+    }
+
+    private func rp39Native(_ source: String) throws -> [String: Any] {
+        var observed: [String: Any]?
+        try require(wait {
+            guard let value = self.rp39Observation()?["native"] as? [String: Any],
+                  value["status"] as? String == "observed",
+                  value["editorCount"] as? Int == 1,
+                  value["sourceSHA256"] as? String == CherriJoinedContract.digest(source),
+                  value["utf16Length"] as? Int == source.utf16.count else { return false }
+            observed = value
+            return true
+        }, "RP39 requires the real unique UITextView and exact current UTF-16 source")
+        return try XCTUnwrap(observed)
+    }
+
+    private func rp39Select(_ editor: XCUIElement, source: String, offset: Int) throws {
+        let native = try rp39Native(source)
+        let dx = try XCTUnwrap(native["targetDX"] as? Double)
+        let dy = try XCTUnwrap(native["targetDY"] as? Double)
+        try require(native["targetOffset"] as? Int == offset && (0...1).contains(dx) && (0...1).contains(dy),
+                    "RP39 caret coordinate must come from this exact native source and target")
+        editor.coordinate(withNormalizedOffset: CGVector(dx: CGFloat(dx), dy: CGFloat(dy))).tap()
+        try require(wait {
+            guard let value = self.rp39Observation()?["native"] as? [String: Any] else { return false }
+            return value["sourceSHA256"] as? String == CherriJoinedContract.digest(source)
+                && value["selectionLocation"] as? Int == offset
+                && value["selectionLength"] as? Int == 0
+                && value["firstResponder"] as? Bool == true
+        }, "The real pointer event must place the actual native caret at the authored UTF-16 offset")
+    }
+
+    private func rp39Format(_ editor: XCUIElement, fixture: JoinedFixture) throws {
+        try expectSource(editor, fixture.source)
+        let options = app.buttons["workspaceOptionsButton"]
+        try require(options.waitForExistence(timeout: 3) && options.isHittable,
+                    "RP39 requires the actual workspace menu")
+        options.tap()
+        let actions = app.buttons.matching(NSPredicate(
+            format: "identifier == %@ OR label == %@", "formatSourceButton", "Format Source"))
+        try require(wait {
+            actions.count == 1 && actions.element(boundBy: 0).isHittable
+                && actions.element(boundBy: 0).isEnabled
+        }, "RP39 requires the unique enabled Format Source action")
+        actions.element(boundBy: 0).tap()
+        try expectSource(editor, fixture.expectedSource)
+    }
+
+    private func rp39Rename(_ editor: XCUIElement, fixture: JoinedFixture,
+                           target: Int, name: String) throws {
+        try expectSource(editor, fixture.source)
+        try rp39Select(editor, source: fixture.source, offset: target)
+        let rename = app.buttons["renameButton"]
+        try require(rename.waitForExistence(timeout: 3) && rename.isHittable && rename.isEnabled,
+                    "RP39 semantic Rename must use its actual control")
+        rename.tap()
+        let alert = app.alerts["Rename Symbol"]
+        try require(alert.waitForExistence(timeout: 5), "RP39 requires the native Rename dialog")
+        let field = alert.textFields["renameTextField"]
+        try require(field.waitForExistence(timeout: 2) && field.isHittable,
+                    "RP39 requires the actual rename input")
+        field.tap()
+        field.typeText(name)
+        let confirmations = alert.buttons.matching(NSPredicate(format: "label == %@", "Rename"))
+        try require(wait {
+            confirmations.count == 1 && confirmations.element(boundBy: 0).isHittable
+                && confirmations.element(boundBy: 0).isEnabled
+        }, "RP39 requires one actual Rename confirmation")
+        confirmations.element(boundBy: 0).tap()
+        try expectSource(editor, fixture.expectedSource)
+        try require(alert.waitForNonExistence(timeout: 5), "The real Rename dialog must finish")
+    }
+
+    private func rp39ExpectedDiagnostics(_ fixture: JoinedFixture) throws -> [[String: Any]] {
+        try XCTUnwrap(fixture.diagnostics).map {
+            ["code": $0.code, "severity": $0.severity,
+             "startLine": $0.range.start.line, "startCharacter": $0.range.start.character,
+             "endLine": $0.range.end.line, "endCharacter": $0.range.end.character]
+        }
+    }
+
+    /// RP39 is one actual document workflow. Only response delivery is gated:
+    /// every compiler analysis, source edit, caret move and publication is real.
+    func testRP39ActualCombinedEditorAndDelayedAnalysisUI() throws {
+        let contract = try CherriJoinedContract(
+            testId: "CherriJoinedContractUITests/testRP39ActualCombinedEditorAndDelayedAnalysisUI"
+        )
+        let format = try contract.fixture("rp39-format")
+        let idempotent = try contract.fixture("rp39-format-idempotent")
+        let outer = try contract.fixture("rp39-outer-rename")
+        let inner = try contract.fixture("rp39-inner-rename")
+        let older = try contract.fixture("rp39-analysis-old")
+        let current = try contract.fixture("rp39-analysis-new")
+        let recovery = try contract.fixture("rp39-recovery")
+        func offset(_ source: String, call: String, prefix: String) throws -> Int {
+            let range = (source as NSString).range(of: call)
+            try require(range.location != NSNotFound, "The independent Unicode caret fixture must be present")
+            return range.location + (prefix as NSString).length + 1
+        }
+        let outerOffset = try offset(outer.source, call: "show(f\"שלום🙂{ערך}\")", prefix: "show(f\"שלום🙂{")
+        let innerOffset = try offset(inner.source, call: "show(f\"🙂{ערך}\")", prefix: "show(f\"🙂{")
+        let nonce = UUID().uuidString
+        let configuration: [String: Any] = [
+            "schema": "cherri-rp39-ui-observation/1", "nonce": nonce,
+            "olderSourceSHA256": older.sourceSha256,
+            "currentSourceSHA256": current.sourceSha256,
+            "caretTargets": [outer.sourceSha256: outerOffset, inner.sourceSha256: innerOffset,
+                             older.sourceSha256: older.source.utf16.count,
+                             current.sourceSha256: current.source.utf16.count],
+        ]
+        // A dedicated test launch enables read-only native observations and a
+        // bounded delivery gate; all other original UI methods stay unchanged.
+        app.terminate()
+        app.launchEnvironment["CHERRI_RP39_UI_OBSERVATION"] = String(
+            decoding: try JSONSerialization.data(withJSONObject: configuration, options: [.sortedKeys]),
+            as: UTF8.self
+        )
+        app.launch()
+        let editor = try openedEditor()
+        try replaceSource(editor, format.source)
+        try rp39Format(editor, fixture: format)
+        try stage(contract, "first-actual-format", fixture: format, editor: editor)
+        let firstCaret = try rp39Native(idempotent.source)
+        try rp39Format(editor, fixture: idempotent)
+        let secondCaret = try rp39Native(idempotent.source)
+        try require(firstCaret["selectionLocation"] as? Int == secondCaret["selectionLocation"] as? Int
+                    && firstCaret["selectionLength"] as? Int == secondCaret["selectionLength"] as? Int,
+                    "The idempotent second Format must preserve the actual native caret")
+        try stage(contract, "second-format-idempotent-caret", fixture: idempotent, editor: editor)
+        try rp39Rename(editor, fixture: outer, target: outerOffset, name: "סכום")
+        try stage(contract, "outer-scope-unicode-rename", fixture: outer, editor: editor)
+        try rp39Rename(editor, fixture: inner, target: innerOffset, name: "פנים")
+        try stage(contract, "inner-scope-unicode-rename", fixture: inner, editor: editor)
+
+        try replaceSource(editor, older.source)
+        let options = app.buttons["workspaceOptionsButton"]
+        try require(options.waitForExistence(timeout: 3) && options.isHittable,
+                    "RP39 requires the actual Live Preview option")
+        options.tap()
+        let toggles = app.descendants(matching: .any).matching(identifier: "livePreviewToggle")
+        try require(wait { toggles.count == 1 && toggles.element(boundBy: 0).isHittable },
+                    "RP39 requires one actual Live Preview toggle")
+        toggles.element(boundBy: 0).tap()
+        try rp39Select(editor, source: older.source, offset: older.source.utf16.count)
+        let buildButton = app.buttons["buildButton"]
+        try require(wait { buildButton.exists && buildButton.isHittable && buildButton.isEnabled },
+                    "The delayed older request must start from the real manual Build")
+        buildButton.tap()
+        try require(wait(8) {
+            guard let delivery = self.rp39Observation()?["delivery"] as? [String: Any] else { return false }
+            return delivery["nonce"] as? String == nonce
+                && delivery["phase"] as? String == "older-real-analysis-held"
+        }, "The gate must hold an actual completed older analysis inside the original Build allowance")
+        try expectSource(editor, older.source)
+        try stage(contract, "older-real-analysis-held", fixture: older, editor: editor)
+
+        // Only five real Delete events and the replacement suffix are needed.
+        // No source injection or artificial completion can create the newer result.
+        let beforeTyping = try rp39Native(older.source)
+        try require(beforeTyping["selectionLocation"] as? Int == older.source.utf16.count
+                    && beforeTyping["selectionLength"] as? Int == 0
+                    && beforeTyping["firstResponder"] as? Bool == true,
+                    "The actual older editor caret must still own keyboard input")
+        editor.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 5) + "Newer)\n")
+        try expectSource(editor, current.source)
+        var delivered: [String: Any]?
+        try require(wait(8) {
+            guard let delivery = self.rp39Observation()?["delivery"] as? [String: Any],
+                  delivery["nonce"] as? String == nonce,
+                  delivery["phase"] as? String == "older-analysis-discarded" else { return false }
+            delivered = delivery
+            return true
+        }, "A real newer result must publish before the unchanged guard rejects the delayed older result")
+        let delivery = try XCTUnwrap(delivered)
+        let oldIdentity = try XCTUnwrap(delivery["older"] as? [String: Any])
+        let newIdentity = try XCTUnwrap(delivery["current"] as? [String: Any])
+        try require(oldIdentity["documentID"] as? String == newIdentity["documentID"] as? String
+                    && oldIdentity["sourceSHA256"] as? String == older.sourceSha256
+                    && newIdentity["sourceSHA256"] as? String == current.sourceSha256
+                    && oldIdentity["liveBuild"] as? Bool == false
+                    && newIdentity["liveBuild"] as? Bool == true,
+                    "Both real analyses must belong to one document and their actual manual/live requests")
+        let oldRevision = try XCTUnwrap(oldIdentity["revision"] as? UInt64)
+        let newRevision = try XCTUnwrap(newIdentity["revision"] as? UInt64)
+        let oldGeneration = try XCTUnwrap(oldIdentity["generation"] as? UInt64)
+        let newGeneration = try XCTUnwrap(newIdentity["generation"] as? UInt64)
+        try require(newRevision > oldRevision && newGeneration > oldGeneration,
+                    "Actual document and Build generations must advance")
+        let oldDiagnostics = try XCTUnwrap(delivery["olderDiagnostics"] as? [[String: Any]])
+        let newDiagnostics = try XCTUnwrap(delivery["currentDiagnostics"] as? [[String: Any]])
+        try require(NSArray(array: oldDiagnostics).isEqual(to: try rp39ExpectedDiagnostics(older))
+                    && NSArray(array: newDiagnostics).isEqual(to: try rp39ExpectedDiagnostics(current)),
+                    "Both delayed and current values must be the distinct real compiler diagnostics with exact UTF-16 spans")
+        try exactDiagnostic(current)
+        try stage(contract, "current-real-analysis-published", fixture: current, editor: editor)
+        let publishedCaret = try XCTUnwrap(delivery["currentCaret"] as? [String: Any])
+        let discardedCaret = try XCTUnwrap(delivery["discardedCaret"] as? [String: Any])
+        let actualCaret = try rp39Native(current.source)
+        for caret in [publishedCaret, discardedCaret, actualCaret] {
+            try require(caret["status"] as? String == "observed"
+                        && caret["sourceSHA256"] as? String == current.sourceSha256
+                        && caret["selectionLocation"] as? Int == current.source.utf16.count
+                        && caret["selectionLength"] as? Int == 0,
+                        "New publication, old rejection and current UI must preserve the same actual native caret")
+        }
+        try expectSource(editor, current.source)
+        try require(!app.staticTexts["compiledStatusText"].exists
+                    && !app.buttons["shareSignedShortcutButton"].exists,
+                    "Neither invalid analysis may publish a compiled or signed artifact")
+        try stage(contract, "delayed-old-rejected-caret-preserved", fixture: current, editor: editor)
+
+        try replaceSource(editor, recovery.source)
+        try build(editor, source: recovery.source, succeeds: true)
+        try require(!app.otherElements["diagnosticsBanner"].exists,
+                    "The subsequent actual valid Build must clear the previous diagnostics")
+        try stage(contract, "current-source-recovery-built", fixture: recovery, editor: editor)
+        try contract.finish()
+    }
 }

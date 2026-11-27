@@ -209,3 +209,12 @@ func validateCombinedEditorRecord(id string, record EvidenceRecord) error {
 	}
 	return combinedEditorValidateOriginals(record.ImplementationSHA, record.Artifacts)
 }
+
+// The original local validator remains unchanged. Native credit requires its
+// own dedicated case, complete original run and current source-bound artifacts.
+func validateCombinedEditorRecordWithManifest(id string, record EvidenceRecord, manifest *EvidenceManifest) error {
+	if id == "RP39" && record.Tier == "ios-ui" {
+		return validateJoinedNativeEditorRecord(id, record, manifest)
+	}
+	return validateCombinedEditorRecord(id, record)
+}

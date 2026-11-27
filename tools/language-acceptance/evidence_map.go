@@ -48,9 +48,13 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 		}
 		return
 	}
-	// The joined RP41 scenario still needs its own actual rendered UI proof.
-	// Historical generic E07 metadata cannot supply that external tier.
-	if id == "RP41" {
+	// Each joined editor scenario owns one dedicated actual UI producer.
+	// Historical E03/E04/E05/E07 and BRG27/BRG28 records remain separate.
+	if id == "RP39" || id == "RP41" {
+		*testIDs = append(*testIDs, joinedNativeEditorTestIDs(id)...)
+		for key, value := range joinedNativeEditorUIAssertions(id) {
+			reqUIAssertions[key] = value
+		}
 		return
 	}
 	if id == "RP24" || id == "RP25" || id == "RP26" || id == "BRG11" || id == "BRG15" {
@@ -145,16 +149,13 @@ func applyRuntimeAndUIMappings(id string, tiers []string, testIDs *[]string, req
 	case "E04":
 		reqUIAssertions["formatter_idempotent_comments"] = "true"
 		*testIDs = append(*testIDs, "CherriCoreIntegrationTests/testE04FormatterPreservesCommentsAndSemantics")
-	case "RP39":
-		// Separate E03/E04 tests do not execute the complete same-document
-		// format/rename/stale-response UI scenario. Its UI tier stays pending.
 	case "E05":
 		reqUIAssertions["versioned_edits_isolated"] = "true"
 		*testIDs = append(*testIDs, "CherriUITests/testE05EditorResponsivenessStaleEditsUI", "CherriCoreIntegrationTests/testE05OutOfOrderVersionedEdits")
 	case "E06":
 		reqUIAssertions["utf16_spans_exact"] = "true"
 		*testIDs = append(*testIDs, "CherriUITests/testE06BidirectionalHebrewEmojiUI", "CherriCoreIntegrationTests/testE06UTF16DiagnosticSpansEmojiAndHebrew")
-	case "E07", "RP41":
+	case "E07":
 		reqUIAssertions["visual_source_edit_bounded"] = "true"
 		*testIDs = append(*testIDs, "CherriUITests/testE07VisualParameterEditingCanvasUI", "CherriCoreIntegrationTests/testE07BoundedVisualSourceEditAndRejection")
 	case "BRG25", "BRG27":
@@ -772,10 +773,12 @@ func deriveRepairFixtures(id string) []string {
 		return append([]string{}, appIntegrationSourcePaths...)
 	}
 	if id == "RP41" {
-		return append([]string{}, previewEditProductionPaths...)
+		return append(append([]string{}, previewEditProductionPaths...), joinedNativePreviewUIPath, joinedNativeContractPath,
+			"ios/CherriApp/Preview/CherriPreviewEditTransaction.swift")
 	}
 	if id == "RP39" {
-		return append([]string{}, combinedEditorProductionPaths...)
+		return append(append([]string{}, combinedEditorProductionPaths...), joinedNativeUIPath, joinedNativeContractPath,
+			"ios/CherriApp/Diagnostics/EditorDeliveryObservation.swift")
 	}
 	if id == "RP24" {
 		return append([]string{}, functionReturnProductionPaths...)

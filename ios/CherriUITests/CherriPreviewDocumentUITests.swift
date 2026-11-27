@@ -316,4 +316,76 @@ final class CherriPreviewDocumentUITests: XCTestCase {
         try previewStage("invalid-dom-number-preserved-source", source: updated)
         print("CHERRI_NATIVE_PREVIEW_UI_CHECKPOINT=BRG28_WEBKIT_FIELDS_COMPLETE")
     }
+    /// RP41 owns this actual mapped-and-generated WebKit workflow. The complete
+    /// source, comments and unrelated calls are checked through the real editor.
+    func testRP41ActualMappedAndGeneratedPreviewSourceUI() throws {
+        let contract = try CherriJoinedContract(
+            testId: "CherriPreviewDocumentUITests/testRP41ActualMappedAndGeneratedPreviewSourceUI"
+        )
+        let fixture = try contract.fixture("rp41-expanded-preview")
+        let editor = try openedEditor()
+        try replaceSource(editor, fixture.source)
+        try build(editor, source: fixture.source, succeeds: true)
+        try contract.stage("expanded-native-source-built", inputSource: fixture.source,
+                           observedSource: observedSource(editor))
+
+        try pane("Preview")
+        let mapped = try field("WFDelayTime", value: "2")
+        let generated = try field("WFNumberActionNumber", value: "1")
+        try replaceField(mapped, old: "2", new: "9")
+        generated.tap()
+        try pane("Code")
+        try expectSource(editor, fixture.expectedSource)
+        try require(app.staticTexts["compiledStatusText"].exists
+                    && !app.staticTexts["diagnosticStatusText"].exists
+                    && !app.buttons["shareSignedShortcutButton"].exists,
+                    "RP41 mapped source publication requires its current native rebuild")
+        try contract.stage("only-mapped-source-region-published", inputSource: fixture.source,
+                           observedSource: observedSource(editor))
+
+        try pane("Preview")
+        _ = try field("WFDelayTime", value: "9")
+        try require(fields("WFDelayTime", value: "2").isEmpty,
+                    "RP41 must render the newly compiled mapped value")
+        _ = try field("WFNumberActionNumber", value: "1")
+        try pane("Code")
+        try expectSource(editor, fixture.expectedSource)
+        try contract.stage("mapped-native-graph-rendered", inputSource: fixture.source,
+                           observedSource: observedSource(editor))
+        try pane("Preview")
+        let generatedAgain = try field("WFNumberActionNumber", value: "1")
+
+        // The Bool condition's Number action is compiler-generated. Editing its
+        // actual DOM field must reach the native source-map rejection, not a
+        // test convenience button or an invented out-of-range action index.
+        try replaceField(generatedAgain, old: "1", new: "0")
+        (try field("WFDelayTime", value: "9")).tap()
+        let diagnostic = app.staticTexts["diagnosticStatusText"]
+        try require(wait {
+            diagnostic.exists
+                && diagnostic.label.contains("Visual edit cannot safely update this source")
+                && diagnostic.label.contains("Source preserved.")
+        }, "RP41 generated action editing must display the actual read-only-source explanation")
+        try pane("Code")
+        try expectSource(editor, fixture.expectedSource)
+        try require(!app.buttons["shareSignedShortcutButton"].exists,
+                    "A rejected generated edit must not publish a signed artifact")
+        try contract.stage("generated-edit-explained-source-preserved", inputSource: fixture.source,
+                           observedSource: observedSource(editor))
+
+        // Rebuilding that unchanged document independently confirms which value
+        // remains authoritative after the rejected DOM candidate.
+        try build(editor, source: fixture.expectedSource, succeeds: true)
+        try pane("Preview")
+        _ = try field("WFNumberActionNumber", value: "1")
+        _ = try field("WFDelayTime", value: "9")
+        try require(fields("WFNumberActionNumber", value: "0").isEmpty,
+                    "The rejected generated value must not enter the rebuilt native graph")
+        try pane("Code")
+        try expectSource(editor, fixture.expectedSource)
+        try contract.stage("unchanged-source-native-rebuild-confirmed", inputSource: fixture.source,
+                           observedSource: observedSource(editor))
+        try contract.finish()
+    }
+
 }

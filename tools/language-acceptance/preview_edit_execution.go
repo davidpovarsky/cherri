@@ -211,3 +211,12 @@ func validatePreviewEditRecord(id string, record EvidenceRecord) error {
 	}
 	return loopOutputWithinProcess(raw, receipt)
 }
+
+// The original local validator remains unchanged. Native credit requires its
+// own dedicated case, complete original run and current source-bound artifacts.
+func validatePreviewEditRecordWithManifest(id string, record EvidenceRecord, manifest *EvidenceManifest) error {
+	if id == "RP41" && record.Tier == "ios-ui" {
+		return validateJoinedNativeEditorRecord(id, record, manifest)
+	}
+	return validatePreviewEditRecord(id, record)
+}
