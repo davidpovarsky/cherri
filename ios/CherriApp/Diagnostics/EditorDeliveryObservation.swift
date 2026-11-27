@@ -255,6 +255,19 @@ struct CherriRP39NativeEditorWitness: UIViewRepresentable {
                     value["currentCaretDY"] = Double(dy)
                     value["currentCaretEditorPoint"] = [Double(localCaret.midX), Double(localCaret.midY)]
                     value["currentCaretWindowPoint"] = [Double(rect.midX), Double(rect.midY)]
+                    // Read-only directional predictions admit at most one real
+                    // XCTest arrow key; they never assign or prove a selection.
+                    for (field, direction) in [
+                        ("currentCaretLeftUTF16Offset", UITextLayoutDirection.left),
+                        ("currentCaretRightUTF16Offset", UITextLayoutDirection.right),
+                    ] {
+                        if let next = editor.position(from: currentPosition, in: direction, offset: 1) {
+                            let nextOffset = editor.offset(from: editor.beginningOfDocument, to: next)
+                            if (0...length).contains(nextOffset), nextOffset != selected.location {
+                                value[field] = nextOffset
+                            }
+                        }
+                    }
                 }
             }
             if let target = CherriEditorDeliveryObservation.shared?.configuration.caretTargets[digest],
