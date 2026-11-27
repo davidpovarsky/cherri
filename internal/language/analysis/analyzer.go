@@ -1912,7 +1912,7 @@ func (a *Analyzer) analyzeCallArguments(call *syntax.CallExpr, scope *Scope) typ
 		return a.requireOutputType(call, boundArguments)
 	}
 	if actionSchema.CallableName == "paginate" && actionSchema.CompilerConstruct {
-		a.checkPaginateArguments(call, boundArguments)
+		return a.checkPaginateArguments(call, boundArguments)
 	}
 	if result, specialized := a.variantOutputType(actionSchema, boundArguments); specialized {
 		return result
