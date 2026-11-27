@@ -14,6 +14,8 @@ import json
 import plistlib
 from pathlib import Path
 import re
+import shutil
+import stat
 import sys
 import time
 import urllib.parse
@@ -25,6 +27,7 @@ import run_differential_batch as differential
 import shortcut_library_identity as library
 
 SCHEMA = "cherri-native-caller-input-observation/1"
+IMPORT_XCRUN = Path("/usr/bin/xcrun")
 PACKET_SCHEMA = "cherri-native-caller-input-packet/1"
 PACKET_KEYS = frozenset((
     "schema", "caseId", "packetToken", "workflowName", "compileFilename",
@@ -236,6 +239,36 @@ def validate_runtime_bytes(callback, case_id, fixture_id, name, nonce, raw, inpu
             "nativeRawTypeObserved": False, "formalAcceptanceGranted": False}
 
 
+def import_dispatch_argv(owner, phase, signed):
+    """Resolve the actual literal argv required by the unchanged Swift reader."""
+    require(re.fullmatch("[A-Za-z0-9_-]{1,128}", phase) is not None,
+            "IMPORT_EXECUTABLE_PHASE")
+    resolved = shutil.which("xcrun")
+    require(resolved is not None and Path(resolved).is_absolute(),
+            "IMPORT_XCRUN_RESOLUTION")
+    expected = IMPORT_XCRUN.resolve(strict=True)
+    executable = Path(resolved).resolve(strict=True)
+    require(executable == expected, "IMPORT_XCRUN_RESOLUTION")
+    before = executable.stat()
+    require(stat.S_ISREG(before.st_mode) and before.st_uid == 0 and
+            before.st_mode & 0o022 == 0 and before.st_mode & 0o111 != 0 and
+            0 < before.st_size <= 16 * 1024 * 1024, "IMPORT_XCRUN_FILE")
+    raw = executable.read_bytes()
+    after = executable.stat()
+    fields = ("st_dev", "st_ino", "st_mode", "st_uid", "st_gid", "st_size", "st_mtime_ns")
+    require(all(getattr(before, field) == getattr(after, field) for field in fields) and
+            len(raw) == before.st_size, "IMPORT_XCRUN_CHANGED")
+    argv = ["xcrun", "simctl", "openurl", owner.device, Path(signed).as_uri()]
+    record(owner.folder / ("dispatch-" + phase + "-executable.original.json"), {
+        "schema": "cherri-import-dispatch-executable/1", "requestedArgv0": argv[0],
+        "resolvedPath": str(executable), "expectedSystemPath": str(IMPORT_XCRUN),
+        "bytes": len(raw), "sha256": fixtures.sha(raw),
+        "fileIdentity": {field: getattr(before, field) for field in fields},
+        "argv": argv, "nativeInvocationGranted": False,
+    })
+    return argv
+
+
 def dispatch_ui(owner, phase, operation, name, argv):
     """Reuse the qualified capture; publish only after its real owned Popen."""
     require(operation in ("import", "runtime") and
@@ -246,7 +279,7 @@ def dispatch_ui(owner, phase, operation, name, argv):
     dispatch_path = owner.folder / ("dispatch-" + phase + ".json")
     receipt = {"schemaVersion": 1, "command": argv, "timeoutSeconds": 60,
                "startedUTC": library.now(), "outcome": "STARTING", "exitCode": None,
-               "timedOut": False, "parentReaped": False}
+               "timedOut": False}
     command = {"id": phase, "operation": operation, "shortcutName": name}
     if operation == "import":
         command["requiresAbsentLibraryRecord"] = True
@@ -353,7 +386,7 @@ def imported_unique(owner, expected, unsigned, signed):
     before = library.observe(owner.device_data_path, expected, "before", unsigned, signed, before_dir)
     library.admit_absence(before, expected)
     dispatch = dispatch_ui(owner, expected["phaseId"], "import", expected["expectedName"],
-        ["/usr/bin/xcrun", "simctl", "openurl", owner.device, Path(signed).as_uri()])
+        import_dispatch_argv(owner, expected["phaseId"], signed))
     ui = differential.wait_file(owner.folder / ("ack-" + expected["phaseId"] + ".json"), 90, owner.xctest)
     require(ui.get("id") == expected["phaseId"] and ui.get("operation") == "import" and
             ui.get("name") == expected["expectedName"] and ui.get("outcome") == "IMPORTED" and
