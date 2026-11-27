@@ -1,0 +1,199 @@
+{
+  "base": "0d951cf7851fc7a250f4d2a0c6b63aa2b3a6abd6",
+  "cause": "Published0d951 shared helper imported absent record_workspace_presentation_source.py before generic sealing could begin.",
+  "change": "Defer the RP39-only source profile import to source_receipts and seal. Generic native file/archive/encryption functions keep their existing base and predicates.",
+  "formalAcceptanceGranted": false,
+  "independentSourceReview": {
+    "reviewPath": "ci-independent-delta-review-01/review.original.json",
+    "scope": "SOURCE_AND_RETAINED_CAUSAL_CONTROL_ONLY",
+    "sha256": "fe9eb53e8a61530edf69f60c6d3a5422b8fbb511f23551629bf9054cb859af7d",
+    "testsRerun": false
+  },
+  "nativeExecuted": false,
+  "originalExecutionCauseEstablished": false,
+  "originalFailure": {
+    "artifactIntakeSHA256": "2c06f92304e8eba73dfb0474a474c0f99e5d1bbb2a462be206fcb4260fbc9a14",
+    "attempt": 1,
+    "counterInterpretationErratumSHA256": "099283472767c08ee465730bc9dcf99f492ca33882dfd2dcf83f0b44e931d9a5",
+    "innerNativeExecutionBoundary": "UNOBSERVED",
+    "runId": 45952014722,
+    "summarySHA256": "05413138549ba7f52cc2c13f021461795e4fff59deb947416685ce10bd3fdab1"
+  },
+  "originals": {
+    "bytes": 68724,
+    "members": [
+      {
+        "bytes": 31328,
+        "name": "candidate/ios/scripts/collect_ios_xcresult_summary.py",
+        "sha256": "99b0f2894775e9ff395c3382f2428b18d919733762109b999a3c7dfb21330402"
+      },
+      {
+        "bytes": 16679,
+        "name": "candidate/ios/scripts/seal_rp39_diagnostic.py",
+        "sha256": "77bc46a766b6548774984780f695be88b4037b8a821508ad7d9e745b473784a0"
+      },
+      {
+        "bytes": 2931,
+        "name": "candidate/ios/scripts/test_native_diagnostic_seal.py",
+        "sha256": "4864f18e42df3c2510727ad3409127217363954f6ef1cae3ff5e966acda307aa"
+      },
+      {
+        "bytes": 1551,
+        "name": "candidate-one-control.process.original.json",
+        "sha256": "49d6abc73161d4fcab1c57cc566a41c2a2331a4ec2108eadd35bee21154ce21b"
+      },
+      {
+        "bytes": 595,
+        "name": "candidate-one-control.start.original.json",
+        "sha256": "1d20535176394d394e13ff2797f3f2a19411ac5e762ff877d25cc7bdded44539"
+      },
+      {
+        "bytes": 240,
+        "name": "candidate-one-control.stderr.original",
+        "sha256": "382f630c30976b99f05be761da176a4d89eb06b9fd8a3e3295cd5b9c0b464a11"
+      },
+      {
+        "bytes": 0,
+        "name": "candidate-one-control.stdout.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 7017,
+        "name": "ci-independent-delta-review-01/owner.original.py",
+        "sha256": "e60f3d0bbc6962909c3b3a2a022fbed44e879ff770dc87a98ca6a5daa69c4c2e"
+      },
+      {
+        "bytes": 12987,
+        "name": "ci-independent-delta-review-01/review.original.json",
+        "sha256": "fe9eb53e8a61530edf69f60c6d3a5422b8fbb511f23551629bf9054cb859af7d"
+      },
+      {
+        "bytes": 31328,
+        "name": "old/ios/scripts/collect_ios_xcresult_summary.py",
+        "sha256": "99b0f2894775e9ff395c3382f2428b18d919733762109b999a3c7dfb21330402"
+      },
+      {
+        "bytes": 16616,
+        "name": "old/ios/scripts/seal_rp39_diagnostic.py",
+        "sha256": "76f28b1d0c5b46997f5a52d7e9639a2a05a468b1201e1453e1b2e206f8db7d35"
+      },
+      {
+        "bytes": 2931,
+        "name": "old/ios/scripts/test_native_diagnostic_seal.py",
+        "sha256": "4864f18e42df3c2510727ad3409127217363954f6ef1cae3ff5e966acda307aa"
+      },
+      {
+        "bytes": 1549,
+        "name": "old-one-control.process.original.json",
+        "sha256": "3bf7e6c9eb627dffff16e544b1f042e7f4806fdcf419584ae9959ea7c3ed3a8a"
+      },
+      {
+        "bytes": 583,
+        "name": "old-one-control.start.original.json",
+        "sha256": "d3461de744dcbf23848d726aff31d6185b8d9d4e279a44d0944600565396be1a"
+      },
+      {
+        "bytes": 1194,
+        "name": "old-one-control.stderr.original",
+        "sha256": "995290ee1192741262bb46d644d4d53ebde5887a7edfa8201cf28475ac41d43c"
+      },
+      {
+        "bytes": 0,
+        "name": "old-one-control.stdout.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 26657,
+        "name": "owner.exact-source-retained.py",
+        "sha256": "81db00d280d8890314770e9f166d6da0053d3d8942da9071e9060af193c68853"
+      },
+      {
+        "bytes": 1694,
+        "name": "read-base.process.original.json",
+        "sha256": "902ea3927ece2c517a117d8ae550203fa2df473071b6d6f7aeda5645ff2c799c"
+      },
+      {
+        "bytes": 735,
+        "name": "read-base.start.original.json",
+        "sha256": "45966485972613e2aaa7ce45f79c67c210974817e7a9736c38f16e625a3458ae"
+      },
+      {
+        "bytes": 0,
+        "name": "read-base.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 31328,
+        "name": "read-base.stdout.original",
+        "sha256": "99b0f2894775e9ff395c3382f2428b18d919733762109b999a3c7dfb21330402"
+      },
+      {
+        "bytes": 1686,
+        "name": "read-seal.process.original.json",
+        "sha256": "b6dea2e6140b398355671f68bfee44084dbd83ab0c6e3cd0ee83a1133c8d30b4"
+      },
+      {
+        "bytes": 727,
+        "name": "read-seal.start.original.json",
+        "sha256": "ed4070f0ff1158a02b63d2b1f27eba460b583c1b87969fc6be1d15d996761f1e"
+      },
+      {
+        "bytes": 0,
+        "name": "read-seal.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 16616,
+        "name": "read-seal.stdout.original",
+        "sha256": "76f28b1d0c5b46997f5a52d7e9639a2a05a468b1201e1453e1b2e206f8db7d35"
+      },
+      {
+        "bytes": 9119,
+        "name": "result.original.json",
+        "sha256": "5a60a25516af2b52675dce9a99a6f9980b16793d03a088f59cc9d8d9cb3e7c2d"
+      },
+      {
+        "bytes": 1051,
+        "name": "source-after.original.json",
+        "sha256": "b021d43f03073c44f5ee743b2cb5ed22f5cbe6a282d3618589768f812c0f4e98"
+      },
+      {
+        "bytes": 1051,
+        "name": "source-before.original.json",
+        "sha256": "b021d43f03073c44f5ee743b2cb5ed22f5cbe6a282d3618589768f812c0f4e98"
+      },
+      {
+        "bytes": 3969,
+        "name": "source.original.patch",
+        "sha256": "e0f432eac2bd01aabde24996fc496aaf6a1c4eab359f3c400df86a8e4a97426d"
+      }
+    ],
+    "sha256": "ac80076a4f6ae48410669ee1a9312bedb639e8d2fd61b2de695c82ad093d0205"
+  },
+  "priorPublicationFailure": {
+    "boundary": "LOCAL_COMMIT_AUTHOR_IDENTITY_ABSENT",
+    "remoteMutationOccurred": false,
+    "sha256": "b36fece329ba5f9847ced33d6cbd1bd513e3283d6a3582c1bafbcab28c6e519f"
+  },
+  "qualification": {
+    "allChildrenReapedAndGroupsAbsent": true,
+    "candidateControlCount": 1,
+    "candidateOutcome": "PASS_IMPORT_ARCHIVE_EXACT_READBACK_AND_RP39_FAIL_CLOSED",
+    "oldControlCount": 1,
+    "oldOutcome": "ASSERTION_FAILURE_MISSING_PROFILE_IMPORT",
+    "resultSHA256": "5a60a25516af2b52675dce9a99a6f9980b16793d03a088f59cc9d8d9cb3e7c2d"
+  },
+  "schema": "cherri-generic-native-seal-qualification-report/1",
+  "sourcePins": {
+    "ios/scripts/seal_rp39_diagnostic.py": {
+      "bytes": 16679,
+      "sha256": "77bc46a766b6548774984780f695be88b4037b8a821508ad7d9e745b473784a0"
+    },
+    "ios/scripts/test_native_diagnostic_seal.py": {
+      "bytes": 2931,
+      "sha256": "4864f18e42df3c2510727ad3409127217363954f6ef1cae3ff5e966acda307aa"
+    }
+  },
+  "status": "QUALIFIED_GENERIC_IMPORT_ARCHIVE_REPAIR",
+  "workflowActivated": false
+}

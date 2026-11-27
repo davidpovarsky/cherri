@@ -1,0 +1,58 @@
+name: FN04 signed native caller input
+
+"on": create
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: fn04-native-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native-caller-input:
+    if: >-
+      github.repository == 'davidpovarsky/cherri' &&
+      github.event_name == 'create' &&
+      github.event.ref_type == 'branch' &&
+      github.event.ref == 'probe/cherri-p10r15-fn04-native-sealed-20261127' &&
+      github.run_attempt == '1'
+    runs-on: xcode-27
+    timeout-minutes: 60
+    env:
+      CHERRI_FN04_CASE: nested_false
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out exact controller source
+        timeout-minutes: 2
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Select one shared-clock Python
+        timeout-minutes: 2
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Reuse or install XcodeGen
+        timeout-minutes: 5
+        run: |
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+      - name: Run the original signed FN04 owner
+        timeout-minutes: 44
+        id: native
+        run: python3 -B tools/shortcuts-simulator-qa/native_caller_hosted_run.py
+      - name: Upload only encrypted native originals and closed summary
+        timeout-minutes: 5
+        if: always() && steps.native.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fn04-native-originals-nested_false
+          path: |
+            ${{ runner.temp }}/cherri-fn04-${{ github.run_id }}-1/public/summary.json
+            ${{ runner.temp }}/cherri-fn04-${{ github.run_id }}-1/public/fn04-originals.zip.p7m
+          if-no-files-found: error
+          retention-days: 7
