@@ -69,11 +69,17 @@ func p15MeasureVoidDateString(value any) (map[string]any, error) {
 	return ref, nil
 }
 
-// This oracle removes only complete, causally linked timer instrumentation.
+// This oracle removes only verified native input boundaries and complete,
+// causally linked timer instrumentation.
 // It then compares every remaining native action and parameter with the real
 // ordinary source body. UUID/name normalization preserves references and data;
 // no runtime result is simulated or inferred from an exit code.
 func p15MeasureVoidGraphError(actual, ordinary []ShortcutAction, timers int, profile BuildProfile) error {
+	var err error
+	actual, err = p15MeasureProjectInput(actual, timers, profile)
+	if err != nil {
+		return err
+	}
 	var body []ShortcutAction
 	var stack []string
 	var startOffsets []int

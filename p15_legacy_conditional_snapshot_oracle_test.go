@@ -14,6 +14,10 @@ var p15ConditionalTimerName = regexp.MustCompile("^__cherri_debug_timer_[0-9a-f]
 // depends on source position. Normalize only its declaration and verified
 // native Variable references, never an equal-looking literal payload.
 func p15ConditionSnapshotGraphIdentity(actions []ShortcutAction, profile BuildProfile) ([]map[string]any, error) {
+	boundaries, err := p15MeasureInputBoundaries(actions, 1, profile)
+	if err != nil {
+		return nil, err
+	}
 	rows, err := p15ConditionGraphIdentity(actions)
 	if err != nil {
 		return nil, err
@@ -82,6 +86,14 @@ func p15ConditionSnapshotGraphIdentity(actions []ShortcutAction, profile BuildPr
 		}
 		params := rows[index]["WFWorkflowActionParameters"].(map[string]any)
 		params["WFVariableName"] = fmt.Sprintf("private-timer-at-%d", index)
+	}
+	for _, boundary := range boundaries {
+		name := fmt.Sprintf("private-input-at-%d", boundary.capture)
+		capture := rows[boundary.capture]["WFWorkflowActionParameters"].(map[string]any)
+		restore := rows[boundary.restore]["WFWorkflowActionParameters"].(map[string]any)
+		capture["WFVariableName"] = name
+		ref := restore["WFVariable"].(map[string]any)["Value"].(map[string]any)
+		ref["VariableName"] = name
 	}
 	return rows, nil
 }
