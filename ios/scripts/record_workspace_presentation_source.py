@@ -9,6 +9,7 @@ import re
 import stat
 import subprocess
 import time
+import types
 
 
 METHODS = (
@@ -54,6 +55,8 @@ RP39_SOURCE_FILES = JOINED_SOURCE_FILES + (
     "ios/scripts/test_ios_xcresult_summary.py",
     "ios/scripts/seal_rp39_diagnostic.py",
     "ios/scripts/test_rp39_diagnostic_transport.py",
+    "ios/scripts/source_git_identity.py",
+    "ios/scripts/test_rp39_source_git_failure_retention.py",
     "tools/shortcuts-simulator-qa/simulator_session_recovery.py",
     "tools/shortcuts-simulator-qa/qa_terminal_receipts.py",
     "tools/shortcuts-simulator-qa/project_prerequisite.py",
@@ -63,6 +66,9 @@ RP39_SOURCE_FILES = JOINED_SOURCE_FILES + (
     "ios/CherriTests/CherriEditorInputTests.swift",
     "ios/CherriUITests/EditorStartupDeadline.swift",
 )
+GIT_IDENTITY_FILE = "ios/scripts/source_git_identity.py"
+GIT_IDENTITY_PIN = {"bytes": 4676, "sha256": "ffa29a47f2f8502619253ef77c82df37ae8e79c1b90f8ec44e0fe5fdc713affd"}
+FAILURE_SCHEMA = "cherri-rp39-source-failure/1"
 
 
 def require(condition, code):
@@ -95,26 +101,55 @@ def context_from_environment(env):
             "repository": "davidpovarsky/cherri", "workflow": "iOS Build"}
 
 
-def git(repo, args, deadline):
+def select_verified_git(repo, deadline):
+    path = repo / GIT_IDENTITY_FILE
+    info = path.lstat()
+    require(stat.S_ISREG(info.st_mode) and path.resolve(strict=True) == path
+            and info.st_size == GIT_IDENTITY_PIN["bytes"], "COMPONENT_SOURCE_CHANGED")
+    raw = path.read_bytes()
+    require({"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()} == GIT_IDENTITY_PIN
+            and time.monotonic() < deadline, "COMPONENT_SOURCE_CHANGED")
+    module = types.ModuleType("_component_source_git_identity")
+    module.__file__ = str(path)
+    exec(compile(raw, str(path), "exec"), module.__dict__)
+    return module.select_homebrew(deadline)
+
+
+def git(repo, args, deadline, *, identity=None):
+    executable = "/usr/bin/git" if identity is None else str(identity.check(deadline))
     remaining = deadline - time.monotonic()
     require(remaining > 0, "COMPONENT_SOURCE_DEADLINE")
-    result = subprocess.run(["/usr/bin/git", "--no-replace-objects", "-C", str(repo), *args],
+    argv = [executable, "--no-replace-objects", "-C", str(repo), *args]
+    result = subprocess.run(argv,
                             env=dict(os.environ, GIT_OPTIONAL_LOCKS="0"),
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             timeout=min(10, remaining), check=False)
-    require(result.returncode == 0, "COMPONENT_GIT_READ")
+    if result.returncode != 0:
+        error = ValueError("COMPONENT_GIT_READ")
+        error.cmd, error.returncode = argv, result.returncode
+        error.stdout, error.stderr = result.stdout, result.stderr
+        raise error
+    if identity is not None:
+        identity.check(deadline)
     return result.stdout
 
 
-def source_snapshot(repo, context, source_files=SOURCE_FILES):
+def source_snapshot(repo, context, source_files=SOURCE_FILES, *, verified_homebrew_git=False):
     require(source_files in (SOURCE_FILES, JOINED_SOURCE_FILES, RP39_SOURCE_FILES), "COMPONENT_SOURCE_PROFILE")
     deadline = time.monotonic() + 20
+    require(type(verified_homebrew_git) is bool and
+            (not verified_homebrew_git or source_files == RP39_SOURCE_FILES), "COMPONENT_SOURCE_PROFILE")
+    selected = select_verified_git(repo, deadline) if verified_homebrew_git else None
+    read_git = git
+    if selected is not None:
+        def read_git(repo, args, deadline):
+            return git(repo, args, deadline, identity=selected)
     require(repo == repo.resolve(strict=True), "COMPONENT_SOURCE_ROOT")
-    require(git(repo, ["rev-parse", "HEAD"], deadline).decode().strip() == context["source"],
+    require(read_git(repo, ["rev-parse", "HEAD"], deadline).decode().strip() == context["source"],
             "COMPONENT_SOURCE_CHANGED")
-    tree = git(repo, ["rev-parse", context["source"] + "^{tree}"], deadline).decode().strip()
+    tree = read_git(repo, ["rev-parse", context["source"] + "^{tree}"], deadline).decode().strip()
     require(re.fullmatch(r"[0-9a-f]{40}", tree) is not None, "COMPONENT_TREE")
-    raw = git(repo, ["ls-tree", "-r", "-z", context["source"], "--", *source_files], deadline)
+    raw = read_git(repo, ["ls-tree", "-r", "-z", context["source"], "--", *source_files], deadline)
     entries = {}
     for row in raw.split(b"\0"):
         if not row:
@@ -140,17 +175,64 @@ def source_snapshot(repo, context, source_files=SOURCE_FILES):
                 and stat.S_IMODE(info.st_mode) == expected_mode, "COMPONENT_SOURCE_CHANGED")
         files[name] = {"gitBlob": blob, "sha256": hashlib.sha256(data).hexdigest(),
                        "bytes": len(data), "mode": mode}
-    require(not git(repo, ["status", "--porcelain", "--untracked-files=no", "--", *source_files],
+    require(not read_git(repo, ["status", "--porcelain", "--untracked-files=no", "--", *source_files],
                     deadline).strip(), "COMPONENT_SOURCE_CHANGED")
-    require(git(repo, ["rev-parse", "HEAD"], deadline).decode().strip() == context["source"],
+    require(read_git(repo, ["rev-parse", "HEAD"], deadline).decode().strip() == context["source"],
             "COMPONENT_SOURCE_CHANGED")
+    if selected is not None:
+        selected.check(deadline, contents=True)
+        selected.emit("closed")
     return {"tree": tree, "files": files}
 
 
-def record(repo, phase, context, *, joined=False, rp39=False):
+def retain_source_failure(repo, context, error):
+    """Retain a failed closing read, without supplying a closing source receipt."""
+    output = repo / "ios/.build/rp39-diagnostic-source"
+    require(output.is_dir() and not output.is_symlink() and output.resolve() == output,
+            "COMPONENT_OUTPUT_ALIAS")
+    before = output / "before.original.json"
+    require(before.is_file() and not before.is_symlink() and before.stat().st_size <= 65536,
+            "COMPONENT_BEFORE_REQUIRED")
+    raw = before.read_bytes()
+    message = str(error)
+    argv = getattr(error, "cmd", None)
+    require(argv is None or (isinstance(argv, list) and len(argv) <= 80 and
+            all(isinstance(item, str) and len(item.encode()) <= 4096 for item in argv)),
+            "COMPONENT_FAILURE_LIMIT")
+    streams = {}
+    for name in ("stdout", "stderr"):
+        value = getattr(error, name, None)
+        require(value is None or isinstance(value, bytes) and len(value) <= 32768,
+                "COMPONENT_FAILURE_LIMIT")
+        streams[name] = None if value is None else {"encoding": "hex", "bytes": len(value), "data": value.hex()}
+    value = {"schema": FAILURE_SCHEMA, "context": context, "phase": "after",
+             "sourceVerification": "FAILED", "formalAcceptanceGranted": False,
+             "beforeSHA256": hashlib.sha256(raw).hexdigest(),
+             "exception": {"type": type(error).__name__, "message": message[:4096],
+                           "messageTruncated": len(message) > 4096, "argv": argv,
+                           "timeoutSeconds": getattr(error, "timeout", None),
+                           "returnCode": getattr(error, "returncode", None), **streams}}
+    data = (json.dumps(value, sort_keys=True, indent=2) + "\n").encode()
+    require(len(data) <= 256 * 1024, "COMPONENT_FAILURE_LIMIT")
+    with (output / "after-failure.original.json").open("xb") as handle:
+        handle.write(data)
+
+
+def record(repo, phase, context, *, joined=False, rp39=False, verified_homebrew_git=False):
     require(type(joined) is bool and type(rp39) is bool and not (joined and rp39), "COMPONENT_SOURCE_PROFILE")
     require(phase in ("before", "after"), "COMPONENT_PHASE")
-    snapshot = source_snapshot(repo, context, RP39_SOURCE_FILES if rp39 else JOINED_SOURCE_FILES if joined else SOURCE_FILES)
+    require(type(verified_homebrew_git) is bool and (not verified_homebrew_git or rp39),
+            "COMPONENT_SOURCE_PROFILE")
+    try:
+        snapshot = source_snapshot(repo, context, RP39_SOURCE_FILES if rp39 else JOINED_SOURCE_FILES if joined else SOURCE_FILES,
+                                   verified_homebrew_git=verified_homebrew_git)
+    except Exception as error:
+        if rp39 and phase == "after":
+            try:
+                retain_source_failure(repo, context, error)
+            except Exception:
+                print("RP39_SOURCE_FAILURE_RETENTION_UNAVAILABLE")
+        raise
     value = {"schema": RP39_SCHEMA if rp39 else JOINED_SCHEMA if joined else SCHEMA, "context": context, "source": snapshot,
              "methods": list(RP39_METHODS if rp39 else JOINED_METHODS if joined else METHODS),
              "scope": "declared-rp39-diagnostic-source-only" if rp39 else "declared-joined-editor-component-source-only" if joined else "declared-ui-component-source-only",
@@ -182,6 +264,7 @@ def record(repo, phase, context, *, joined=False, rp39=False):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("phase", choices=("mode", "before", "after"))
+    parser.add_argument("--verified-homebrew-git", action="store_true")
     args = parser.parse_args()
     validate_mode(os.environ.get("DOCUMENTATION_COMPONENT_ONLY", "false"),
                   os.environ.get("STARTUP_OBSERVATION_ONLY", "false"),
@@ -193,7 +276,8 @@ def main():
     joined = os.environ.get("JOINED_EDITOR_COMPONENT_ONLY", "false") == "true"
     rp39 = os.environ.get("RP39_DIAGNOSTIC_ONLY", "false") == "true"
     require(os.environ.get("WORKSPACE_PRESENTATION_ONLY") == "true" or joined or rp39, "COMPONENT_MODE_REQUIRED")
-    record(Path(__file__).resolve().parents[2], args.phase, context_from_environment(os.environ), joined=joined, rp39=rp39)
+    record(Path(__file__).resolve().parents[2], args.phase, context_from_environment(os.environ), joined=joined, rp39=rp39,
+           verified_homebrew_git=args.verified_homebrew_git)
 
 
 if __name__ == "__main__":

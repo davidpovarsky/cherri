@@ -41,6 +41,7 @@ HELPERS = (
 HELPER_FILES = tuple("tools/shortcuts-simulator-qa/" + n + ".py" for n in HELPERS)
 SOURCE_FILES = (
     "ios/scripts/collect_ios_xcresult_summary.py",
+    "ios/scripts/source_git_identity.py",
     "ios/scripts/verify_ios_xcresult_summary.py",
     "ios/scripts/test_ios_xcresult_summary.py", WORKFLOW,
     *HELPER_FILES, RECIPIENT,
@@ -150,7 +151,10 @@ class PrepareFailureObservation:
 
 _prepare_observation = None
 _owned_git = None
+_git_identity = None
 _first_interruption = None
+GIT_IDENTITY_FILE = "ios/scripts/source_git_identity.py"
+GIT_IDENTITY_PIN = {"bytes": 4676, "sha256": "ffa29a47f2f8502619253ef77c82df37ae8e79c1b90f8ec44e0fe5fdc713affd"}
 
 # This bootstrap permits only these already-qualified process primitives before
 # the first Git read. The normal immutable Git/blob/physical checks still follow.
@@ -192,9 +196,9 @@ class OwnedGitReads:
         except (OSError, ValueError):
             return {"state": "NOT_OBSERVED", "path": None}
 
-    def run(self, args, env, deadline):
+    def run(self, args, env, deadline, *, git_executable="/usr/bin/git"):
         env = dict(env)
-        if sys.platform == "darwin" and not env.get("DEVELOPER_DIR"):
+        if git_executable == "/usr/bin/git" and sys.platform == "darwin" and not env.get("DEVELOPER_DIR"):
             if self.selected_developer_directory is None:
                 selection = self.capture_command("selected_developer_directory",
                     ["/usr/bin/xcode-select", "--print-path"], deadline)
@@ -209,7 +213,7 @@ class OwnedGitReads:
                 self.selected_developer_directory = value
             env["DEVELOPER_DIR"] = self.selected_developer_directory
         argv = ["/usr/bin/env", "-i", *[k + "=" + v for k, v in sorted(env.items())],
-                "/usr/bin/git", "--no-replace-objects", "-C", str(self.repo), *args]
+                git_executable, "--no-replace-objects", "-C", str(self.repo), *args]
         return self.capture_command("git", argv, deadline)
 
     def capture_command(self, operation, argv, deadline):
@@ -444,7 +448,18 @@ def directory_identity(path):
             "mode": stat.S_IMODE(info.st_mode)}
 
 
+def select_verified_git(repo, deadline):
+    raw = read_regular(Path(repo) / GIT_IDENTITY_FILE, SOURCE_LIMIT)
+    require(digest_record(raw) == GIT_IDENTITY_PIN and time.monotonic() < deadline,
+            "SOURCE_CHANGED")
+    module = types.ModuleType("_source_git_identity")
+    module.__file__ = str(Path(repo) / GIT_IDENTITY_FILE)
+    exec(compile(raw, module.__file__, "exec"), module.__dict__)
+    return module.select_homebrew(deadline)
+
+
 def local_git(repo, args, deadline):
+    executable = "/usr/bin/git" if _git_identity is None else str(_git_identity.check(deadline))
     remaining = deadline - time.monotonic()
     require(remaining > 0, "DIAGNOSTIC_DEADLINE")
     env = {k: os.environ[k] for k in ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "DEVELOPER_DIR") if k in os.environ}
@@ -453,12 +468,14 @@ def local_git(repo, args, deadline):
     if _prepare_observation is not None:
         _prepare_observation.git_started(args, remaining)
     if _owned_git is None:
-        process = subprocess.run(["/usr/bin/git", "--no-replace-objects", "-C", str(repo), *args],
+        process = subprocess.run([executable, "--no-replace-objects", "-C", str(repo), *args],
                                  stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE, timeout=remaining, env=env)
     else:
         require(Path(repo) == _owned_git.repo, "SOURCE_CHANGED")
-        process = _owned_git.run(args, env, deadline)
+        process = _owned_git.run(args, env, deadline, git_executable=executable)
+    if _git_identity is not None:
+        _git_identity.check(deadline)
     if _prepare_observation is not None:
         _prepare_observation.git_returned(process)
     require(process.returncode == 0 and len(process.stdout) <= METADATA_LIMIT and
@@ -523,6 +540,9 @@ def source_binding(repo, source, deadline):
                                  "--", *SOURCE_FILES, ABSENT_SOURCE], deadline).strip(),
             "SOURCE_CHANGED")
     observe_prepare("source_validation")
+    if _git_identity is not None:
+        _git_identity.check(deadline, contents=True)
+        _git_identity.emit("closed")
     return validate_sources({"sourceSha": source, "tree": tree, "files": files,
                              "absent": [ABSENT_SOURCE]}, source)
 
@@ -875,13 +895,14 @@ def envelope(seconds):
 
 
 def main(argv=None):
-    global _owned_git
+    global _owned_git, _git_identity
     observe_prepare("arguments")
     parser = FixedParser(prog="collect_ios_xcresult_summary.py", description=__doc__)
     parser.add_argument("mode", choices=("prepare", "collect"))
     parser.add_argument("--repo", required=True)
     parser.add_argument("--reservation-sha")
     parser.add_argument("--owned-git-diagnostic", action="store_true")
+    parser.add_argument("--verified-homebrew-git", action="store_true")
     args = parser.parse_args(argv)
     require(sys.flags.isolated == 1, "ARGUMENTS_REJECTED")
     observe_prepare("context")
@@ -895,6 +916,10 @@ def main(argv=None):
     observe_prepare("envelope")
     with envelope(15 if args.mode == "prepare" else 60):
         start = time.monotonic()
+        if args.verified_homebrew_git:
+            require(args.owned_git_diagnostic and os.environ.get("RP39_DIAGNOSTIC_ONLY") == "true"
+                    and context["event"] == "workflow_dispatch", "CONTEXT_REJECTED")
+            _git_identity = select_verified_git(repo, start + (15 if args.mode == "prepare" else 60))
         if args.owned_git_diagnostic:
             require(os.environ.get("RP39_DIAGNOSTIC_ONLY") == "true" and
                     context["event"] == "workflow_dispatch", "CONTEXT_REJECTED")
